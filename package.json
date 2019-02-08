@@ -1,0 +1,52 @@
+{
+  "name": "openlaw-elements",
+  "version": "1.0.0",
+  "description": "Generated form inputs to help you quickly build UI from OpenLaw templates.",
+  "main": "index.js",
+  "scripts": {
+    "flow": "flow",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config webpack.config.dev.js"
+  },
+  "author": "OpenLaw Team <opensource@openlaw.io>",
+  "license": "Apache-2.0",
+  "browserslist": [
+    "last 1 version",
+    "not dead",
+    "> 0.2%"
+  ],
+  "devDependencies": {
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.3.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/preset-flow": "^7.0.0",
+    "@babel/preset-react": "^7.0.0",
+    "@storybook/react": "^4.1.11",
+    "babel-eslint": "^10.0.1",
+    "babel-loader": "^8.0.5",
+    "cross-env": "^5.2.0",
+    "eslint": "^5.13.0",
+    "eslint-plugin-flowtype": "^3.2.1",
+    "eslint-plugin-jsx-a11y": "^6.2.1",
+    "eslint-plugin-react": "^7.12.4",
+    "flow-bin": "^0.92.1",
+    "flow-copy-source": "^2.0.2",
+    "mini-css-extract-plugin": "^0.5.0",
+    "node-sass": "^4.11.0",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "rimraf": "^2.6.3",
+    "webpack": "^4.29.1",
+    "webpack-cli": "^3.2.3",
+    "webpack-dev-server": "^3.1.14"
+  },
+  "peerDependencies": {
+    "react": ">= 16.0.0",
+    "react-dom": ">= 16.0.0"
+  },
+  "dependencies": {
+    "flatpickr": "^4.5.2",
+    "react-autosuggest": "^9.4.3",
+    "react-image-crop": "^6.0.12"
+  }
+}

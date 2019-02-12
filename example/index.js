@@ -45,18 +45,20 @@ class Form extends Component {
         this.state.parameters
       );
 
-    // https://docs.openlaw.io/openlaw-object/#compiletemplate
-    const {compiledTemplate} = Openlaw.compileTemplate(SampleTemplateText);
-    // https://docs.openlaw.io/openlaw-object/#execute
-    const {executionResult} = Openlaw.execute(compiledTemplate, {}, {});
-    // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
-    const variables = Openlaw.getExecutedVariables(executionResult, {});
+    this.setState(({parameters}) => {
+      const concatParameters = {...parameters, ...updatedDraftParameters};
+      // https://docs.openlaw.io/openlaw-object/#compiletemplate
+      const {compiledTemplate} = Openlaw.compileTemplate(SampleTemplateText);
+      // https://docs.openlaw.io/openlaw-object/#execute
+      const {executionResult} = Openlaw.execute(compiledTemplate, {}, concatParameters);
 
-    this.setState(({parameters}) => ({
-      executionResult,
-      parameters: {...parameters, ...updatedDraftParameters},
-      variables,
-    }));
+      return {
+        executionResult,
+        parameters: concatParameters,
+        // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
+        variables: Openlaw.getExecutedVariables(executionResult, {}),
+      };
+    });
   };
 
   render() {

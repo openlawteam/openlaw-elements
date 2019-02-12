@@ -22,18 +22,16 @@
 
 # Basic YesNo Conditional
 {{BBQ Love Limit "Do you love BBQ?" =>
-  I, [[Contestant Name]], declare I love BBQ.}}
+  I, [[Contestant Name]], declare I love BBQ.
+}}
 
 # Nested conditional
 {{ Contestant BBQ Medical "Do you have any medical complications related to BBQ sauces?" =>
-  Text to include in an agreement if a user selects 'yes'
-  {{Sub-Conditional-1 "Text of Sub-Question 1" => Text}}
-  {{Sub-Conditional-2 "Text of Sub-Question 2" => Text}}
-  {{Sub-Conditional-3 "Text of Sub-Question 3" => Text}}
+  [[Please explain your BBQ sauce medical history: LargeText]]
 }}
 
 # LargeText
-[[Contestant Personal Statement: LargeText "Please write a personal statement."]]
+[[Contestant Personal Statement: LargeText "Please write a brief personal statement"]]
 
 # Ethereum Address
 [[Contestant ETH Address: EthAddress "Your ETH address for the registration fee ($200)"]]

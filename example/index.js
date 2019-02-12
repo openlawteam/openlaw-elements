@@ -51,7 +51,7 @@ class Form extends Component {
     const {executionResult} = Openlaw.execute(compiledTemplate, {}, {});
     // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
     const variables = Openlaw.getExecutedVariables(executionResult, {});
-console.log(variables)
+
     this.setState(({parameters}) => ({
       executionResult,
       parameters: {...parameters, ...updatedDraftParameters},

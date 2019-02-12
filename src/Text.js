@@ -19,7 +19,7 @@ export class Text extends React.Component<Props, State> {
   openLaw = this.props.openLaw;
 
   state = {
-    currentValue: this.props.savedValue,
+    currentValue: this.props.savedValue || '',
     validationError: false,
   };
 
@@ -30,10 +30,10 @@ export class Text extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     if (
       !this.state.validationError &&
-      this.state.currentValue !== this.props.savedValue
+      this.props.savedValue !== prevProps.savedValue
     ) {
       this.setState({
         currentValue: this.props.savedValue,
@@ -55,16 +55,15 @@ export class Text extends React.Component<Props, State> {
           currentValue: eventValue,
           validationError: false,
         }, () => {
-          const realValue = eventValue === '' ? undefined : eventValue;
-          this.props.onChange(name, realValue);
+          this.props.onChange(name, eventValue);
         });
       } else {
         if (this.state.currentValue) {
           this.setState({
-            currentValue: undefined,
+            currentValue: '',
             validationError: false,
           }, () => {
-            this.props.onChange(name, undefined);
+            this.props.onChange(name, '');
           });
         }
       }

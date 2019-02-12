@@ -1,0 +1,15 @@
+\centered **International BBQ Cookoff Registration**
+
+To: [[BBQ Partner Name]]
+
+Let us conduct a BBQ on [[BBQ Date: Date]]
+
+[[BBQ RSVP: YesNo "Do you require a visa to enter the U.S.?"]]
+
+// country type definition
+[[Your Country: Choice("USA", "Switzerland", "Sweden", "Germany", "India")]]
+
+// country type usage
+[[Your Country of Origin: Your Country]]
+
+(We're working with governments - slowly - to get BBQ contestants into the U.S. on a BBQ visa.)

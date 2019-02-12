@@ -302,7 +302,7 @@ export class ImageInput extends React.Component<Props, State> {
               <label
                 htmlFor={`image-${cleanName}`}
               >
-                {`Select ${description}`}
+                <span>{`Select ${description}`}</span>
 
                 <input
                   accept="image/png, image/jpeg, image/tiff, image/bmp, image/gif"

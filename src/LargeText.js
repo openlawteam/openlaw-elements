@@ -87,6 +87,7 @@ export class LargeText extends React.Component<Props, State> {
       <div className="contract_variable">
         <label>
           <span>{description}</span>
+
           <textarea
             className={`input ${cleanName} ${additionalClassName}`}
             onChange={this.onChange}

@@ -133,19 +133,22 @@ export class Collection extends React.Component<Props, State> {
           this.props.savedValue,
           this.props.executionResult,
         );
+
         this.setState({
-          validationError: false,
           currentValue,
+          validationError: false,
+        }, () => {
+          this.props.onChange(variableName, currentValue);
         });
-        this.props.onChange(variableName, currentValue);
       } else {
         this.setState({
+          currentValue: '',
           validationError: false,
-          currentValue: undefined,
+        }, () => {
+          this.props.onChange(this.openLaw.getName(variable), '');
         });
-        this.props.onChange(this.openLaw.getName(variable), undefined);
       }
-    } catch (err) {
+    } catch (error) {
       this.setState({
         validationError: true,
       });
@@ -168,7 +171,6 @@ export class Collection extends React.Component<Props, State> {
     const variable = this.props.variable;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
-
     const collectionSize = this.openLaw.getCollectionSize(
       variable,
       this.props.savedValue,

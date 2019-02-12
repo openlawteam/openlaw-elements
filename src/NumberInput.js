@@ -19,7 +19,7 @@ export class NumberInput extends React.Component<Props, State> {
   openLaw = this.props.openLaw;
 
   state = {
-    currentValue: this.props.savedValue,
+    currentValue: this.props.savedValue || '',
     validationError: false,
   };
 
@@ -30,8 +30,8 @@ export class NumberInput extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate() {
-    if (this.state.currentValue !== this.props.savedValue) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.savedValue !== this.props.savedValue) {
       this.setState({
         currentValue: this.props.savedValue,
       });
@@ -59,10 +59,10 @@ export class NumberInput extends React.Component<Props, State> {
 
       } else {
         this.setState({
-          currentValue: undefined,
+          currentValue: '',
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(variable), undefined);
+          this.props.onChange(this.openLaw.getName(variable), '');
         });
       }
     } catch (error) {
@@ -80,13 +80,17 @@ export class NumberInput extends React.Component<Props, State> {
 
     return (
       <div className="contract_variable">
-        <input
-          type="number"
-          className={`input ${cleanName}`}
-          onChange={this.onChange}
-          value={this.state.currentValue}
-          placeholder={description}
-        />
+        <label>
+          <span>{description}</span>
+
+          <input
+            type="number"
+            className={`input ${cleanName}`}
+            onChange={this.onChange}
+            value={this.state.currentValue}
+            placeholder={description}
+          />
+        </label>
       </div>
     );
   }

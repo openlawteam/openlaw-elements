@@ -133,19 +133,22 @@ export class Collection extends React.Component<Props, State> {
           this.props.savedValue,
           this.props.executionResult,
         );
+
         this.setState({
-          validationError: false,
           currentValue,
+          validationError: false,
+        }, () => {
+          this.props.onChange(variableName, currentValue);
         });
-        this.props.onChange(variableName, currentValue);
       } else {
         this.setState({
+          currentValue: '',
           validationError: false,
-          currentValue: undefined,
+        }, () => {
+          this.props.onChange(this.openLaw.getName(variable), '');
         });
-        this.props.onChange(this.openLaw.getName(variable), undefined);
       }
-    } catch (err) {
+    } catch (error) {
       this.setState({
         validationError: true,
       });
@@ -168,7 +171,6 @@ export class Collection extends React.Component<Props, State> {
     const variable = this.props.variable;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
-
     const collectionSize = this.openLaw.getCollectionSize(
       variable,
       this.props.savedValue,
@@ -193,8 +195,12 @@ export class Collection extends React.Component<Props, State> {
     return (
       <div className={'contract_variable collection_variable' + cleanName}>
         <div className="collection_variable_description">{description}</div>
+        {/* TODO we shouldn't need to use space-occupying divs */}
         <div className="collection_variable_row" />
+
         {variables}
+
+        {/* TODO this should be a <button /> */}
         <div className="button is-light" onClick={this.add}>
           Add
         </div>
@@ -204,7 +210,7 @@ export class Collection extends React.Component<Props, State> {
 }
 
 const TimesSVG = (props) => (
-  <svg className="svg-inline--fa fa-w-12" {...props} data-icon="times" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+  <svg className="svg-inline--fa fa-w-12" height="12" width="12" {...props} data-icon="times" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
     <path
       fill="currentColor"
       d="M323.1 441l53.9-53.9c9.4-9.4 9.4-24.5 0-33.9L279.8 256l97.2-97.2c9.4-9.4 9.4-24.5 0-33.9L323.1 71c-9.4-9.4-24.5-9.4-33.9 0L192 168.2 94.8 71c-9.4-9.4-24.5-9.4-33.9 0L7 124.9c-9.4 9.4-9.4 24.5 0 33.9l97.2 97.2L7 353.2c-9.4 9.4-9.4 24.5 0 33.9L60.9 441c9.4 9.4 24.5 9.4 33.9 0l97.2-97.2 97.2 97.2c9.3 9.3 24.5 9.3 33.9 0z"

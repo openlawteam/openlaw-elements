@@ -19,7 +19,7 @@ export class LargeText extends React.Component<Props, State> {
   openLaw = this.props.openLaw;
 
   state = {
-    currentValue: this.props.savedValue,
+    currentValue: this.props.savedValue || '',
     validationError: false,
   };
 
@@ -30,10 +30,10 @@ export class LargeText extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     if (
       !this.state.validationError &&
-      this.state.currentValue !== this.props.savedValue
+      prevProps.savedValue !== this.props.savedValue
     ) {
       this.setState({
         currentValue: this.props.savedValue,
@@ -43,34 +43,33 @@ export class LargeText extends React.Component<Props, State> {
 
   onChange(event: SyntheticEvent<*>) {
     const variable = this.props.variable;
-    const value = event.currentTarget.value;
+    const eventValue = event.currentTarget.value;
 
     try {
       const name = this.openLaw.getName(variable);
 
-      if (value) {
-        this.openLaw.checkValidity(variable, value, this.props.executionResult);
+      if (eventValue) {
+        this.openLaw.checkValidity(variable, eventValue, this.props.executionResult);
 
         this.setState({
           validationError: false,
-          currentValue: value,
+          currentValue: eventValue,
         }, () => {
-          const realValue = value === '' ? undefined : value;
-          this.props.onChange(name, realValue);
+          this.props.onChange(name, eventValue);
         });
       } else {
         if (this.state.currentValue) {
           this.setState({
             validationError: false,
-            currentValue: undefined,
+            currentValue: '',
           }, () => {
-            this.props.onChange(name, undefined);
+            this.props.onChange(name, '');
           });
         }
       }
     } catch (error) {
       this.setState({
-        currentValue: value,
+        currentValue: eventValue,
         validationError: true,
       });
     }
@@ -86,14 +85,18 @@ export class LargeText extends React.Component<Props, State> {
 
     return (
       <div className="contract_variable">
-        <textarea
-          className={`input ${cleanName} ${additionalClassName}`}
-          onChange={this.onChange}
-          placeholder={description}
-          title={description}
-          type="text"
-          value={this.state.currentValue}
-        />
+        <label>
+          <span>{description}</span>
+
+          <textarea
+            className={`input ${cleanName} ${additionalClassName}`}
+            onChange={this.onChange}
+            placeholder={description}
+            title={description}
+            type="text"
+            value={this.state.currentValue}
+          />
+        </label>
       </div>
     );
   }

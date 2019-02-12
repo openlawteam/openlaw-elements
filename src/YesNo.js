@@ -25,7 +25,6 @@ export class YesNo extends React.Component<Props, State> {
 
     const self: any = this;
     self.onChange = this.onChange.bind(this);
-    // self.onChangeOrSet = this.onChangeOrSet.bind(this);
   }
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
@@ -39,18 +38,6 @@ export class YesNo extends React.Component<Props, State> {
       currentValue: eventValue,
     });
   }
-
-  // onChangeOrSet() {
-  //   const variable = this.props.variable;
-  //   const name = this.openLaw.getName(variable);
-  //   const value = this.state.currentValue || 'false';
-
-  //   this.props.onChange(name, value);
-
-  //   this.setState({
-  //     currentValue: value,
-  //   });
-  // }
 
   componentDidUpdate(prevProps) {
     if (this.props.savedValue !== prevProps.savedValue) {
@@ -70,11 +57,10 @@ export class YesNo extends React.Component<Props, State> {
       <div
         className={`contract_variable contract_question ${additionalClass}`}
       >
-
         <label className="label">{description}</label>
 
         <div>
-          <label>
+          <label className="radio-label">
             <input
               type="radio"
               onChange={this.onChange}
@@ -82,10 +68,10 @@ export class YesNo extends React.Component<Props, State> {
               checked={this.state.currentValue === 'true'}
               className={`radio_yes radio_for_optional_variable radio_for_variable_${cleanName}`}
             />
-            Yes
+            <span>Yes</span>
           </label>
 
-          <label>
+          <label className="radio-label">
             <input
               type="radio"
               onChange={this.onChange}
@@ -93,7 +79,7 @@ export class YesNo extends React.Component<Props, State> {
               checked={this.state.currentValue !== 'true'}
               className="radio_no radio_for_optional_variable"
             />
-            No
+            <span>No</span>
           </label>
         </div>
       </div>

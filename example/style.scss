@@ -1,0 +1,29 @@
+.openlaw-form {
+  label,
+  select,
+  textarea,
+  input[type="text"],
+  input[type="number"],
+  input[type="file"] {
+    display: block;
+    margin-top: 6px;
+  }
+
+  .contract_variable {
+    display: block;
+    margin-top: 12px;
+  }
+
+  .radio-label {
+    display: inline-block;
+    margin-right: 12px;
+  }
+
+  .radio-label input[type="radio"] {
+    margin-right: 6px;
+  }
+
+  .is-danger-new {
+    outline: 1px dashed red;
+  }  
+}

@@ -15,8 +15,6 @@ import './style.css';
 const apiClient = new APIClient('https://develop.dev.openlaw.io');
 apiClient.login('openlawuser@example.com', 'yourpassword');
 
-// const onChange = (key, value, force) => console.log(`${key}: ${value}\n Force?: ${force}`);
-
 /**
  * OpenLawForm requires:
  *   - apiClient {object}: OpenLaw helper `new APIClient('...')` instance
@@ -30,7 +28,7 @@ class Form extends Component {
   state = {
     definedValues: {},
     executionResult: {},
-    parameters: [],
+    parameters: {},
     variables: {},
   };
 
@@ -39,12 +37,12 @@ class Form extends Component {
   }
 
   update = (key, value) => {
-    const definedValues = key
+    const updatedDraftParameters = key
       ? ({
-        ...this.state.definedValues,
+        ...this.state.parameters,
         [key]: value,
       }) : (
-        this.state.definedValues
+        this.state.parameters
       );
 
     // https://docs.openlaw.io/openlaw-object/#compiletemplate
@@ -53,15 +51,12 @@ class Form extends Component {
     const {executionResult} = Openlaw.execute(compiledTemplate, {}, {});
     // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
     const variables = Openlaw.getExecutedVariables(executionResult, {});
-    // https://docs.openlaw.io/openlaw-object/#getinitialparameters
-    const parameters = Openlaw.getInitialParameters(executionResult);
-
-    this.setState({
-      definedValues,
+console.log(variables)
+    this.setState(({parameters}) => ({
       executionResult,
-      parameters,
+      parameters: {...parameters, ...updatedDraftParameters},
       variables,
-    });
+    }));
   };
 
   render() {

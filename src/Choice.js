@@ -38,12 +38,11 @@ export class Choice extends React.Component<Props, State> {
       if (variable) {
         if (eventValue === '') {
           this.setState({
-            validationError: false,
             currentValue: '',
+            validationError: false,
+          }, () => {
+            this.props.onChange(this.openLaw.getName(variable), '');
           });
-          const name = this.openLaw.getName(variable);
-
-          this.props.onChange(name, undefined);
         } else {
           this.openLaw.checkValidity(
             variable,
@@ -52,26 +51,24 @@ export class Choice extends React.Component<Props, State> {
           );
 
           this.setState({
-            validationError: false,
             currentValue: eventValue,
+            validationError: false,
+          }, () => {
+            this.props.onChange(this.openLaw.getName(variable), eventValue);
           });
-
-          const name = this.openLaw.getName(variable);
-          const realValue = eventValue === '' ? undefined : eventValue;
-
-          this.props.onChange(name, realValue);
         }
       } else {
         this.setState({
+          currentValue: '',
           validationError: false,
-          currentValue: undefined,
+        }, () => {
+          this.props.onChange(this.openLaw.getName(variable), '');
         });
-        this.props.onChange(this.openLaw.getName(variable), undefined);
       }
-    } catch (err) {
+    } catch (error) {
       this.setState({
-        validationError: true,
         currentValue: eventValue,
+        validationError: true,
       });
     }
   }
@@ -97,7 +94,8 @@ export class Choice extends React.Component<Props, State> {
     return (
       <div className="contract_variable">
         <label className="label">
-          {description}
+          <span>{description}</span>
+
           <select
             value={this.state.currentValue}
             onChange={this.onChange}

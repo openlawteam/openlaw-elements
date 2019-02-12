@@ -51,8 +51,24 @@
 # Structure type usage
 [[MedicalContact: Contestant Emergency Contact]]
 
-[[Employees: Collection<Text>]]
+# Collection definition
+[[Favorite Meat: Collection<Text>]]
 
-{{#for each Employee: Employees =>
-    ^[[Employee]]
+# Usage of Collection
+{{#for each Favorite Meat: Favorite Meat =>
+    ^[[Favorite Meat]]
+}}
+
+# Structure for Collection definition
+[[BBQ Certifications: Structure(
+  Title: Text;
+  Date: Date
+)]]
+
+# Collection of Structure definition
+[[CertList: Collection<BBQ Certifications>]]
+
+# Usage of Collection of Structure
+{{#for each Cert: CertList =>
+    ^[[BBQ Certifications.Title]] - [[BBQ Certifications.Date]]
 }}

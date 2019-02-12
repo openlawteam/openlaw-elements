@@ -32,6 +32,7 @@ export const InputRenderer = (props: RendererProps) => {
   } = props;
 
   const nameWithDashes = openLaw.getCleanName(variable);
+  const onChangeFunctionForce = (key, value) => onChangeFunction(key, value, true);
 
   // Choice type detection is different
   if (openLaw.isChoiceType(variable, executionResult)) {
@@ -141,7 +142,10 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <YesNo
           key={`${nameWithDashes}-yesno`}
-          onChange={(key, value) => onChangeFunction(key, value, true)}
+          // uses a param `force` set to `true`
+          // TODO re-evaluate overriding onChange from the top-level
+          // as we really only use this function in OpenLaw's front-end to tell Redux something.
+          onChange={onChangeFunctionForce}
           openLaw={openLaw}
           savedValue={savedValue}
           variable={variable}

@@ -126,15 +126,15 @@ const renderSections = (props: RendererSectionProps) => {
 };
 
 export const OpenLawForm = (props: Props): Array<React.Node> => {
-  const {openLaw} = props;
-  const allVariables = openLaw.getVariables(this.props.executionResult, {});
-  const executedVariables = this.props.variables.map(variable =>
+  const {executionResult, openLaw, variables} = props;
+  const allVariables = openLaw.getVariables(executionResult, {});
+  const executedVariables = variables.map(variable =>
     openLaw.getName(variable),
   );
-  const sections = openLaw.getSections(this.props.executionResult);
+  const sections = openLaw.getSections(executionResult);
   const variableObjects = allVariables
     .filter(variable =>
-      openLaw.showInForm(variable, this.props.executionResult),
+      openLaw.showInForm(variable, executionResult),
     )
     .filter(
       variable => executedVariables.indexOf(openLaw.getName(variable)) > -1,

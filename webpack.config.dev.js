@@ -7,6 +7,7 @@ module.exports = {
   entry: {
     example: './example/index'
   },
+  mode: 'development',
   output: {
     path: path.join(__dirname, 'build'),
     filename: 'static/[name].js'
@@ -22,19 +23,15 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        use: ['babel-loader'],
-        include: path.join(__dirname, 'src')
+        use: 'babel-loader',
+        exclude: /node_modules/,
+      }, {
+        test: /\.txt$/,
+        use: 'raw-loader'
+      }, {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
       },
-      // {
-      //   test: /\.css$/,
-      //   use: ['style-loader', 'css-loader?modules', 'postcss-loader'],
-      //   include: path.join(__dirname, 'source')
-      // },
-      // {
-      //   test: /\.css$/,
-      //   use: ['style-loader', 'css-loader?minimize=false'],
-      //   include: path.join(__dirname, 'styles.css')
-      // }
     ]
   },
   devServer: {

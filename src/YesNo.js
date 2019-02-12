@@ -25,7 +25,6 @@ export class YesNo extends React.Component<Props, State> {
 
     const self: any = this;
     self.onChange = this.onChange.bind(this);
-    // self.onChangeOrSet = this.onChangeOrSet.bind(this);
   }
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
@@ -39,18 +38,6 @@ export class YesNo extends React.Component<Props, State> {
       currentValue: eventValue,
     });
   }
-
-  // onChangeOrSet() {
-  //   const variable = this.props.variable;
-  //   const name = this.openLaw.getName(variable);
-  //   const value = this.state.currentValue || 'false';
-
-  //   this.props.onChange(name, value);
-
-  //   this.setState({
-  //     currentValue: value,
-  //   });
-  // }
 
   componentDidUpdate(prevProps) {
     if (this.props.savedValue !== prevProps.savedValue) {
@@ -74,7 +61,7 @@ export class YesNo extends React.Component<Props, State> {
         <label className="label">{description}</label>
 
         <div>
-          <label>
+          <label className="radio-label">
             <input
               type="radio"
               onChange={this.onChange}
@@ -85,7 +72,7 @@ export class YesNo extends React.Component<Props, State> {
             Yes
           </label>
 
-          <label>
+          <label className="radio-label">
             <input
               type="radio"
               onChange={this.onChange}

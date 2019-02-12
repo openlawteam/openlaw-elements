@@ -141,14 +141,18 @@ export class Address extends React.Component<Props, State> {
 
     return (
       <div className={`contract_variable ${cleanName}-address`}>
-        <Autosuggest
-          inputProps={inputProps}
-          getSuggestionValue={getSuggestionValue}
-          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-          renderSuggestion={renderSuggestion}
-          suggestions={this.state.result}
-        />
+        <label>
+          <span>{description}</span>
+
+          <Autosuggest
+            inputProps={inputProps}
+            getSuggestionValue={getSuggestionValue}
+            onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+            onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+            renderSuggestion={renderSuggestion}
+            suggestions={this.state.result}
+          />
+        </label>
       </div>
     );
   }

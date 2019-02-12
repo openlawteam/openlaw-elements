@@ -1,15 +1,58 @@
 \centered **International BBQ Cookoff Registration**
 
-To: [[BBQ Partner Name]]
+[[Contestant Name "Your Name"]]
+[[Contestant Address: Address "Mailing Address"]]
+[[Contestant DOB: Date "Date of Birth"]]
+[[Contestant Picture: Image]]
 
-Let us conduct a BBQ on [[BBQ Date: Date]]
+# Basic YesNo
+[[BBQ Contestant Status: YesNo "Are you a returning U.S. BBQ Championships contestant?"]]
 
-[[BBQ RSVP: YesNo "Do you require a visa to enter the U.S.?"]]
+# Number
+[[Contestant BBQ Experience Years: Number "How many years of BBQ experience do you have?"]]
 
-// country type definition
-[[Your Country: Choice("USA", "Switzerland", "Sweden", "Germany", "India")]]
+# Period
+[[Contestant Longest BBQ: Period "What is the longest BBQ you ever conducted?"]]
 
-// country type usage
-[[Your Country of Origin: Your Country]]
+# Choice type
+[[Contestant Regional Style: Choice("Carolinas", "Hawaii", "Kansas City", "Memphis", "Texas")]]
 
-(We're working with governments - slowly - to get BBQ contestants into the U.S. on a BBQ visa.)
+# Choice type usage
+[[Contestant BBQ Region: Contestant Regional Style "Your Regional Style"]]
+
+# Basic YesNo Conditional
+{{BBQ Love Limit "Do you love BBQ?" =>
+  I, [[Contestant Name]], declare I love BBQ.}}
+
+# Nested conditional
+{{ Contestant BBQ Medical "Do you have any medical complications related to BBQ sauces?" =>
+  Text to include in an agreement if a user selects 'yes'
+  {{Sub-Conditional-1 "Text of Sub-Question 1" => Text}}
+  {{Sub-Conditional-2 "Text of Sub-Question 2" => Text}}
+  {{Sub-Conditional-3 "Text of Sub-Question 3" => Text}}
+}}
+
+# LargeText
+[[Contestant Personal Statement: LargeText "Please write a personal statement."]]
+
+# Ethereum Address
+[[Contestant ETH Address: EthAddress "Your ETH address for the registration fee ($200)"]]
+
+# DateTime
+[[Contestant Signature Date Time: DateTime "Date & Time of Signature"]]
+
+# Structure definition
+[[Contestant Emergency Contact: Structure(
+  Emergency Contact Name: Text;
+  Emergency Contact Email: Identity;
+  Emergency Contact Phone: Text
+)]]
+
+# Structure type usage
+[[MedicalContact: Contestant Emergency Contact]]
+
+[[Employees: Collection<Text>]]
+
+{{#for each Employee: Employees =>
+    ^[[Employee]]
+}}

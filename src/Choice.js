@@ -96,15 +96,17 @@ export class Choice extends React.Component<Props, State> {
 
     return (
       <div className="contract_variable">
-        <label className="label">{description}</label>
-        <select
-          value={this.state.currentValue}
-          onChange={this.onChange}
-          className={`input ${cleanName} ${additionalClassName}`}>
-
-          <option value="">-- Please choose from the list --</option>
-          {choices.map(f)}
-        </select>
+        <label className="label">
+          {description}
+          <select
+            value={this.state.currentValue}
+            onChange={this.onChange}
+            className={`input ${cleanName} ${additionalClassName}`}
+          >
+            <option value="">-- Please choose from the list --</option>
+            {choices.map(f)}
+          </select>
+        </label>
       </div>
     );
   }

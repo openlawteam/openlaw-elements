@@ -39,7 +39,6 @@ const IMG_MAX_WIDTH = 600;
 
 export class ImageInput extends React.Component<Props, State> {
   fileRef = React.createRef();
-  fileRef: { current: null | HTMLInputElement }
 
   openLaw = this.props.openLaw;
 
@@ -180,7 +179,9 @@ export class ImageInput extends React.Component<Props, State> {
     }
   }
 
-  handleImageCancel() {
+  handleImageCancel(event: SyntheticEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+
     const fileInputRef = this.fileRef.current;
     if (fileInputRef) fileInputRef.value = '';
 
@@ -294,23 +295,23 @@ export class ImageInput extends React.Component<Props, State> {
               onClick={this.handleToggleModal}
               disabled={disableEditRemoteImage}
             >
-              {`Edit: ${description}`}
+              {`Edit ${description}`}
             </button>
           ) : (
             <Fragment>
-              <input
-                accept="image/png, image/jpeg, image/tiff, image/bmp, image/gif"
-                id={`image-${cleanName}`}
-                className="Image"
-                onChange={this.handleFileChange}
-                ref={this.fileRef}
-                type="file"
-              />
-
               <label
                 htmlFor={`image-${cleanName}`}
               >
-                {`Select: ${description}`}
+                {`Select ${description}`}
+
+                <input
+                  accept="image/png, image/jpeg, image/tiff, image/bmp, image/gif"
+                  id={`image-${cleanName}`}
+                  className="Image"
+                  onChange={this.handleFileChange}
+                  ref={this.fileRef}
+                  type="file"
+                />
               </label>
             </Fragment>
           )
@@ -352,6 +353,7 @@ export class ImageInput extends React.Component<Props, State> {
                       )}
                       <a
                         className="ol-modalconfirm-secondary"
+                        href=""
                         onClick={this.handleImageCancel}
                       >
                         Cancel

@@ -2,6 +2,7 @@
 
 import * as React from 'react';
 import Flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.css';
 
 type Props = {
   enableTime: boolean,

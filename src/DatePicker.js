@@ -86,12 +86,17 @@ export class DatePicker extends React.Component<Props, State> {
 
     return (
       <div className="contract_variable">
-        <input
-          onChange={this.onChange}
-          className={`input ${cleanName}`}
-          id={this.id}
-          placeholder={description}
-        />
+        <label>
+          <span>{description}</span>
+
+          <input
+            onChange={this.onChange}
+            className={`input ${cleanName}`}
+            id={this.id}
+            placeholder={description}
+          />
+        </label>
+
         {this.shouldShowIOSLabel &&
           <span className="ios-label">{description}</span>
         }

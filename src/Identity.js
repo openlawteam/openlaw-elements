@@ -36,19 +36,19 @@ export class Identity extends React.Component<Props, State> {
       if (this.props.savedValue) {
         const identity = this.openLaw.checkValidity(this.props.savedValue);
         this.setState({
-          validationError: false,
           email: this.openLaw.getIdentityEmail(identity),
+          validationError: false,
         });
       } else {
         this.setState({
-          validationError: false,
           email: '',
+          validationError: false,
         });
       }
     } catch (ex) {
       this.setState({
-        validationError: false,
         email: '',
+        validationError: false,
       });
     }
   }
@@ -62,18 +62,18 @@ export class Identity extends React.Component<Props, State> {
           validationError: false,
           email: eventValue,
         }, () => {
-          this.props.onChange(this.openLaw.getName(this.props.variable), undefined);
+          this.props.onChange(this.openLaw.getName(this.props.variable), '');
         });
       } else {
         this.setState({
-          validationError: false,
           email: eventValue,
-        }, () => {
-          this.props.onChange(
-            this.openLaw.getName(this.props.variable),
-            this.openLaw.createIdentityInternalValue(undefined, eventValue),
-          );
+          validationError: false,
         });
+
+        this.props.onChange(
+          this.openLaw.getName(this.props.variable),
+          this.openLaw.createIdentityInternalValue('', eventValue),
+        );
 
         this.props.apiClient.getUserDetails(eventValue).then(result => {
           if (result.email) {
@@ -83,16 +83,16 @@ export class Identity extends React.Component<Props, State> {
             );
 
             this.setState({
-              validationError: false,
               email: result.email,
+              validationError: false,
             });
           }
         });
       }
     } catch (error) {
       this.setState({
-        validationError: true,
         email: eventValue,
+        validationError: true,
       });
     }
   }
@@ -129,13 +129,18 @@ export class Identity extends React.Component<Props, State> {
 
     return (
       <div className="contract_variable identity">
-        <input
-          className={`input ${cleanName}-email ${additionalClassName}`}
-          onChange={this.onChange}
-          title={description}
-          type="text"
-          value={this.state.email}
-        />
+        <label>
+          <span>{description}</span>
+
+          <input
+            className={`input ${cleanName}-email ${additionalClassName}`}
+            onChange={this.onChange}
+            placeholder={description}
+            title={description}
+            type="text"
+            value={this.state.email}
+          />
+        </label>
       </div>
     );
   }

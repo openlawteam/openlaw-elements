@@ -60,7 +60,7 @@ const renderInputs = (props: RendererInputProps) => {
     );
   }
 
-  // Collection:  can contain a <Structure />, and all types of inputs in <InputRenderer />
+  // Collection: can contain a <Structure />, and all types of inputs in <InputRenderer />
   if (openLaw.getType(variable) === 'Collection') {
     return (
       <Collection
@@ -79,6 +79,7 @@ const renderInputs = (props: RendererInputProps) => {
 
   return (
     <InputRenderer
+      key={`${cleanName}-input`}
       apiClient={apiClient}
       executionResult={executionResult}
       onChangeFunction={onChangeFunction}
@@ -91,14 +92,13 @@ const renderInputs = (props: RendererInputProps) => {
 
 const renderSections = (props: RendererSectionProps) => {
   const {
+    executionResult,
     openLaw,
     sections,
     variablesMap,
     variableObjects,
   } = props;
-  const sectionVariables = openLaw.getVariableSections(
-    this.props.executionResult,
-  );
+  const sectionVariables = openLaw.getVariableSections(executionResult);
   const variableNames = variableObjects.map(variable =>
     openLaw.getName(variable),
   );
@@ -146,7 +146,7 @@ export const OpenLawForm = (props: Props): Array<React.Node> => {
     variablesMap[openLaw.getName(variable)] = variable;
   });
 
-  // render sections
+  // loop to render sections
   if (sections.length > 0) {
     return renderSections({
       sections,
@@ -156,7 +156,7 @@ export const OpenLawForm = (props: Props): Array<React.Node> => {
     });
   }
 
-  // render inputs
+  // loop to render inputs
   return executedVariables
     .map(name => variablesMap[name])
     .filter(variable => variable !== undefined)

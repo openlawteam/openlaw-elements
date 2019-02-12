@@ -1,9 +1,10 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {render} from 'react-dom';
 import {APIClient, Openlaw} from 'openlaw';
 
 import {OpenLawForm} from '../src';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
+import './style.css';
 
 /**
  * Example app showing how you can render `OpenLawForm`
@@ -14,15 +15,7 @@ import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
 const apiClient = new APIClient('https://develop.dev.openlaw.io');
 apiClient.login('openlawuser@example.com', 'yourpassword');
 
-// https://docs.openlaw.io/openlaw-object/#compiletemplate
-const {compiledTemplate} = Openlaw.compileTemplate(SampleTemplateText);
-// https://docs.openlaw.io/openlaw-object/#execute
-const {executionResult} = Openlaw.execute(compiledTemplate, {}, {});
-// https://docs.openlaw.io/openlaw-object/#getexecutedvariables
-const variables = Openlaw.getExecutedVariables(executionResult, {});
-// https://docs.openlaw.io/openlaw-object/#getinitialparameters
-const initialDraftParameters = Openlaw.getInitialParameters(executionResult);
-const onChange = (key, value, force) => console.log(`${key}: ${value}\n Force?: ${force}`);
+// const onChange = (key, value, force) => console.log(`${key}: ${value}\n Force?: ${force}`);
 
 /**
  * OpenLawForm requires:
@@ -33,16 +26,61 @@ const onChange = (key, value, force) => console.log(`${key}: ${value}\n Force?: 
  *   - openLaw {object}
  *   - variables {array}
  */
-const Form = () => (
-  <OpenLawForm
-    apiClient={APIClient}
-    executionResult={executionResult}
-    parameters={initialDraftParameters}
-    onChangeFunction={onChange}
-    openLaw={Openlaw}
-    variables={variables}
-  />
-);
+class Form extends Component {
+  state = {
+    definedValues: {},
+    executionResult: {},
+    parameters: [],
+    variables: {},
+  };
+
+  componentDidMount() {
+    this.update();
+  }
+
+  update = (key, value) => {
+    const definedValues = key
+      ? ({
+        ...this.state.definedValues,
+        [key]: value,
+      }) : (
+        this.state.definedValues
+      );
+
+    // https://docs.openlaw.io/openlaw-object/#compiletemplate
+    const {compiledTemplate} = Openlaw.compileTemplate(SampleTemplateText);
+    // https://docs.openlaw.io/openlaw-object/#execute
+    const {executionResult} = Openlaw.execute(compiledTemplate, {}, {});
+    // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
+    const variables = Openlaw.getExecutedVariables(executionResult, {});
+    // https://docs.openlaw.io/openlaw-object/#getinitialparameters
+    const parameters = Openlaw.getInitialParameters(executionResult);
+
+    this.setState({
+      definedValues,
+      executionResult,
+      parameters,
+      variables,
+    });
+  };
+
+  render() {
+    return (
+      <div>
+        {Object.keys(this.state.executionResult).length && (
+          <OpenLawForm
+            apiClient={apiClient}
+            executionResult={this.state.executionResult}
+            parameters={this.state.parameters}
+            onChangeFunction={this.update}
+            openLaw={Openlaw}
+            variables={this.state.variables}
+          />
+        )}
+      </div>
+    );
+  }
+}
 
 const styles = {
   pre: {

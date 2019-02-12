@@ -4,7 +4,7 @@ import {APIClient, Openlaw} from 'openlaw';
 
 import {OpenLawForm} from '../src';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
-import './style.css';
+import './style.scss';
 
 /**
  * Example app showing how you can render `OpenLawForm`

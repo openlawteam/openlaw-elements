@@ -55,7 +55,7 @@ export class YesNo extends React.Component<Props, State> {
 
     return (
       <div
-        className={`contract_variable contract_question ${additionalClass}`}
+        className={`contract-variable contract-question ${additionalClass}`}
       >
         <label className="label">{description}</label>
 
@@ -66,7 +66,7 @@ export class YesNo extends React.Component<Props, State> {
               onChange={this.onChange}
               value="true"
               checked={this.state.currentValue === 'true'}
-              className={`radio_yes radio_for_optional_variable radio_for_variable_${cleanName}`}
+              className={cleanName}
             />
             <span>Yes</span>
           </label>
@@ -77,7 +77,7 @@ export class YesNo extends React.Component<Props, State> {
               onChange={this.onChange}
               value="false"
               checked={this.state.currentValue !== 'true'}
-              className="radio_no radio_for_optional_variable"
+              className={cleanName}
             />
             <span>No</span>
           </label>

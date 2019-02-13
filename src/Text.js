@@ -84,7 +84,7 @@ export class Text extends React.Component<Props, State> {
       : '';
 
     return (
-      <div className="contract_variable">
+      <div className="contract-variable">
         <label>
           <span>{description}</span>
 

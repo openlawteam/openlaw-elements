@@ -79,7 +79,7 @@ export class Text extends React.Component<Props, State> {
     const variable = this.props.variable;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
-    const additionalClassName = this.state.validationError ? 'is-danger-new' : '';
+    const additionalClassName = this.state.validationError ? 'is-error' : '';
 
     return (
       <div className="contract-variable">

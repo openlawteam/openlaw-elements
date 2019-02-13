@@ -80,7 +80,7 @@ export class Choice extends React.Component<Props, State> {
       this.props.executionResult,
     );
     const cleanName = this.openLaw.getCleanName(variable);
-    const additionalClassName = this.state.validationError ? ' is-danger-new' : '';
+    const additionalClassName = this.state.validationError ? ' is-error' : '';
     const description = this.openLaw.getDescription(variable);
 
     const f = choice => (

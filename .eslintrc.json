@@ -39,5 +39,12 @@
     ],
     "no-console": 0,
     "react/jsx-uses-vars": "error"
+  },
+  "settings": {
+    "react": {
+      "pragma": "React",
+      "version": "detect",
+      "flowVersion": "0.92"
+    }
   }
 }

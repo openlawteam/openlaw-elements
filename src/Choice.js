@@ -80,9 +80,7 @@ export class Choice extends React.Component<Props, State> {
       this.props.executionResult,
     );
     const cleanName = this.openLaw.getCleanName(variable);
-    const additionalClassName = this.state.validationError
-      ? ' is-danger-new'
-      : '';
+    const additionalClassName = this.state.validationError ? ' is-danger-new' : '';
     const description = this.openLaw.getDescription(variable);
 
     const f = choice => (
@@ -92,7 +90,7 @@ export class Choice extends React.Component<Props, State> {
     );
 
     return (
-      <div className="contract_variable">
+      <div className="contract-variable">
         <label className="label">
           <span>{description}</span>
 

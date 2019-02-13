@@ -85,13 +85,13 @@ export class DatePicker extends React.Component<Props, State> {
     const cleanName = this.openLaw.getCleanName(variable);
 
     return (
-      <div className="contract_variable">
+      <div className="contract-variable">
         <label>
           <span>{description}</span>
 
           <input
             onChange={this.onChange}
-            className={`${cleanName}`}
+            className={cleanName}
             id={this.id}
             placeholder={description}
           />

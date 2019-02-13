@@ -287,11 +287,11 @@ export class ImageInput extends React.Component<Props, State> {
 
     /* eslint-disable complexity */
     return (
-      <div className="contract_variable">
+      <div className="contract-variable">
         {this.props.savedValue
           ? (
             <button
-              className="Image"
+              className="image"
               onClick={this.handleToggleModal}
               disabled={disableEditRemoteImage}
             >
@@ -307,7 +307,7 @@ export class ImageInput extends React.Component<Props, State> {
                 <input
                   accept="image/png, image/jpeg, image/tiff, image/bmp, image/gif"
                   id={`image-${cleanName}`}
-                  className="Image"
+                  className="image"
                   onChange={this.handleFileChange}
                   ref={this.fileRef}
                   type="file"

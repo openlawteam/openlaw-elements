@@ -128,7 +128,7 @@ export class Identity extends React.Component<Props, State> {
       : '';
 
     return (
-      <div className="contract_variable identity">
+      <div className="contract-variable identity">
         <label>
           <span>{description}</span>
 
@@ -137,7 +137,7 @@ export class Identity extends React.Component<Props, State> {
             onChange={this.onChange}
             placeholder={description}
             title={description}
-            type="text"
+            type="email"
             value={this.state.email}
           />
         </label>

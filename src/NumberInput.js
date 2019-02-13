@@ -79,13 +79,13 @@ export class NumberInput extends React.Component<Props, State> {
     const description = this.openLaw.getDescription(variable);
 
     return (
-      <div className="contract_variable">
+      <div className="contract-variable">
         <label>
           <span>{description}</span>
 
           <input
             type="number"
-            className={`${cleanName}`}
+            className={cleanName}
             onChange={this.onChange}
             value={this.state.currentValue}
             placeholder={description}

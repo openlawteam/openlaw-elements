@@ -255,7 +255,7 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
 
   onSelectFile = (event: SyntheticInputEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length) {
-      const reader = new FileReader();
+      const reader = new window.FileReader();
 
       reader.addEventListener(
         'load',

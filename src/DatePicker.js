@@ -54,8 +54,8 @@ export class DatePicker extends React.Component<Props, State> {
     this.flatpickr = new Flatpickr(document.getElementById(this.id), options);
   }
 
-  componentDidUpdate() {
-    if (this.state.currentValue !== this.props.savedValue) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.savedValue !== this.props.savedValue) {
       this.setState({
         currentValue: this.props.savedValue,
       });

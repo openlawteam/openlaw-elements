@@ -39,10 +39,10 @@ export class Address extends React.Component<Props, State> {
     self.submitAddress = this.submitAddress.bind(this);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps) {
     if (
       this.props.savedValue &&
-      this.state.currentValue !== this.props.savedValue
+      (prevProps.savedValue !== this.props.savedValue)
     ) {
       this.setState({
         currentValue: this.props.savedValue,

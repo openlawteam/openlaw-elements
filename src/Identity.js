@@ -53,6 +53,28 @@ export class Identity extends React.Component<Props, State> {
     }
   }
 
+  componentDidUpdate() {
+    try {
+      if (this.props.savedValue) {
+        const identity = this.openLaw.checkValidity(
+          this.props.variable,
+          this.props.savedValue,
+          this.props.executionResult,
+        );
+
+        if (!this.state.email) {
+          this.setState({
+            email: this.openLaw.getIdentityEmail(identity),
+          });
+        }
+      }
+    } catch (error) {
+      // TODO actually handle error
+      // eslint-disable-next-line no-undef
+      console.error(error);
+    }
+  }
+
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
 
@@ -94,28 +116,6 @@ export class Identity extends React.Component<Props, State> {
         email: eventValue,
         validationError: true,
       });
-    }
-  }
-
-  componentDidUpdate() {
-    try {
-      if (this.props.savedValue) {
-        const identity = this.openLaw.checkValidity(
-          this.props.variable,
-          this.props.savedValue,
-          this.props.executionResult,
-        );
-
-        if (!this.state.email) {
-          this.setState({
-            email: this.openLaw.getIdentityEmail(identity),
-          });
-        }
-      }
-    } catch (error) {
-      // TODO actually handle error
-      // eslint-disable-next-line no-undef
-      console.error(error);
     }
   }
 

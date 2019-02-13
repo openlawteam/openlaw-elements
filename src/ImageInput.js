@@ -159,7 +159,7 @@ export class ImageInput extends React.Component<Props, State> {
 
   handleFileChange(event: SyntheticEvent<HTMLInputElement>) {
     const file = event.currentTarget.files[0];
-    const reader = new FileReader();
+    const reader = new window.FileReader();
 
     reader.onload = () => {
       const url = (typeof reader.result === 'string') ? reader.result : reader.result.toString();

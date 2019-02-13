@@ -68,6 +68,8 @@ export default class Collapsible extends React.Component<Props, State> {
     onClosing: () => {},
   };
 
+  refInner = React.createRef();
+
   constructor(props: Props) {
     super(props);
 
@@ -136,9 +138,11 @@ export default class Collapsible extends React.Component<Props, State> {
   }
 
   closeCollapsible() {
+    const ref = this.refInner.current;
+
     this.setState({
       shouldSwitchAutoOnNextCycle: true,
-      height: this.refs.inner.offsetHeight,
+      height: (ref ? ref.offsetHeight : 0),
       transition: `height ${this.props.transitionTime}ms ${this.props.easing}`,
       inTransition: true,
     });
@@ -152,8 +156,10 @@ export default class Collapsible extends React.Component<Props, State> {
   }
 
   continueOpenCollapsible() {
+    const ref = this.refInner.current;
+
     this.setState({
-      height: this.refs.inner.offsetHeight,
+      height: (ref ? ref.offsetHeight : 0),
       transition: `height ${this.props.transitionTime}ms ${this.props.easing}`,
       isClosed: false,
       hasBeenOpened: true,
@@ -265,10 +271,9 @@ export default class Collapsible extends React.Component<Props, State> {
 
         <div
           className={outerClassString.trim()}
-          ref="outer"
           style={dropdownStyle}
           onTransitionEnd={this.handleTransitionEnd}>
-          <div className={innerClassString.trim()} ref="inner">
+          <div className={innerClassString.trim()} ref={this.refInner}>
             {children}
           </div>
         </div>

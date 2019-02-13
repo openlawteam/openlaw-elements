@@ -133,7 +133,7 @@ export class Identity extends React.Component<Props, State> {
           <span>{description}</span>
 
           <input
-            className={`input ${cleanName}-email ${additionalClassName}`}
+            className={`${cleanName}-email ${additionalClassName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}

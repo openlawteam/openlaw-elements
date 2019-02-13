@@ -85,7 +85,7 @@ export class NumberInput extends React.Component<Props, State> {
 
           <input
             type="number"
-            className={`input ${cleanName}`}
+            className={`${cleanName}`}
             onChange={this.onChange}
             value={this.state.currentValue}
             placeholder={description}

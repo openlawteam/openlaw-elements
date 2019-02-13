@@ -89,7 +89,7 @@ export class Text extends React.Component<Props, State> {
           <span>{description}</span>
 
           <input
-            className={`input ${cleanName} ${additionalClassName}`}
+            className={`${cleanName} ${additionalClassName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}

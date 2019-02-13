@@ -91,7 +91,7 @@ export class DatePicker extends React.Component<Props, State> {
 
           <input
             onChange={this.onChange}
-            className={`input ${cleanName}`}
+            className={`${cleanName}`}
             id={this.id}
             placeholder={description}
           />

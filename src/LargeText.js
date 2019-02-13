@@ -89,7 +89,7 @@ export class LargeText extends React.Component<Props, State> {
           <span>{description}</span>
 
           <textarea
-            className={`input ${cleanName} ${additionalClassName}`}
+            className={`${cleanName} ${additionalClassName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}

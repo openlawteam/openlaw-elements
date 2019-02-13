@@ -86,7 +86,7 @@ export class Collection extends React.Component<Props, State> {
     const {executionResult} = this.props;
 
     return (
-      <div className="collection_variable_row" key={variableName}>
+      <div className="collection-variable-row" key={variableName}>
         {this.openLaw.isStructuredType(subVariable, executionResult)
           ? (
             <Structure
@@ -110,7 +110,7 @@ export class Collection extends React.Component<Props, State> {
           )
         }{' '}
         <div
-          className="collection_variable_remove"
+          className="collection-variable-remove"
           onClick={() => this.remove(index)}
         >
           <TimesSVG />
@@ -193,10 +193,10 @@ export class Collection extends React.Component<Props, State> {
     }
 
     return (
-      <div className={'contract_variable collection_variable' + cleanName}>
-        <div className="collection_variable_description">{description}</div>
+      <div className={'contract-variable collection-variable' + cleanName}>
+        <div className="collection-variable-description">{description}</div>
         {/* TODO we shouldn't need to use space-occupying divs */}
-        <div className="collection_variable_row" />
+        <div className="collection-variable-row" />
 
         {variables}
 

@@ -47,7 +47,7 @@ export class Structure extends React.Component<Props, State> {
     );
 
     return (
-      <div className="structure_variable_row" key={this.openLaw.getName(subVariable)}>
+      <div className="structure-variable-row" key={this.openLaw.getName(subVariable)}>
         <InputRenderer
           apiClient={this.props.apiClient}
           executionResult={this.props.executionResult}
@@ -107,7 +107,7 @@ export class Structure extends React.Component<Props, State> {
     ).map(field => this.generateInput(field));
 
     return (
-      <div className={`contract_variable structure_variable ${cleanName}`}>
+      <div className={`contract-variable structure-variable ${cleanName}`}>
         {fields}
       </div>
     );

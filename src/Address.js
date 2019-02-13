@@ -28,7 +28,7 @@ export class Address extends React.Component<Props, State> {
     currentValue: this.props.savedValue,
     errorMsg: '',
     result: [],
-    validationError: true,
+    validationError: false,
   };
 
   constructor(props: Props) {
@@ -126,12 +126,11 @@ export class Address extends React.Component<Props, State> {
     const variable = this.props.variable;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
-    // TODO add re-usable error class
-    const additionalClassName = this.state.validationError ? '' : '';
+    const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     const inputProps = {
       autoComplete: 'new-password',
-      className: `input ${cleanName} ${additionalClassName}`,
+      className: `${cleanName}${additionalClassName}`,
       onChange: this.onChange,
       placeholder: description,
       title: description,
@@ -140,7 +139,7 @@ export class Address extends React.Component<Props, State> {
     };
 
     return (
-      <div className={`contract_variable ${cleanName}-address`}>
+      <div className={`contract-variable ${cleanName}-address`}>
         <label>
           <span>{description}</span>
 

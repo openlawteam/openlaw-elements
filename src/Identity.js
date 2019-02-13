@@ -123,21 +123,19 @@ export class Identity extends React.Component<Props, State> {
     const variable = this.props.variable;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
-    const additionalClassName = this.state.validationError
-      ? 'is-danger-new'
-      : '';
+    const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     return (
-      <div className="contract_variable identity">
+      <div className="contract-variable identity">
         <label>
           <span>{description}</span>
 
           <input
-            className={`input ${cleanName}-email ${additionalClassName}`}
+            className={`${cleanName}-email${additionalClassName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}
-            type="text"
+            type="email"
             value={this.state.email}
           />
         </label>

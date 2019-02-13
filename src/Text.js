@@ -79,17 +79,15 @@ export class Text extends React.Component<Props, State> {
     const variable = this.props.variable;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
-    const additionalClassName = this.state.validationError
-      ? 'is-danger-new'
-      : '';
+    const additionalClassName = this.state.validationError ? 'is-error' : '';
 
     return (
-      <div className="contract_variable">
+      <div className="contract-variable">
         <label>
           <span>{description}</span>
 
           <input
-            className={`input ${cleanName} ${additionalClassName}`}
+            className={`${cleanName}${additionalClassName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}

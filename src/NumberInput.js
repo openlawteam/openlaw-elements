@@ -84,11 +84,11 @@ export class NumberInput extends React.Component<Props, State> {
           <span>{description}</span>
 
           <input
-            type="number"
             className={cleanName}
             onChange={this.onChange}
-            value={this.state.currentValue}
             placeholder={description}
+            type="number"
+            value={this.state.currentValue}
           />
         </label>
       </div>

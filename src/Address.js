@@ -130,7 +130,7 @@ export class Address extends React.Component<Props, State> {
 
     const inputProps = {
       autoComplete: 'new-password',
-      className: `${cleanName} ${additionalClassName}`,
+      className: `${cleanName}${additionalClassName}`,
       onChange: this.onChange,
       placeholder: description,
       title: description,

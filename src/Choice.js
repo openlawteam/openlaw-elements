@@ -97,7 +97,7 @@ export class Choice extends React.Component<Props, State> {
           <select
             value={this.state.currentValue}
             onChange={this.onChange}
-            className={`${cleanName} ${additionalClassName}`}
+            className={`${cleanName}${additionalClassName}`}
           >
             <option value="">-- Please choose from the list --</option>
             {choices.map(f)}

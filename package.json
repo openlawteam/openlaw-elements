@@ -2,13 +2,24 @@
   "name": "openlaw-elements",
   "version": "1.0.0",
   "description": "Generated form inputs to help you quickly build UI from OpenLaw templates.",
-  "main": "index.js",
-  "scripts": {
-    "flow": "flow",
-    "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config webpack.config.dev.js"
-  },
   "author": "OpenLaw Team <opensource@openlaw.io>",
   "license": "Apache-2.0",
+  "homepage": "https://openlaw.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/openlawteam/openlaw-elements.git"
+  },
+  "bugs": "https://github.com/openlawteam/openlaw-elements/issues",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "flow": "flow",
+    "lint": "eslint --c .eslintrc.json 'src/**/*.js'",
+    "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config webpack.config.dev.js"
+  },
   "browserslist": [
     "last 1 version",
     "not dead",
@@ -55,5 +66,16 @@
     "flatpickr": "^4.5.2",
     "react-autosuggest": "^9.4.3",
     "react-image-crop": "^6.0.12"
-  }
+  },
+  "keywords": [
+    "openlaw",
+    "legal",
+    "law",
+    "contract",
+    "agreement",
+    "blockchain",
+    "ethereum",
+    "smart contract",
+    "components"
+  ]
 }

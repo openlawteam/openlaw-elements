@@ -221,7 +221,7 @@ export default class Collapsible extends React.Component<Props, State> {
     };
 
     const openClass = this.state.isClosed ? 'is-closed' : 'is-open';
-    const disabledClass = this.props.triggerDisabled ? 'is-disabled' : '';
+    const disabledClass = this.props.triggerDisabled ? ' is-disabled' : '';
 
     //If user wants different text when tray is open
     const trigger =
@@ -238,7 +238,7 @@ export default class Collapsible extends React.Component<Props, State> {
     // Construct CSS classes strings
     const triggerClassString = `${
       this.props.classParentString
-    }__trigger ${openClass} ${disabledClass} ${
+    }__trigger ${openClass}${disabledClass} ${
       this.state.isClosed
         ? this.props.triggerClassName
         : this.props.triggerOpenedClassName

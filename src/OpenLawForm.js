@@ -79,9 +79,9 @@ const renderInputs = (props: RendererInputProps) => {
 
   return (
     <InputRenderer
-      key={`${cleanName}-input`}
       apiClient={apiClient}
       executionResult={executionResult}
+      key={`${cleanName}-input`}
       onChangeFunction={onChangeFunction}
       openLaw={openLaw}
       savedValue={savedValue}

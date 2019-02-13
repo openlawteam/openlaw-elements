@@ -51,11 +51,11 @@ export class YesNo extends React.Component<Props, State> {
     const variable = this.props.variable;
     const description = this.openLaw.getDescription(variable);
     const cleanName = this.openLaw.getCleanName(variable);
-    const additionalClass = this.state.currentValue ? 'conditional-set' : '';
+    const additionalClass = this.state.currentValue ? ' conditional-set' : '';
 
     return (
       <div
-        className={`contract-variable contract-question ${additionalClass}`}
+        className={`contract-variable contract-question${additionalClass}`}
       >
         <label className="label">{description}</label>
 

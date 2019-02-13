@@ -79,9 +79,9 @@ const renderInputs = (props: RendererInputProps) => {
 
   return (
     <InputRenderer
-      key={`${cleanName}-input`}
       apiClient={apiClient}
       executionResult={executionResult}
+      key={`${cleanName}-input`}
       onChangeFunction={onChangeFunction}
       openLaw={openLaw}
       savedValue={savedValue}
@@ -146,19 +146,27 @@ export const OpenLawForm = (props: Props): Array<React.Node> => {
     variablesMap[openLaw.getName(variable)] = variable;
   });
 
+  let formContent;
+
   // loop to render sections
   if (sections.length > 0) {
-    return renderSections({
+    formContent = renderSections({
       sections,
       variablesMap,
       variableObjects,
       ...props,
     });
+  } else {
+    formContent = executedVariables
+      .map(name => variablesMap[name])
+      .filter(variable => variable !== undefined)
+      .map(variable => renderInputs({variable, ...props}));
   }
 
   // loop to render inputs
-  return executedVariables
-    .map(name => variablesMap[name])
-    .filter(variable => variable !== undefined)
-    .map(variable => renderInputs({variable, ...props}));
+  return (
+    <div className="openlaw-form">
+      {formContent}
+    </div>
+  );
 };

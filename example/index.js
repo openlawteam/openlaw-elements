@@ -1,10 +1,10 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import {render} from 'react-dom';
 import {APIClient, Openlaw} from 'openlaw';
 
 import {OpenLawForm} from '../src';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
-import './style.css';
+import './style.scss';
 
 /**
  * Example app showing how you can render `OpenLawForm`
@@ -63,7 +63,7 @@ class Form extends Component {
 
   render() {
     return (
-      <div>
+      <Fragment>
         {Object.keys(this.state.executionResult).length && (
           <OpenLawForm
             apiClient={apiClient}
@@ -74,7 +74,7 @@ class Form extends Component {
             variables={this.state.variables}
           />
         )}
-      </div>
+      </Fragment>
     );
   }
 }
@@ -92,9 +92,7 @@ const styles = {
 
 const App = () => (
   <div style={styles.wrapApp}>
-    <div>
-      <Form />
-    </div>
+    <Form />
     <div>
       <pre style={styles.pre}>{SampleTemplateText}</pre>
     </div>

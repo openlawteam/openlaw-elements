@@ -42,19 +42,22 @@
 # Structure definition
 [[Contestant Emergency Contact: Structure(
   Emergency Contact Name: Text;
-  Emergency Contact Email: Identity;
   Emergency Contact Phone: Text
 )]]
 
-# Structure type usage
-[[MedicalContact: Contestant Emergency Contact]]
+# Structure type var
+[[#MedicalContact: Contestant Emergency Contact]]
+
+**Emergency Contact**
+Name: [[MedicalContact.Emergency Contact Name]]
+Phone: [[MedicalContact.Emergency Contact Phone]]
 
 # Collection definition
-[[Favorite Meat: Collection<Text>]]
+[[#FavoriteMeats: Collection<Text>]]
 
-# Usage of Collection
-{{#for each Favorite Meat: Favorite Meat =>
-    ^[[Favorite Meat]]
+**Contestant's Favorite Meats**
+{{#for each Meat: FavoriteMeats =>
+  - Meat Type: [[Meat]]
 }}
 
 # Structure for Collection definition
@@ -64,9 +67,11 @@
 )]]
 
 # Collection of Structure definition
-[[CertList: Collection<BBQ Certifications>]]
+[[#CertList: Collection<BBQ Certifications>]]
 
-# Usage of Collection of Structure
+**Contestant BBQ Certifications**
 {{#for each Cert: CertList =>
-    ^[[BBQ Certifications.Title]] - [[BBQ Certifications.Date]]
+  **Certifcation:**
+  - Certification Title: [[Cert.Title]]
+  - Certification Date: [[Cert.Date]]
 }}

@@ -43,7 +43,7 @@ export class Collection extends React.Component<Props, State> {
     if (this.state.focusIndex !== null) {
       const index = this.state.focusIndex || '';
       // TODO should replace things like this with a ref
-      const element = document.querySelector(`.${this.openLaw.getName(this.props.variable)}_${index}`);
+      const element = document.querySelector(`.${this.openLaw.getCleanName(this.props.variable)}_${index}`);
 
       if (element) element.focus();
 
@@ -145,7 +145,7 @@ export class Collection extends React.Component<Props, State> {
           currentValue: '',
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(variable), '');
+          this.props.onChange(this.openLaw.getName(variable));
         });
       }
     } catch (error) {

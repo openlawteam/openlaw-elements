@@ -37,7 +37,7 @@ type Props = {
 
 type State = {
   hasBeenOpened: boolean,
-  height: string,
+  height: number | 'auto',
   inTransition: boolean,
   isClosed: boolean,
   overflow: string,
@@ -94,7 +94,7 @@ export default class Collapsible extends React.Component<Props, State> {
     } else {
       this.state = {
         hasBeenOpened: false,
-        height: '0',
+        height: 0,
         inTransition: false,
         isClosed: true,
         overflow: 'hidden',
@@ -119,7 +119,7 @@ export default class Collapsible extends React.Component<Props, State> {
       window.setTimeout(() => {
         // Set small timeout to ensure a true re-render
         this.setState({
-          height: '0',
+          height: 0,
           overflow: 'hidden',
           isClosed: true,
           shouldSwitchAutoOnNextCycle: false,

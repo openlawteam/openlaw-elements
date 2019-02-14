@@ -18,26 +18,26 @@ type Props = {
 };
 
 type RendererInputProps = {
-  variable: {},
   ...Props,
+  variable: {},
 };
 
 type RendererSectionProps = {
+  ...Props,
   variable: {},
   variablesMap: {[string]: Object},
   variableObjects: Array<Object>,
   sections: Array<Object>,
-  ...Props,
 };
 
 const renderInputs = (props: RendererInputProps) => {
   const {
     apiClient, // for API call to Google for geo data (if generating an Address)
-    executionResult,
-    onChangeFunction,
+    executionResult = {},
+    onChangeFunction = () => {},
     openLaw,
     parameters,
-    variable,
+    variable = {},
   } = props;
 
   if (!openLaw) return;
@@ -127,6 +127,7 @@ const renderSections = (props: RendererSectionProps) => {
 
 export const OpenLawForm = (props: Props): Array<React.Node> => {
   const {executionResult, openLaw, variables} = props;
+
   const allVariables = openLaw.getVariables(executionResult, {});
   const executedVariables = variables.map(variable =>
     openLaw.getName(variable),

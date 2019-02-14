@@ -28,7 +28,7 @@ export default {
       runtimeHelpers: true,
     }),
     postcss({
-      plugins: [],
+      inject: true, // default, but doing for clarity
     }),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),

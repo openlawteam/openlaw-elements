@@ -14,7 +14,7 @@ type Props = {
   onChangeFunction: (any) => mixed,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
-  variables: Array<string>,
+  variables: Array<{}>,
 };
 
 type RendererInputProps = {

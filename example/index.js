@@ -51,7 +51,7 @@ class Form extends Component {
     definedValues: {},
     executionResult: {},
     parameters: {},
-    variables: {},
+    variables: [],
   };
 
   componentDidMount() {

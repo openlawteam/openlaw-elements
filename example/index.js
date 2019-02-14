@@ -11,9 +11,22 @@ import './style.scss';
  * with a valid OpenLaw template.
  */
 
+const loginDetails = {
+  email: process.env.OPENLAW_EMAIL || '',
+  password: process.env.OPENLAW_PASSWORD || '',
+};
+
 // for running against your OpenLaw instance: 'https://[YOUR.INSTANCE.URL]';
-const apiClient = new APIClient('https://develop.dev.openlaw.io');
-apiClient.login('openlawuser+1@gmail.com', 'OpenLaw2018!');
+const apiClient = new APIClient('https://app.openlaw.io');
+apiClient
+  .login(loginDetails.email, loginDetails.password) //eslint-disable-line  no-undef
+  .catch((error) => {
+    if (/500/.test(error)) {
+      console.warn('OpenLaw APIClient: Please authenticate to the APIClient to use the Address input.');
+      return;
+    }
+    console.error('OpenLaw APIClient:', error);
+  });
 
 /**
  * OpenLawForm requires:

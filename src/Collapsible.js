@@ -2,6 +2,8 @@
 
 import * as React from 'react';
 
+// TODO refactor this component. It's a bit slow when rendering; not sure why; need to dig.
+
 type Props = {
   accordionPosition?: string | number,
   children: any,
@@ -68,7 +70,7 @@ export default class Collapsible extends React.Component<Props, State> {
     onClosing: () => {},
   };
 
-  refInner = React.createRef();
+  refInner: {current: null | HTMLDivElement} = React.createRef();
 
   constructor(props: Props) {
     super(props);

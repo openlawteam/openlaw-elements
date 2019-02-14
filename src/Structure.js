@@ -16,7 +16,6 @@ type Props = {
 type State = {
   currentValue: string,
   validationError: boolean,
-  focusIndex: ?number,
   errorMsg: string,
 };
 

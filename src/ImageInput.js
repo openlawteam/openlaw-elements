@@ -38,7 +38,7 @@ const {Fragment} = React;
 const IMG_MAX_WIDTH = 600;
 
 export class ImageInput extends React.Component<Props, State> {
-  fileRef = React.createRef();
+  fileRef: {current: null | HTMLInputElement} = React.createRef();
 
   openLaw = this.props.openLaw;
 

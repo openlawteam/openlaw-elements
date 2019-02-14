@@ -1,4 +1,4 @@
-import React, {Component, Fragment} from 'react';
+import React, {Component, Fragment, useEffect, useState} from 'react';
 import {render} from 'react-dom';
 import {APIClient, Openlaw} from 'openlaw';
 
@@ -25,6 +25,15 @@ apiClient.login('openlawuser+1@gmail.com', 'OpenLaw2018!');
  *   - variables {array}
  */
 class Form extends Component {
+  static defaultProps = {
+    stateLifter: () => {},
+  };
+
+  // trick eslint
+  static propTypes = {
+    stateLifter: () => {},
+  };
+
   state = {
     definedValues: {},
     executionResult: {},
@@ -50,14 +59,25 @@ class Form extends Component {
       // https://docs.openlaw.io/openlaw-object/#compiletemplate
       const {compiledTemplate} = Openlaw.compileTemplate(SampleTemplateText);
       // https://docs.openlaw.io/openlaw-object/#execute
-      const {executionResult} = Openlaw.execute(compiledTemplate, {}, concatParameters);
+      const {executionResult, errorMessage} = Openlaw.execute(compiledTemplate, {}, concatParameters);
 
-      return {
+      if (errorMessage) {
+        // eslint-disable-next-line no-undef
+        console.error('Openlaw Execution Error:', errorMessage);
+        return;
+      }
+
+      const state = {
         executionResult,
         parameters: concatParameters,
         // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
         variables: Openlaw.getExecutedVariables(executionResult, {}),
       };
+
+      // send props up
+      this.props.stateLifter(state);
+
+      return state;
     });
   };
 
@@ -80,6 +100,18 @@ class Form extends Component {
 }
 
 const styles = {
+  previewButton: {
+    background: '#6c6cff',
+    border: 'none',
+    color: '#F9F9F9',
+    cursor: 'pointer',
+    fontWeight: 600,
+    fontSize: '1em',
+    padding: '12px 24px',
+    position: 'fixed',
+    right: 0,
+    top: 0,
+  },
   pre: {
     wordBreak: 'break-all',
     whiteSpace: 'pre-wrap',
@@ -90,13 +122,51 @@ const styles = {
   },
 };
 
-const App = () => (
-  <div style={styles.wrapApp}>
-    <Form />
+const renderPreviewHTML = (formState, callback) => () => {
+  const {executionResult} = formState;
+  const {agreement} = Openlaw.getAgreements(executionResult)[0];
+
+  callback(Openlaw.renderForPreview(agreement, {}, {}));
+};
+
+const App = () => {
+  const [formState, liftFormState] = useState();
+  const [previewHTML, setPreviewHTML] = useState();
+
+  useEffect(() => {
+    // Scroll to top if there's a preview
+    const previewHTMLElement = document.getElementById('openlaw-preview-html');
+    if (previewHTMLElement) previewHTMLElement.scrollIntoView();
+  }, [previewHTML]);
+
+  return (
     <div>
-      <pre style={styles.pre}>{SampleTemplateText}</pre>
+      {previewHTML && (
+        <Fragment>
+          <div
+            dangerouslySetInnerHTML={{__html: previewHTML}}
+            id="openlaw-preview-html"
+          />
+
+          <hr />
+        </Fragment>
+      )}
+
+      <button
+        onClick={renderPreviewHTML(formState, setPreviewHTML)}
+        style={styles.previewButton}
+      >
+        Preview
+      </button>
+
+      <div style={styles.wrapApp}>
+        <Form stateLifter={liftFormState} />
+        <div>
+          <pre style={styles.pre}>{SampleTemplateText}</pre>
+        </div>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 render(<App />, document.getElementById('root'));

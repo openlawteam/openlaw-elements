@@ -36,12 +36,12 @@ export class Choice extends React.Component<Props, State> {
 
     try {
       if (variable) {
-        if (eventValue === '') {
+        if (!eventValue) {
           this.setState({
             currentValue: '',
             validationError: false,
           }, () => {
-            this.props.onChange(this.openLaw.getName(variable), '');
+            this.props.onChange(this.openLaw.getName(variable));
           });
         } else {
           this.openLaw.checkValidity(
@@ -62,7 +62,7 @@ export class Choice extends React.Component<Props, State> {
           currentValue: '',
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(variable), '');
+          this.props.onChange(this.openLaw.getName(variable));
         });
       }
     } catch (error) {

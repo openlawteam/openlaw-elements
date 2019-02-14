@@ -32,6 +32,7 @@ export const InputRenderer = (props: RendererProps) => {
   } = props;
 
   const nameWithDashes = openLaw.getCleanName(variable);
+  // TODO refactor; `force = true` is specific to the OpenLaw apps
   const onChangeFunctionForce = (key, value) => onChangeFunction(key, value, true);
 
   // Choice type detection is different

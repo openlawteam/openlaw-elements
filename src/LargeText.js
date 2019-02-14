@@ -30,13 +30,13 @@ export class LargeText extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (
       !this.state.validationError &&
       prevProps.savedValue !== this.props.savedValue
     ) {
       this.setState({
-        currentValue: this.props.savedValue,
+        currentValue: this.props.savedValue || '',
       });
     }
   }
@@ -63,7 +63,7 @@ export class LargeText extends React.Component<Props, State> {
             validationError: false,
             currentValue: '',
           }, () => {
-            this.props.onChange(name, '');
+            this.props.onChange(name);
           });
         }
       }

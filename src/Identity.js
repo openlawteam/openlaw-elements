@@ -53,9 +53,9 @@ export class Identity extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
     try {
-      if (this.props.savedValue) {
+      if (prevProps.savedValue !== this.props.savedValue) {
         const identity = this.openLaw.checkValidity(
           this.props.variable,
           this.props.savedValue,

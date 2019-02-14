@@ -30,10 +30,10 @@ export class NumberInput extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (prevProps.savedValue !== this.props.savedValue) {
       this.setState({
-        currentValue: this.props.savedValue,
+        currentValue: this.props.savedValue || '',
       });
     }
   }
@@ -56,13 +56,12 @@ export class NumberInput extends React.Component<Props, State> {
         }, () => {
           this.props.onChange(this.openLaw.getName(variable), eventValue);
         });
-
       } else {
         this.setState({
           currentValue: '',
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(variable), '');
+          this.props.onChange(this.openLaw.getName(variable));
         });
       }
     } catch (error) {

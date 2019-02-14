@@ -3,6 +3,10 @@
   "version": "1.0.0",
   "description": "Generated form inputs to help you quickly build UI from OpenLaw templates.",
   "author": "OpenLaw Team <opensource@openlaw.io>",
+  "contributors": [
+    "Jeremiah Trein <jeremiahtrein@gmail.com>",
+    "Ramiro Jr. Franco <me@ramiro.mx> (ramiro.mx)"
+  ],
   "license": "Apache-2.0",
   "homepage": "https://openlaw.io",
   "repository": {
@@ -12,6 +16,9 @@
   "bugs": "https://github.com/openlawteam/openlaw-elements/issues",
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
+  "files": [
+    "dist"
+  ],
   "sideEffects": [
     "*.css"
   ],
@@ -27,6 +34,8 @@
     "clean:umd": "rimraf dist/umd",
     "flow": "flow",
     "lint": "eslint --c .eslintrc.json 'src/**/*.js'",
+    "prepublishOnly": "npm run build",
+    "release": "np",
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config webpack.config.dev.js"
   },
   "browserslist": [
@@ -55,6 +64,7 @@
     "flow-bin": "^0.93.0",
     "flow-copy-source": "^2.0.3",
     "node-sass": "^4.11.0",
+    "np": "^4.0.2",
     "openlaw": "^0.1.19",
     "raw-loader": "^1.0.0",
     "react": "^16.8.1",

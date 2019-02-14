@@ -34,7 +34,7 @@
     "clean:umd": "rimraf dist/umd",
     "flow": "flow",
     "lint": "eslint --c .eslintrc.json 'src/**/*.js'",
-    "prepublishOnly": "npm run build",
+    "prepublishOnly": "npm run lint && npm run flow && npm run build",
     "release": "np",
     "start": "cross-env NODE_ENV=development webpack-dev-server --hot --config webpack.config.dev.js"
   },

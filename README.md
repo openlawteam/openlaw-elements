@@ -12,6 +12,12 @@ Currently, OpenLaw is making use of this library in our internal projects, but o
 
 We appreciate your patience as we make these improvements in our forthcoming releases.
 
+## Install
+
+```
+npm install --save openlaw-elements
+```
+
 ## Usage
 
 ```js
@@ -79,7 +85,7 @@ The example app (`openlaw-elements/example`) can help you gain ideas and underst
 We use Webpack to bundle a small app that changes the app's state tree every time an edit is made to the rendered `<OpenLawForm />`. Additionally, each time you click the `Preview` button, it will generate a preview of what the final document will look like at the top of the webpage.
 
 ### Run
-```bash
+```
 git clone git@github.com:openlawteam/openlaw-elements.git
 cd openlaw-elements
 npm install

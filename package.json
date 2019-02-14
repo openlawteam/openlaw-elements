@@ -55,7 +55,6 @@
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-flow-react-proptypes": "^25.0.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "cross-env": "^5.2.0",
     "css-loader": "^2.1.0",
     "eslint": "^5.13.0",

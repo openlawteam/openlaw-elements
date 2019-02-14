@@ -6,7 +6,7 @@ import 'flatpickr/dist/flatpickr.css';
 
 type Props = {
   enableTime: boolean,
-  onChange: (string, string) => mixed,
+  onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   variable: {},

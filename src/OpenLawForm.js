@@ -24,7 +24,6 @@ type RendererInputProps = {
 
 type RendererSectionProps = {
   ...Props,
-  variable: {},
   variablesMap: {[string]: Object},
   variableObjects: Array<Object>,
   sections: Array<Object>,
@@ -35,14 +34,12 @@ const renderInputs = (props: RendererInputProps) => {
     apiClient, // for API call to Google for geo data (if generating an Address)
     executionResult = {},
     onChangeFunction = () => {},
-    openLaw,
-    parameters,
+    openLaw = {},
+    parameters = {},
     variable = {},
   } = props;
 
-  if (!openLaw) return;
-
-  const savedValue = parameters[openLaw.getName(variable)];
+  const savedValue = parameters[openLaw.getName(variable)] || '';
   const cleanName = openLaw.getCleanName(variable);
 
   // Structure: can contain all types of inputs in <InputRenderer />
@@ -93,7 +90,7 @@ const renderInputs = (props: RendererInputProps) => {
 const renderSections = (props: RendererSectionProps) => {
   const {
     executionResult,
-    openLaw,
+    openLaw = {},
     sections,
     variablesMap,
     variableObjects,
@@ -125,7 +122,7 @@ const renderSections = (props: RendererSectionProps) => {
     });
 };
 
-export const OpenLawForm = (props: Props): Array<React.Node> => {
+export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
   const {executionResult, openLaw, variables} = props;
 
   const allVariables = openLaw.getVariables(executionResult, {});
@@ -157,6 +154,7 @@ export const OpenLawForm = (props: Props): Array<React.Node> => {
       variableObjects,
       ...props,
     });
+  // loop to render inputs
   } else {
     formContent = executedVariables
       .map(name => variablesMap[name])
@@ -164,7 +162,6 @@ export const OpenLawForm = (props: Props): Array<React.Node> => {
       .map(variable => renderInputs({variable, ...props}));
   }
 
-  // loop to render inputs
   return (
     <div className="openlaw-form">
       {formContent}

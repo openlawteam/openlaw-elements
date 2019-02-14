@@ -25,7 +25,7 @@ export const GetSections = (
   sections: Array<string>,
 ) => {
   let addedVariables = [];
-  const collapsibles = sections
+  const collapsibles: Array<any> = sections
     .filter(
       section =>
         getVariablesForSection(

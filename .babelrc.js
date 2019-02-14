@@ -1,66 +1,53 @@
 const env = process.env.NODE_ENV;
 
-// if (env === 'commonjs' || env === 'es') {
-//   module.exports = {
-//     ignore: [
-//       '*.jest.js',
-//       '*.e2e.js',
-//       '*.ssr.js',
-//       '*.example.js',
-//       'source/demo',
-//       'source/jest-*.js',
-//       'source/TestUtils.js',
-//     ],
-//     plugins: [
-//       'transform-runtime',
-//       ['flow-react-proptypes', {deadCode: true, useESModules: true}],
-//       ['transform-react-remove-prop-types', {mode: 'wrap'}],
-//     ],
-//     presets: [['env', {modules: false}], 'react', 'flow', 'stage-2'],
-//   };
+const presetsCommon = [
+  "@babel/preset-react",
+  '@babel/preset-flow',
+  ['@babel/preset-env', {modules: false}],
+];
 
-//   if (env === 'commonjs') {
-//     module.exports.plugins.push('transform-es2015-modules-commonjs');
-//   }
-// }
+if (env === 'commonjs' || env === 'esm') {
+  module.exports = {
+    plugins: [
+      // keep the order as-is
+      ["@babel/transform-runtime", {
+        "regenerator": true
+      }],
+      ['flow-react-proptypes', {deadCode: true, useESModules: true}],
+      '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-proposal-object-rest-spread',
+    ],
+    presets: presetsCommon,
+  };
 
-// if (env === 'rollup') {
-//   module.exports = {
-//     comments: false,
-//     plugins: ['external-helpers'],
-//     presets: [['env', { modules: false }], 'react', 'flow', 'stage-2'],
-//   };
-// }
+  if (env === 'commonjs') {
+    module.exports.plugins.push('transform-es2015-modules-commonjs');
+  }
+}
+
+if (env === 'rollup') {
+  module.exports = {
+    comments: false,
+    plugins: [
+      ["@babel/transform-runtime", {
+        "regenerator": true
+      }],
+      '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-proposal-object-rest-spread',
+    ],
+    presets: presetsCommon,
+  };
+}
 
 if (env === 'development') {
   module.exports = {
     plugins: [
-      '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-proposal-object-rest-spread',
       ["@babel/transform-runtime", {
         "regenerator": true
       }],
+      '@babel/plugin-proposal-class-properties',
+      '@babel/plugin-proposal-object-rest-spread',
     ],
-    presets: [
-      "@babel/preset-react",
-      '@babel/preset-flow',
-      '@babel/preset-env',
-    ],
+    presets: presetsCommon,
   };
 }
-
-// if (env === 'production') {
-//   module.exports = {
-//     comments: false,
-//     plugins: ['transform-runtime'],
-//     presets: ['env', 'react', 'flow', 'stage-2'],
-//   };
-// }
-
-// if (env === 'test') {
-//   module.exports = {
-//     comments: false,
-//     plugins: ['transform-es2015-modules-commonjs'],
-//     presets: ['react', 'flow', 'stage-2'],
-//   };
-// }

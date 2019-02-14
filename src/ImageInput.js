@@ -38,7 +38,7 @@ const {Fragment} = React;
 const IMG_MAX_WIDTH = 600;
 
 export class ImageInput extends React.Component<Props, State> {
-  fileRef = React.createRef();
+  fileRef: {current: null | HTMLInputElement} = React.createRef();
 
   openLaw = this.props.openLaw;
 
@@ -159,7 +159,7 @@ export class ImageInput extends React.Component<Props, State> {
 
   handleFileChange(event: SyntheticEvent<HTMLInputElement>) {
     const file = event.currentTarget.files[0];
-    const reader = new FileReader();
+    const reader = new window.FileReader();
 
     reader.onload = () => {
       const url = (typeof reader.result === 'string') ? reader.result : reader.result.toString();

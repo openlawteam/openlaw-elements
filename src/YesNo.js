@@ -27,24 +27,24 @@ export class YesNo extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const variable = this.props.variable;
-    const name = this.openLaw.getName(variable);
-    const eventValue = event.currentTarget.value;
-
-    this.props.onChange(name, eventValue);
-
-    this.setState({
-      currentValue: eventValue,
-    });
-  }
-
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (this.props.savedValue !== prevProps.savedValue) {
       this.setState({
         currentValue: this.props.savedValue,
       });
     }
+  }
+
+  onChange(event: SyntheticEvent<HTMLInputElement>) {
+    const variable = this.props.variable;
+    const name = this.openLaw.getName(variable);
+    const eventValue = event.currentTarget.value;
+
+    this.setState({
+      currentValue: eventValue,
+    }, () => {
+      this.props.onChange(name, eventValue);
+    });
   }
 
   render() {

@@ -16,7 +16,6 @@ type Props = {
 type State = {
   currentValue: string,
   validationError: boolean,
-  focusIndex: ?number,
   errorMsg: string,
 };
 
@@ -60,22 +59,21 @@ export class Structure extends React.Component<Props, State> {
     );
   }
 
-  onChange(key: string, value: string) {
+  onChange(key: string, value: ?string) {
     const variable = this.props.variable;
     const variableName = this.openLaw.getName(variable);
 
     try {
       if (variable) {
-        const savedValue = this.props.savedValue === '' ? undefined : this.props.savedValue;
+        const {savedValue} = this.props;
 
         const currentValue = this.openLaw.setStructureFieldValue(
           variable,
           key,
           value,
-          savedValue,
+          (savedValue || undefined),
           this.props.executionResult,
         );
-
         this.setState({
           currentValue,
           validationError: false,
@@ -84,10 +82,10 @@ export class Structure extends React.Component<Props, State> {
         });
       } else {
         this.setState({
-          currentValue: undefined,
+          currentValue: '',
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(variable), undefined);
+          this.props.onChange(this.openLaw.getName(variable));
         });
       }
     } catch (error) {

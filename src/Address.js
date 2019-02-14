@@ -39,40 +39,13 @@ export class Address extends React.Component<Props, State> {
     self.submitAddress = this.submitAddress.bind(this);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(prevProps: Props) {
     if (
       this.props.savedValue &&
-      this.state.currentValue !== this.props.savedValue
+      (prevProps.savedValue !== this.props.savedValue)
     ) {
       this.setState({
-        currentValue: this.props.savedValue,
-      });
-    }
-  }
-
-  submitAddress(address: Object) {
-    const variable = this.props.variable;
-
-    try {
-      if (variable) {
-        this.setState({
-          validationError: false,
-          currentValue: address.address,
-        }, () => {
-          this.props.onChange(this.openLaw.getName(variable), this.openLaw.createAddress(address));
-        });
-      } else {
-        this.setState({
-          validationError: false,
-          currentValue: undefined,
-        }, () => {
-          this.props.onChange(this.openLaw.getName(variable), undefined);
-        });
-      }
-    } catch (error) {
-      this.setState({
-        validationError: true,
-        currentValue: '',
+        currentValue: this.props.savedValue || '',
       });
     }
   }
@@ -94,16 +67,23 @@ export class Address extends React.Component<Props, State> {
       const variable = this.props.variable;
       const name = this.openLaw.getName(variable);
 
-      if (this.props.savedValue) {
-        this.props.onChange(name, undefined);
-      }
-
       this.setState({
         currentValue: eventValue,
         validationError: true,
+      }, () => {
+        if (this.props.savedValue) {
+          this.props.onChange(name);
+        }
       });
     }
   }
+
+  // Autosuggest will call this function every time you need to clear suggestions.
+  onSuggestionsClearRequested = () => {
+    this.setState({
+      result: [],
+    });
+  };
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
@@ -115,12 +95,32 @@ export class Address extends React.Component<Props, State> {
     });
   };
 
-  // Autosuggest will call this function every time you need to clear suggestions.
-  onSuggestionsClearRequested = () => {
-    this.setState({
-      result: [],
-    });
-  };
+  submitAddress(address: Object) {
+    const variable = this.props.variable;
+
+    try {
+      if (variable) {
+        this.setState({
+          validationError: false,
+          currentValue: address.address,
+        }, () => {
+          this.props.onChange(this.openLaw.getName(variable), this.openLaw.createAddress(address));
+        });
+      } else {
+        this.setState({
+          validationError: false,
+          currentValue: undefined,
+        }, () => {
+          this.props.onChange(this.openLaw.getName(variable));
+        });
+      }
+    } catch (error) {
+      this.setState({
+        validationError: true,
+        currentValue: '',
+      });
+    }
+  }
 
   render() {
     const variable = this.props.variable;

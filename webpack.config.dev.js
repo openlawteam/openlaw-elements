@@ -13,6 +13,10 @@ module.exports = {
     filename: 'static/[name].js'
   },
   plugins: [
+    new webpack.DefinePlugin({
+      'process.env.OPENLAW_EMAIL': JSON.stringify(process.env.OPENLAW_EMAIL),
+      'process.env.OPENLAW_PASSWORD': JSON.stringify(process.env.OPENLAW_PASSWORD),
+    }),
     new HtmlWebpackPlugin({
       filename: 'index.html',
       inject: true,

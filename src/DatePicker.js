@@ -6,7 +6,7 @@ import 'flatpickr/dist/flatpickr.css';
 
 type Props = {
   enableTime: boolean,
-  onChange: (string, string) => mixed,
+  onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   variable: {},
@@ -54,8 +54,8 @@ export class DatePicker extends React.Component<Props, State> {
     this.flatpickr = new Flatpickr(document.getElementById(this.id), options);
   }
 
-  componentDidUpdate() {
-    if (this.state.currentValue !== this.props.savedValue) {
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.savedValue !== this.props.savedValue) {
       this.setState({
         currentValue: this.props.savedValue,
       });
@@ -64,7 +64,6 @@ export class DatePicker extends React.Component<Props, State> {
 
   get isIOS() {
     return !!window.navigator.platform && /iPad|iPhone|iPod/.test(window.navigator.platform);
-    // return true;
   }
 
   get shouldShowIOSLabel() {
@@ -74,9 +73,9 @@ export class DatePicker extends React.Component<Props, State> {
   onChange(values: Array<any>) {
     const variable = this.props.variable;
     const name = this.openLaw.getName(variable);
-    const epoch = values[0].getTime();
+    const epoch = (values.length ? values[0].getTime().toString() : undefined);
 
-    this.props.onChange(name, epoch.toString());
+    this.props.onChange(name, epoch);
   }
 
   render() {

@@ -30,13 +30,13 @@ export class Text extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (
       !this.state.validationError &&
       this.props.savedValue !== prevProps.savedValue
     ) {
       this.setState({
-        currentValue: this.props.savedValue,
+        currentValue: this.props.savedValue || '',
       });
     }
   }
@@ -63,7 +63,7 @@ export class Text extends React.Component<Props, State> {
             currentValue: '',
             validationError: false,
           }, () => {
-            this.props.onChange(name, '');
+            this.props.onChange(name);
           });
         }
       }
@@ -79,7 +79,7 @@ export class Text extends React.Component<Props, State> {
     const variable = this.props.variable;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
-    const additionalClassName = this.state.validationError ? 'is-error' : '';
+    const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     return (
       <div className="contract-variable">

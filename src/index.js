@@ -1,1 +1,1 @@
-export * from './OpenLawForm';
+export {OpenLawForm as default} from './OpenLawForm';

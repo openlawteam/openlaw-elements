@@ -20,11 +20,17 @@ npm install --save openlaw-elements
 
 ## Usage
 
+### A note about dependencies' CSS
+
+Before using the `<OpenLawForm />` component in your bundled app, be sure to add a way to import CSS into your bundle. While we don't have any of our own styles in the library, we rely on `flatpickr` for dates and `react-image-crop` for images. As an example, using Webpack's [css-loader](https://github.com/webpack-contrib/css-loader) or [style-loader](https://github.com/webpack-contrib/style-loader) you will be ready to load styles. If you are using [create-react-app](https://github.com/facebook/create-react-app) this is already done for you.
+
+### Using the component
+
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { APIClient, Openlaw } from 'openlaw';
-import { OpenLawForm } from 'openlaw-elements';
+import OpenLawForm from 'openlaw-elements';
 
 // OpenLaw APIClient: https://docs.openlaw.io/api-client/#authentication
 //  - Used to fetch geo data in our `Address` field type

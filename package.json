@@ -1,6 +1,6 @@
 {
   "name": "openlaw-elements",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0-beta.1",
   "description": "Generated form inputs to help you quickly build UI from OpenLaw templates.",
   "author": "OpenLaw Team <opensource@openlaw.io>",
   "contributors": [

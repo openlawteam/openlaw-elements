@@ -15,7 +15,7 @@ We appreciate your patience as we make these improvements in our forthcoming rel
 ## Install
 
 ```
-npm install --save openlaw-elements
+npm install --save openlaw-elements@beta
 ```
 
 ## Usage

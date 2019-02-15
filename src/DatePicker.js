@@ -9,6 +9,7 @@ type Props = {
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
+  textLikeInputClass: string,
   variable: {},
 };
 
@@ -46,6 +47,11 @@ export class DatePicker extends React.Component<Props, State> {
     options.onChange = this.onChange;
     options.enableTime = this.state.enableTime;
     options.utc = true;
+
+    if (this.props.textLikeInputClass) {
+      // Flatpickr inherits our classnames from the original input element
+      options.altInputClass = this.props.textLikeInputClass;
+    }
 
     if (this.props.savedValue) {
       options.defaultDate = new Date(parseInt(this.props.savedValue));

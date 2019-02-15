@@ -7,6 +7,7 @@ type Props = {
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
+  textLikeInputClass: string,
   variable: {},
 };
 
@@ -83,7 +84,7 @@ export class NumberInput extends React.Component<Props, State> {
           <span>{description}</span>
 
           <input
-            className={cleanName}
+            className={`${this.props.textLikeInputClass}${cleanName}`}
             onChange={this.onChange}
             placeholder={description}
             type="number"

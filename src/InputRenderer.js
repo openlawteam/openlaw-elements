@@ -137,6 +137,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
+          textLikeInputClass={props.textLikeInputClass}
           variable={variable}
         />
       );

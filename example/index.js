@@ -104,7 +104,7 @@ class Form extends Component {
             parameters={this.state.parameters}
             onChangeFunction={this.update}
             openLaw={Openlaw}
-            textLikeInputClass="index"
+            textLikeInputClass="input"
             variables={this.state.variables}
           />
         )}

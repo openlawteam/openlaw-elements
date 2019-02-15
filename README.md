@@ -8,7 +8,7 @@ Currently, OpenLaw is making use of this library in our internal projects, but o
 
 1) Our component classnames for CSS are heavily geared toward our internal stylesheets. However, no styles are shipped with this library to make it easier for you to use your own stylesheet.
 2) There is currently no proper namespacing (or a way to create one) for CSS classes.
-3) There are no unit or integration tests as of `v1.0.0-beta.1`.
+3) There are no unit or integration tests.
 
 We appreciate your patience as we make these improvements in our forthcoming releases.
 

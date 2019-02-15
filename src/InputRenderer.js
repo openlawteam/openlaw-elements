@@ -18,6 +18,7 @@ type RendererProps = {
   onChangeFunction: (string, ?string, ?boolean) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
+  textLikeInputClass: string,
   variable: {},
 };
 
@@ -62,6 +63,7 @@ export const InputRenderer = (props: RendererProps) => {
               ? openLaw.getFormattedAddress(openLaw.getAddress(savedValue))
               : ''
           }
+          textLikeInputClass={props.textLikeInputClass}
           variable={variable}
         />
       );
@@ -161,6 +163,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
+          textLikeInputClass={props.textLikeInputClass}
           variable={variable}
         />
       );

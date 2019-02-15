@@ -57,7 +57,7 @@ if (errorMessage) {
 
 const onChange = (key, value) => console.log('KEY:', key, 'VALUE:', value);
 
-// * all props are required *
+// * all props, except textLikeInputClass are required *
 const App = () => (
   <OpenLawForm
     apiClient={apiClient}
@@ -66,6 +66,8 @@ const App = () => (
     onChangeFunction={onChange}
     // https://docs.openlaw.io/openlaw-object/
     openLaw={Openlaw}
+    // Optional: This is utilized to apply a class to all elements that present as text input
+    textLikeInputClass="input"
     variables={variables}
   />
 );

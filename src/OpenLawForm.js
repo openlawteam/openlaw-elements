@@ -14,6 +14,7 @@ type Props = {
   onChangeFunction: (any) => mixed,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
+  textLikeInputClass?: string,
   variables: Array<{}>,
 };
 
@@ -41,6 +42,7 @@ const renderInputs = (props: RendererInputProps) => {
 
   const savedValue = parameters[openLaw.getName(variable)] || '';
   const cleanName = openLaw.getCleanName(variable);
+  const textLikeInputClass = props.textLikeInputClass ? `${props.textLikeInputClass} ` : '';
 
   // Structure: can contain all types of inputs in <InputRenderer />
   if (openLaw.isStructuredType(variable, executionResult)) {
@@ -52,6 +54,7 @@ const renderInputs = (props: RendererInputProps) => {
         onChange={onChangeFunction}
         openLaw={openLaw}
         savedValue={savedValue}
+        textLikeInputClass={textLikeInputClass}
         variable={variable}
       />
     );
@@ -69,6 +72,7 @@ const renderInputs = (props: RendererInputProps) => {
         savedValue={
           savedValue || openLaw.getCollectionValue(variable, executionResult, '')
         }
+        textLikeInputClass={textLikeInputClass}
         variable={variable}
       />
     );
@@ -82,6 +86,7 @@ const renderInputs = (props: RendererInputProps) => {
       onChangeFunction={onChangeFunction}
       openLaw={openLaw}
       savedValue={savedValue}
+      textLikeInputClass={textLikeInputClass}
       variable={variable}
     />
   );

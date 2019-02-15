@@ -2,7 +2,7 @@ import React, {Component, Fragment, useEffect, useState} from 'react';
 import {render} from 'react-dom';
 import {APIClient, Openlaw} from 'openlaw';
 
-import {OpenLawForm} from '../src';
+import OpenLawForm from '../src';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
 import './style.scss';
 

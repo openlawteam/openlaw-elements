@@ -7,6 +7,7 @@ type Props = {
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
+  textLikeInputClass: string,
   variable: {},
 };
 
@@ -87,7 +88,7 @@ export class LargeText extends React.Component<Props, State> {
           <span>{description}</span>
 
           <textarea
-            className={`${cleanName}${additionalClassName}`}
+            className={`${this.props.textLikeInputClass}${cleanName}${additionalClassName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}

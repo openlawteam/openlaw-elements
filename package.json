@@ -1,7 +1,7 @@
 {
   "name": "openlaw-elements",
   "version": "1.0.0-beta.2",
-  "description": "Generated form inputs to help you quickly build UI from OpenLaw templates.",
+  "description": "Dynamically render React form components from an OpenLaw template.",
   "author": "OpenLaw Team <opensource@openlaw.io>",
   "contributors": [
     "Jeremiah Trein <jeremiahtrein@gmail.com>",

@@ -29,6 +29,7 @@ export const InputRenderer = (props: RendererProps) => {
     onChangeFunction,
     openLaw,
     savedValue,
+    textLikeInputClass,
     variable,
   } = props;
 
@@ -63,7 +64,7 @@ export const InputRenderer = (props: RendererProps) => {
               ? openLaw.getFormattedAddress(openLaw.getAddress(savedValue))
               : ''
           }
-          textLikeInputClass={props.textLikeInputClass}
+          textLikeInputClass={textLikeInputClass}
           variable={variable}
         />
       );
@@ -76,6 +77,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
+          textLikeInputClass={textLikeInputClass}
           variable={variable}
         />
       );
@@ -88,6 +90,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
+          textLikeInputClass={textLikeInputClass}
           variable={variable}
         />
       );
@@ -101,7 +104,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
-          textLikeInputClass={props.textLikeInputClass}
+          textLikeInputClass={textLikeInputClass}
           variable={variable}
         />
       );
@@ -126,7 +129,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
-          textLikeInputClass={props.textLikeInputClass}
+          textLikeInputClass={textLikeInputClass}
           variable={variable}
         />
       );
@@ -139,7 +142,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
-          textLikeInputClass={props.textLikeInputClass}
+          textLikeInputClass={textLikeInputClass}
           variable={variable}
         />
       );
@@ -166,7 +169,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
-          textLikeInputClass={props.textLikeInputClass}
+          textLikeInputClass={textLikeInputClass}
           variable={variable}
         />
       );

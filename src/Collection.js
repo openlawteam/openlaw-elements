@@ -11,6 +11,7 @@ type Props = {
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
+  textLikeInputClass: string,
   variable: {},
 };
 
@@ -96,6 +97,7 @@ export class Collection extends React.Component<Props, State> {
               onChange={this.onChange}
               openLaw={this.openLaw}
               savedValue={savedValue}
+              textLikeInputClass={this.props.textLikeInputClass}
               variable={subVariable}
             />
           ) : (
@@ -105,6 +107,7 @@ export class Collection extends React.Component<Props, State> {
               onChangeFunction={this.onChange}
               openLaw={this.openLaw}
               savedValue={savedValue}
+              textLikeInputClass={this.props.textLikeInputClass}
               variable={subVariable}
             />
           )

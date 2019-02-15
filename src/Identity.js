@@ -8,6 +8,7 @@ type Props = {
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
+  textLikeInputClass: string,
   variable: {},
 };
 
@@ -131,7 +132,7 @@ export class Identity extends React.Component<Props, State> {
           <span>{description}</span>
 
           <input
-            className={`${cleanName}-email${additionalClassName}`}
+            className={`${this.props.textLikeInputClass}${cleanName}-email${additionalClassName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}

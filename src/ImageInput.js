@@ -287,7 +287,7 @@ export class ImageInput extends React.Component<Props, State> {
 
     /* eslint-disable complexity */
     return (
-      <div className="contract-variable">
+      <div className="contract-variable file">
         {this.props.savedValue
           ? (
             <button

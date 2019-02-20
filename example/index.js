@@ -118,15 +118,24 @@ class Form extends Component {
 
 // eslint-disable-next-line react/prop-types
 const sectionsRenderer = ({ children, section }) => (
-  <Collapsible
-    key={`section-${section}`}
-    open
-    overflowWhenOpen="visible"
-    trigger={section}
-    triggerDisabled={false}
-  >
-    {children}
-  </Collapsible>
+  section
+    // the section has a title
+    ? (
+      <Collapsible
+        key={`section-${section}`}
+        open
+        overflowWhenOpen="visible"
+        trigger={section}
+        triggerDisabled={false}
+      >
+        {children}
+      </Collapsible>
+    // section exists but no title, e.g. unsectionedTitle
+    ) : (
+      <Fragment key={`section-${section}`}>
+        {children}
+      </Fragment>
+    )
 );
 
 const styles = {

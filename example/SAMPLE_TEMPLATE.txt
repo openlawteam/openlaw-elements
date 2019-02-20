@@ -1,8 +1,37 @@
-==WOW==
-[[A Name]]
+<%
+==Personal Info==
+[[Contestant Name]]
+[[Contestant Address]]
+[[Contestant DOB]]
+[[Contestant Picture]]
+[[Contestant ETH Address]]
 
-==WOW MAN==
-[[B Name]]
+==Experience==
+[[Contestant BBQ Experience Years]]
+[[Contestant Longest BBQ]]
+[[BBQ Contestant Status]]
+[[BBQ Certifications: Structure(
+  Title: Text;
+  Date: Date
+)]]
+[[CertList: Collection<BBQ Certifications>]]
+
+==Preferences==
+[[Contestant BBQ Region]]
+[[BBQ Love Limit]]
+[[Contestant Personal Statement]]
+[[FavoriteMeats: Collection<Text>]]
+
+==Medical Info==
+[[Contestant BBQ Medical]]
+[[Please explain your BBQ sauce medical history]]
+[[Contestant Emergency Contact: Structure(
+  Emergency Contact Name: Text;
+  Emergency Contact Phone: Text
+)]]
+[[MedicalContact: Contestant Emergency Contact]]
+
+%>
 
 \centered **International BBQ Cookoff Registration**
 

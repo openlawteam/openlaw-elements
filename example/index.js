@@ -105,9 +105,9 @@ class Form extends Component {
             parameters={this.state.parameters}
             onChangeFunction={this.update}
             openLaw={Openlaw}
-            // renderSections={sectionsRenderer}
+            renderSections={sectionsRenderer}
             textLikeInputClass="input"
-            unsectionedTitle="DUDE"
+            unsectionedTitle=""
             variables={this.state.variables}
           />
         )}

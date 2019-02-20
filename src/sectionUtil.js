@@ -48,12 +48,16 @@ export const GetSections = (
     // get rid of any `undefined` slots
     .filter(section => section && true);
 
-  const addedVariables = mappedSections.map(s => s.variables);
+  const orphanVariables = (
+    variables
+      .filter(v => {
+        const flattedSectionVariables = mappedSections
+          .reduce((acc, o) => acc.concat(o.variables), []);
 
-  const orphanVariables = variables.filter(
-    v => addedVariables.indexOf(v) === -1
+        return flattedSectionVariables.indexOf(v) === -1;
+      })
   );
-console.log(orphanVariables)
+
   if (orphanVariables.length > 0) {
     mappedSections.push({
       section: getUnsectionedTitle(),

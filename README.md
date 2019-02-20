@@ -69,6 +69,7 @@ const App = () => (
     // Optional: This is utilized to apply a class to all elements that present as text input
     textLikeInputClass="input"
     // Optional: This will disable collapsible behavior on Collapsible elements when true
+    // https://docs.openlaw.io/markup-language/#groupings
     triggerDisabled={false}
     variables={variables}
   />

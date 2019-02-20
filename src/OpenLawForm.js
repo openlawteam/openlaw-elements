@@ -15,6 +15,7 @@ type Props = {
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
   textLikeInputClass?: string,
+  triggerDisabled?: boolean,
   variables: Array<{}>,
 };
 
@@ -99,6 +100,7 @@ const renderSections = (props: RendererSectionProps) => {
     sections,
     variablesMap,
     variableObjects,
+    triggerDisabled,
   } = props;
   const sectionVariables = openLaw.getVariableSections(executionResult);
   const variableNames = variableObjects.map(variable =>
@@ -118,6 +120,7 @@ const renderSections = (props: RendererSectionProps) => {
           open
           overflowWhenOpen="visible"
           trigger={section}
+          triggerDisabled={triggerDisabled}
         >
           {currentVariables.map(variable =>
             renderInputs({variable, ...props})

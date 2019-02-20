@@ -46,6 +46,7 @@ export const InputRenderer = (props: RendererProps) => {
         onChange={onChangeFunction}
         openLaw={openLaw}
         savedValue={savedValue}
+        textLikeInputClass={textLikeInputClass}
         variable={variable}
       />
     );

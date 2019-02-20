@@ -30,7 +30,7 @@ Before using the `<OpenLawForm />` component in your bundled app, be sure to add
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { APIClient, Openlaw } from 'openlaw';
-import OpenLawForm from 'openlaw-elements';
+import { OpenLawForm } from 'openlaw-elements';
 
 // OpenLaw APIClient: https://docs.openlaw.io/api-client/#authentication
 //  - Used to fetch geo data in our `Address` field type
@@ -68,6 +68,8 @@ const App = () => (
     openLaw={Openlaw}
     // Optional: This is utilized to apply a class to all elements that present as text input
     textLikeInputClass="input"
+    // Optional: This will disable collapsible behavior on Collapsible elements when true
+    triggerDisabled=false
     variables={variables}
   />
 );

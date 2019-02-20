@@ -26,7 +26,7 @@ export const GetSections = (
   const getUnsectionedTitle = () => {
     const { unsectionedTitle } = config;
     // set to string null value by the user
-    if (unsectionedTitle === '') return null;
+    if (unsectionedTitle === '') return '';
 
     // there's a value set by the user
     if (unsectionedTitle) return unsectionedTitle;

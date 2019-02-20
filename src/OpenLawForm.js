@@ -13,8 +13,13 @@ type Props = {
   onChangeFunction: (any) => mixed,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
+  renderSections?: ({
+    children: React.Node,
+    section: string,
+  }) => React.Node,
   textLikeInputClass?: string,
   triggerDisabled?: boolean,
+  unsectionedTitle?: string,
   variables: Array<{}>,
 };
 

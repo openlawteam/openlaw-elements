@@ -6,7 +6,6 @@ import {Collection} from './Collection';
 import {GetSections} from './sectionUtil';
 import {InputRenderer} from './InputRenderer';
 import {Structure} from './Structure';
-import Collapsible from './Collapsible';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
@@ -97,35 +96,34 @@ const renderSections = (props: RendererSectionProps) => {
   const {
     executionResult,
     openLaw = {},
+    renderSections:renderSectionsProp,
     sections,
+    unsectionedTitle,
     variablesMap,
     variableObjects,
-    triggerDisabled,
   } = props;
   const sectionVariables = openLaw.getVariableSections(executionResult);
-  const variableNames = variableObjects.map(variable =>
-    openLaw.getName(variable),
-  );
+  const variableNames = variableObjects.map(v => openLaw.getName(v));
 
-  return GetSections(variableNames, sectionVariables, sections)
-    .map(collapsible => {
-      const section = collapsible.section;
-      const currentVariables = collapsible.variables.map(
-        name => variablesMap[name],
-      );
+  return GetSections(variableNames, sectionVariables, sections, { unsectionedTitle })
+    .map(({ section, variables }) => {
+      if (renderSectionsProp) {
+        const inputsChildrenComponent = () => (
+          variables
+            .map(name => variablesMap[name])
+            .map(variable => renderInputs({variable, ...props}))
+        );
+
+        return renderSectionsProp({
+          children: React.createElement(inputsChildrenComponent),
+          section,
+        });
+      }
 
       return (
-        <Collapsible
-          key={`section-${section}`}
-          open
-          overflowWhenOpen="visible"
-          trigger={section}
-          triggerDisabled={triggerDisabled}
-        >
-          {currentVariables.map(variable =>
-            renderInputs({variable, ...props})
-          )}
-        </Collapsible>
+        variables
+          .map(name => variablesMap[name])
+          .map(variable => renderInputs({variable, ...props}))
       );
     });
 };

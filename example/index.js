@@ -3,6 +3,7 @@ import {render} from 'react-dom';
 import {APIClient, Openlaw} from 'openlaw';
 
 import OpenLawForm from '../src';
+import Collapsible from './Collapsible';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
 import './style.scss';
 
@@ -104,7 +105,9 @@ class Form extends Component {
             parameters={this.state.parameters}
             onChangeFunction={this.update}
             openLaw={Openlaw}
+            // renderSections={sectionsRenderer}
             textLikeInputClass="input"
+            unsectionedTitle="DUDE"
             variables={this.state.variables}
           />
         )}
@@ -112,6 +115,19 @@ class Form extends Component {
     );
   }
 }
+
+// eslint-disable-next-line react/prop-types
+const sectionsRenderer = ({ children, section }) => (
+  <Collapsible
+    key={`section-${section}`}
+    open
+    overflowWhenOpen="visible"
+    trigger={section}
+    triggerDisabled={false}
+  >
+    {children}
+  </Collapsible>
+);
 
 const styles = {
   previewButton: {

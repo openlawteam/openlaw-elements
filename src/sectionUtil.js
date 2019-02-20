@@ -1,5 +1,9 @@
 // @flow
 
+type GetSectionConfigType = {
+  unsectionedTitle?: string,
+};
+
 const getVariablesForSection = (
   section: string,
   variables: Array<string>,
@@ -13,54 +17,49 @@ const getVariablesForSection = (
     );
 };
 
-const getVariablesWithNoSection = (variables, addedVariables) => {
-  return variables.filter(
-    variable => addedVariables.indexOf(variable) === -1,
-  );
-};
-
 export const GetSections = (
   variables: Array<string>,
   sectionVariables: {[string]: any},
   sections: Array<string>,
+  config: GetSectionConfigType,
 ) => {
-  let addedVariables = [];
-  const collapsibles: Array<any> = sections
-    .filter(
-      section =>
-        getVariablesForSection(
-          section,
-          variables,
-          sectionVariables,
-          addedVariables,
-        ).length > 0,
-    )
+  const getUnsectionedTitle = () => {
+    const { unsectionedTitle } = config;
+    // set to string null value by the user
+    if (unsectionedTitle === '') return null;
+
+    // there's a value set by the user
+    if (unsectionedTitle) return unsectionedTitle;
+
+    // default
+    return 'Miscellaneous';
+  };
+
+  const mappedSections: Array<any> = sections
     .map(section => {
-      const currentVariables = getVariablesForSection(
-        section,
-        variables,
-        sectionVariables,
-        addedVariables,
-      );
+      const currentVariables = getVariablesForSection(section, variables, sectionVariables, []);
+      if (currentVariables.length > 0) {
+        return {
+          section,
+          variables: currentVariables,
+        };
+      }
+    })
+    // get rid of any `undefined` slots
+    .filter(section => section && true);
 
-      addedVariables = addedVariables.concat(currentVariables);
-      return {
-        section,
-        variables: currentVariables,
-      };
-    });
+  const addedVariables = mappedSections.map(s => s.variables);
 
-  const orphanVariables = getVariablesWithNoSection(
-    variables,
-    addedVariables,
+  const orphanVariables = variables.filter(
+    v => addedVariables.indexOf(v) === -1
   );
-
+console.log(orphanVariables)
   if (orphanVariables.length > 0) {
-    collapsibles.push({
-      section: 'Misc.',
+    mappedSections.push({
+      section: getUnsectionedTitle(),
       variables: orphanVariables,
     });
   }
 
-  return collapsibles;
+  return mappedSections;
 };

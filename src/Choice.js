@@ -7,6 +7,7 @@ type Props = {
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
+  textLikeInputClass: string,
   variable: {},
 };
 

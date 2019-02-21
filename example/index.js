@@ -106,6 +106,12 @@ class Form extends Component {
             onChangeFunction={this.update}
             openLaw={Openlaw}
             renderSections={sectionsRenderer}
+            sectionTransform={(section, index) => {
+              // Transform & shape your sections here!
+              // Must return an Object.
+              // See the sectionsRenderer below for usage.
+              return { section, mySuperCustomKey: `${index + 1}. `, index };
+            }}
             textLikeInputClass="input"
             unsectionedTitle=""
             variables={this.state.variables}
@@ -117,26 +123,30 @@ class Form extends Component {
 }
 
 // eslint-disable-next-line react/prop-types
-const sectionsRenderer = ({ children, section }) => (
-  section
-    // the section has a title
-    ? (
-      <Collapsible
-        key={`section-${section}`}
-        open
-        overflowWhenOpen="visible"
-        trigger={section}
-        triggerDisabled={false}
-      >
-        {children}
-      </Collapsible>
-    // section exists but no title, e.g. unsectionedTitle
-    ) : (
-      <Fragment key={`section-${section}`}>
-        {children}
-      </Fragment>
-    )
-);
+const sectionsRenderer = ({ children, ...sectionData }) => {
+  const { section, mySuperCustomKey, index } = sectionData;
+
+  return (
+    Object.keys(sectionData).length && section
+      // the section has a title
+      ? (
+        <Collapsible
+          key={`section-${section}`}
+          open={index === 0}
+          overflowWhenOpen="visible"
+          trigger={`${mySuperCustomKey || ''}${section}`}
+          triggerDisabled={false}
+        >
+          {children}
+        </Collapsible>
+      // section exists but no title, e.g. unsectionedTitle
+      ) : (
+        <Fragment key={`section-${section}`}>
+          {children}
+        </Fragment>
+      )
+  );
+};
 
 const styles = {
   previewButton: {

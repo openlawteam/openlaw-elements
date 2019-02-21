@@ -29,6 +29,10 @@
       "error",
       "unix"
     ],
+    "object-curly-spacing": [
+      1,
+      "always"
+    ],
     "quotes": [
       "error",
       "single"

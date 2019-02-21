@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import {InputRenderer} from './InputRenderer';
+import { InputRenderer } from './InputRenderer';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
@@ -67,7 +67,7 @@ export class Structure extends React.Component<Props, State> {
 
     try {
       if (variable) {
-        const {savedValue} = this.props;
+        const { savedValue } = this.props;
 
         const currentValue = this.openLaw.setStructureFieldValue(
           variable,

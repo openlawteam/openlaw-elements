@@ -2,10 +2,10 @@
 
 import * as React from 'react';
 
-import {Collection} from './Collection';
-import {GetSections} from './sectionUtil';
-import {InputRenderer} from './InputRenderer';
-import {Structure} from './Structure';
+import { Collection } from './Collection';
+import { GetSections } from './sectionUtil';
+import { InputRenderer } from './InputRenderer';
+import { Structure } from './Structure';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
@@ -126,7 +126,7 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
         const inputsChildrenComponent = () => (
           variables
             .map(name => variablesMap[name])
-            .map(variable => renderInputs({variable, ...props}))
+            .map(variable => renderInputs({ variable, ...props }))
         );
 
         return renderSections({
@@ -141,7 +141,7 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
 
           {variables
             .map(name => variablesMap[name])
-            .map(variable => renderInputs({variable, ...props}))
+            .map(variable => renderInputs({ variable, ...props }))
           }
         </div>
       );
@@ -149,7 +149,7 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
 };
 
 export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
-  const {executionResult, openLaw, sections:sectionsProp, variables} = props;
+  const { executionResult, openLaw, sections:sectionsProp, variables } = props;
   const allVariables = openLaw.getVariables(executionResult, {});
   const executedVariables = variables.map(variable =>
     openLaw.getName(variable),
@@ -184,7 +184,7 @@ export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
     formContent = executedVariables
       .map(name => variablesMap[name])
       .filter(variable => variable !== undefined)
-      .map(variable => renderInputs({variable, ...props}));
+      .map(variable => renderInputs({ variable, ...props }));
   }
 
   return (

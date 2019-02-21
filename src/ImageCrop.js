@@ -52,7 +52,7 @@ type StateTypes = {
   src: string,
 };
 
-const {Component} = React;
+const { Component } = React;
 
 const styles = {
   cropWrap: {
@@ -94,7 +94,7 @@ const getCroppedImage = (image: HTMLImageElement, pixelCrop: CropParametersType)
   return canvas.toDataURL();
 };
 
-const resizeImageToDataURL = ({image, height, width}: {image: Image, height: number, width: number}): string => {
+const resizeImageToDataURL = ({ image, height, width }: {image: Image, height: number, width: number}): string => {
   // create an off-screen canvas
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -114,7 +114,7 @@ const resizeImageToDataURL = ({image, height, width}: {image: Image, height: num
   return canvas.toDataURL();
 };
 
-const renderDeleteOverlayButton = ({onClick, ...props}: {onClick: (any) => mixed}) => (
+const renderDeleteOverlayButton = ({ onClick, ...props }: {onClick: (any) => mixed}) => (
   <svg
     {...props}
     id="imagecrop-clear"
@@ -153,12 +153,12 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
     src: this.props.dataURL || '',
   };
 
-  componentDidUpdate({dataURL: dataURLPrev}: {dataURL?: string}, prevState: StateTypes) {
-    const {children, dataURL} = this.props;
+  componentDidUpdate({ dataURL: dataURLPrev }: {dataURL?: string}, prevState: StateTypes) {
+    const { children, dataURL } = this.props;
 
     // existing image we want to remove from state
     if (!dataURL && dataURLPrev && prevState.src) {
-      this.setState({src: ''});
+      this.setState({ src: '' });
       return;
     }
 
@@ -172,8 +172,8 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
     }
   }
 
-  getDimensionsFromTarget = ({height, width}: {height: number, width: number}) => {
-    const {targetHeight, targetWidth} = this.props;
+  getDimensionsFromTarget = ({ height, width }: {height: number, width: number}) => {
+    const { targetHeight, targetWidth } = this.props;
     const safeHeight =
       targetHeight && height >= targetHeight ? targetHeight : height;
     const safeWidth = targetWidth && width >= targetWidth ? targetWidth : width;
@@ -221,7 +221,7 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
     return {
       src: this.state.src,
       crop: this.state.crop || crop,
-      imageStyle: {background: 'white'},
+      imageStyle: { background: 'white' },
       keepSelection: true,
       onChange: callAll(onChange, this.onCropChange),
       onComplete: callAll(onComplete, this.onComplete),
@@ -234,8 +234,8 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
     const image = new Image();
 
     image.addEventListener('load', () => {
-      const {height: imageHeight, width: imageWidth} = image;
-      const {height, width} = this.getDimensionsFromTarget({
+      const { height: imageHeight, width: imageWidth } = image;
+      const { height, width } = this.getDimensionsFromTarget({
         height: imageHeight,
         width: imageWidth,
       });
@@ -270,7 +270,7 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
   };
 
   onCropChange = (crop: CropParametersType) => {
-    this.setState({crop});
+    this.setState({ crop });
   };
 
   onComplete = (crop: CropParametersType, pixelCrop: CropParametersType) => {
@@ -287,7 +287,7 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
   };
 
   onImageDelete = () => {
-    this.setState({src: ''}, () => {
+    this.setState({ src: '' }, () => {
       if (this.props.onImageDelete) this.props.onImageDelete(this.state.src);
     });
   };

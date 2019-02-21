@@ -34,7 +34,7 @@ type DimensionsType = {
   targetWidth?: number,
 };
 
-const {Fragment} = React;
+const { Fragment } = React;
 const IMG_MAX_WIDTH = 600;
 
 export class ImageInput extends React.Component<Props, State> {
@@ -70,7 +70,7 @@ export class ImageInput extends React.Component<Props, State> {
     }
   }
 
-  componentDidUpdate({savedValue: prevSavedValue}: {savedValue: string}) {
+  componentDidUpdate({ savedValue: prevSavedValue }: {savedValue: string}) {
     if (
       !this.state.validationError &&
       (this.props.savedValue !== prevSavedValue)
@@ -95,7 +95,7 @@ export class ImageInput extends React.Component<Props, State> {
     }
   }
 
-  drawImageToDataURL({image, height, width}: DrawImageType): string {
+  drawImageToDataURL({ image, height, width }: DrawImageType): string {
     // create an off-screen canvas
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
@@ -115,7 +115,7 @@ export class ImageInput extends React.Component<Props, State> {
     return canvas.toDataURL();
   }
 
-  getDimensions({height, width, targetHeight, targetWidth}: DimensionsType) {
+  getDimensions({ height, width, targetHeight, targetWidth }: DimensionsType) {
     const safeHeight =
       targetHeight && height >= targetHeight ? targetHeight : height;
     const safeWidth = targetWidth && width >= targetWidth ? targetWidth : width;
@@ -189,7 +189,7 @@ export class ImageInput extends React.Component<Props, State> {
   }
 
   handleImageCrop(croppedValue: string) {
-    this.setState({croppedValue});
+    this.setState({ croppedValue });
   }
 
   handleImageDelete() {
@@ -206,11 +206,11 @@ export class ImageInput extends React.Component<Props, State> {
   }
 
   handleShowCropper() {
-    this.setState({showCropper: true});
+    this.setState({ showCropper: true });
   }
 
   handleToggleModal() {
-    this.setState({showModal: !(this.state.showModal)});
+    this.setState({ showModal: !(this.state.showModal) });
   }
 
   resizeImageSource(dataURL: string): Promise<any> {
@@ -223,9 +223,9 @@ export class ImageInput extends React.Component<Props, State> {
       const image = new Image();
 
       image.addEventListener('load', () => {
-        const {height: imageHeight, width: imageWidth} = image;
+        const { height: imageHeight, width: imageWidth } = image;
 
-        const {height, width} = this.getDimensions({
+        const { height, width } = this.getDimensions({
           height: imageHeight,
           width: imageWidth,
           targetWidth: IMG_MAX_WIDTH,
@@ -280,8 +280,8 @@ export class ImageInput extends React.Component<Props, State> {
   }
 
   render() {
-    const {variable} = this.props;
-    const {disableEditRemoteImage} = this.state;
+    const { variable } = this.props;
+    const { disableEditRemoteImage } = this.state;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
 
@@ -346,7 +346,7 @@ export class ImageInput extends React.Component<Props, State> {
                         <a
                           className="ol-modalconfirm-secondary"
                           onClick={this.handleImageDelete}
-                          style={{marginRight: 24}}
+                          style={{ marginRight: 24 }}
                         >
                           Delete
                         </a>

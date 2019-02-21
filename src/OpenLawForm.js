@@ -21,7 +21,6 @@ type Props = {
   sectionTransform?: (any, number) => {},
   sectionVariablesMap: (any, number) => { [string]: Array<string> },
   textLikeInputClass?: string,
-  triggerDisabled?: boolean,
   unsectionedTitle?: string,
   variables: Array<{}>,
 };

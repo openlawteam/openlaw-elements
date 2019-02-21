@@ -196,7 +196,7 @@ export class Collection extends React.Component<Props, State> {
     }
 
     return (
-      <div className={'contract-variable collection-variable' + cleanName}>
+      <div className={`contract-variable collection-variable ${cleanName}`}>
         <div className="collection-variable-description">{description}</div>
         {/* TODO we shouldn't need to use space-occupying divs */}
         <div className="collection-variable-row" />

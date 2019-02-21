@@ -38,11 +38,11 @@ export class Structure extends React.Component<Props, State> {
   }
 
   generateInput(subVariable: Object) {
-    const currentValue = this.props.savedValue === '' ? undefined : this.props.savedValue;
-    const savedValue: string = this.openLaw.getStructureFieldValue(
+    const savedValueProp = this.props.savedValue === '' ? undefined : this.props.savedValue;
+    const structureFieldValue = this.openLaw.getStructureFieldValue(
       this.props.variable,
       subVariable,
-      currentValue,
+      savedValueProp,
       this.props.executionResult,
     );
 
@@ -53,7 +53,7 @@ export class Structure extends React.Component<Props, State> {
           executionResult={this.props.executionResult}
           onChangeFunction={this.onChange}
           openLaw={this.openLaw}
-          savedValue={savedValue}
+          savedValue={structureFieldValue || ''}
           textLikeInputClass={this.props.textLikeInputClass}
           variable={subVariable}
         />

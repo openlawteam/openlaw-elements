@@ -2,15 +2,15 @@
 
 import React from 'react';
 
-import {Address} from './Address';
-import {Choice} from './Choice';
-import {Identity} from './Identity';
-import {DatePicker} from './DatePicker';
-import {ImageInput} from './ImageInput';
-import {LargeText} from './LargeText';
-import {NumberInput} from './NumberInput';
-import {Text} from './Text';
-import {YesNo} from './YesNo';
+import { Address } from './Address';
+import { Choice } from './Choice';
+import { Identity } from './Identity';
+import { DatePicker } from './DatePicker';
+import { ImageInput } from './ImageInput';
+import { LargeText } from './LargeText';
+import { NumberInput } from './NumberInput';
+import { Text } from './Text';
+import { YesNo } from './YesNo';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types

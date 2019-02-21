@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 
-import {InputRenderer} from './InputRenderer';
-import {Structure} from './Structure';
+import { InputRenderer } from './InputRenderer';
+import { Structure } from './Structure';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
@@ -84,7 +84,7 @@ export class Collection extends React.Component<Props, State> {
       index,
     );
     const variableName = this.openLaw.getName(subVariable);
-    const {executionResult} = this.props;
+    const { executionResult } = this.props;
 
     return (
       <div className="collection-variable-row" key={variableName}>

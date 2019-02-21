@@ -62,22 +62,22 @@ export class YesNo extends React.Component<Props, State> {
         <div>
           <label className="radio-label">
             <input
-              type="radio"
-              onChange={this.onChange}
-              value="true"
-              checked={this.state.currentValue === 'true'}
               className={cleanName}
+              onChange={this.onChange}
+              name={cleanName}
+              type="radio"
+              value="true"
             />
             <span>Yes</span>
           </label>
 
           <label className="radio-label">
             <input
-              type="radio"
-              onChange={this.onChange}
-              value="false"
-              checked={this.state.currentValue !== 'true'}
               className={cleanName}
+              name={cleanName}
+              onChange={this.onChange}
+              type="radio"
+              value="false"
             />
             <span>No</span>
           </label>

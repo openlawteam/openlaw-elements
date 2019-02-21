@@ -1,66 +1,84 @@
 // @flow
 
-const getVariablesForSection = (
-  section: string,
-  variables: Array<string>,
-  sectionVariables: {[string]: Array<string>},
-  addedVariables: Array<string>,
-) => {
-  return sectionVariables[section]
-    .map(name => variables.filter(variable => variable === name)[0])
-    .filter(
-      variable => !!variable && addedVariables.indexOf(variable) === -1,
-    );
+type SectionVariablesMapType = { [string]: Array<string> };
+
+type GetSectionConfigType = {
+  sectionTransform?: (any, number) => {},
+  sectionVariablesMap?: (any, number) => SectionVariablesMapType,
+  unsectionedTitle?: string,
 };
 
-const getVariablesWithNoSection = (variables, addedVariables) => {
-  return variables.filter(
-    variable => addedVariables.indexOf(variable) === -1,
-  );
-};
+const getVariablesForSection = (sectionVariables, variables) => (
+  sectionVariables
+    .map(name => variables[variables.indexOf(name)])
+    // get rid of any `undefined` slots
+    .filter(section => section && true)
+);
 
 export const GetSections = (
   variables: Array<string>,
-  sectionVariables: {[string]: any},
-  sections: Array<string>,
+  sectionVariables: SectionVariablesMapType,
+  sections: Array<any>,
+  config: GetSectionConfigType,
 ) => {
-  let addedVariables = [];
-  const collapsibles: Array<any> = sections
-    .filter(
-      section =>
-        getVariablesForSection(
+  const getUnsectionedTitle = () => {
+    const { unsectionedTitle } = config;
+    // set to string null value by the user
+    if (unsectionedTitle === '') return '';
+    // there's a value set by the user
+    if (unsectionedTitle) return unsectionedTitle;
+    // default
+    return 'Miscellaneous';
+  };
+
+  const mappedSections: Array<any> = sections
+    .map((section, index) => {
+      const { sectionTransform, sectionVariablesMap } = config;
+      const sectionVariablesFromConfig = sectionVariablesMap && sectionVariablesMap(section, index);
+
+      const [ userSectionKey ] = sectionVariablesFromConfig ? Object.keys(sectionVariablesFromConfig) : [];
+
+      const currentSectionVariables =
+        (sectionVariablesFromConfig && Object.keys(sectionVariablesFromConfig).length)
+          // user provided an object with the same shape via props
+          ? getVariablesForSection(sectionVariablesFromConfig[userSectionKey], variables)
+          // normal
+          : getVariablesForSection(sectionVariables[section], variables);
+
+      if (currentSectionVariables.length) {
+        // user has a desired section data shape for display purposes
+        if (sectionTransform) {
+          return {
+            ...sectionTransform(section, index),
+            variables: currentSectionVariables,
+          };
+        }
+
+        return {
           section,
-          variables,
-          sectionVariables,
-          addedVariables,
-        ).length > 0,
-    )
-    .map(section => {
-      const currentVariables = getVariablesForSection(
-        section,
-        variables,
-        sectionVariables,
-        addedVariables,
-      );
+          variables: currentSectionVariables,
+        };
+      }
+    })
+    // get rid of any `undefined` slots
+    .filter(section => section && true);
 
-      addedVariables = addedVariables.concat(currentVariables);
-      return {
-        section,
-        variables: currentVariables,
-      };
-    });
+  const orphanVariables = (
+    variables
+      .filter(v => {
+        const flattedSectionVariables = mappedSections
+          .reduce((acc, o) => acc.concat(o.variables), []);
 
-  const orphanVariables = getVariablesWithNoSection(
-    variables,
-    addedVariables,
+        return flattedSectionVariables.indexOf(v) === -1;
+      })
   );
 
   if (orphanVariables.length > 0) {
-    collapsibles.push({
-      section: 'Misc.',
+    mappedSections.push({
+      section: getUnsectionedTitle(),
       variables: orphanVariables,
     });
   }
 
-  return collapsibles;
+  return mappedSections;
 };

@@ -137,12 +137,12 @@ const sectionsRenderer = ({ children, ...sectionData }) => {
           trigger={`${mySuperCustomKey || ''}${section}`}
           triggerDisabled={false}
         >
-          {children}
+          {children()}
         </Collapsible>
       // section exists but no title, e.g. unsectionedTitle
       ) : (
         <Fragment key={`section-${section}`}>
-          {children}
+          {children()}
         </Fragment>
       )
   );

@@ -17,7 +17,9 @@ type Props = {
     children: React.Node,
     section: string,
   }) => React.Node,
-  sectionTransform?: (Array<any>, number) => {},
+  sections: Array<any>,
+  sectionTransform?: (any, number) => {},
+  sectionVariablesMap: (any, number) => { [string]: Array<string> },
   textLikeInputClass?: string,
   triggerDisabled?: boolean,
   unsectionedTitle?: string,
@@ -31,7 +33,7 @@ type RendererInputProps = {
 
 type RendererSectionProps = {
   ...Props,
-  variablesMap: {[string]: Object},
+  variablesMap: { [string]: Object },
   variableObjects: Array<Object>,
   sections: Array<Object>,
 };
@@ -98,55 +100,61 @@ const renderInputs = (props: RendererInputProps) => {
   );
 };
 
-const renderSections = (props: RendererSectionProps) => {
+const renderSectionsAndInputs = (props: RendererSectionProps) => {
   const {
     executionResult,
     openLaw = {},
-    renderSections:renderSectionsProp,
+    renderSections,
     sections,
     sectionTransform,
+    sectionVariablesMap,
     unsectionedTitle,
     variablesMap,
     variableObjects,
   } = props;
   const sectionVariables = openLaw.getVariableSections(executionResult);
   const variableNames = variableObjects.map(v => openLaw.getName(v));
-  const sectionsConfig = {
-    transform: sectionTransform,
+  const getSectionsConfig = {
+    sectionTransform,
+    sectionVariablesMap,
     unsectionedTitle,
   };
 
-  return GetSections(variableNames, sectionVariables, sections, sectionsConfig)
-    .map(({ variables, ...sectionData }) => {
-      if (renderSectionsProp) {
+  return GetSections(variableNames, sectionVariables, sections, getSectionsConfig)
+    .map(({ variables, ...sectionData }, index) => {
+      if (renderSections) {
         const inputsChildrenComponent = () => (
           variables
             .map(name => variablesMap[name])
             .map(variable => renderInputs({variable, ...props}))
         );
 
-        return renderSectionsProp({
-          children: React.createElement(inputsChildrenComponent),
+        return renderSections({
+          children: inputsChildrenComponent,
           ...sectionData,
         });
       }
 
       return (
-        variables
-          .map(name => variablesMap[name])
-          .map(variable => renderInputs({variable, ...props}))
+        <div className="contract-section" key={`${sectionData.section}-${index}`}>
+          <span>{sectionData.section}</span>
+
+          {variables
+            .map(name => variablesMap[name])
+            .map(variable => renderInputs({variable, ...props}))
+          }
+        </div>
       );
     });
 };
 
 export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
-  const {executionResult, openLaw, variables} = props;
-
+  const {executionResult, openLaw, sections:sectionsProp, variables} = props;
   const allVariables = openLaw.getVariables(executionResult, {});
   const executedVariables = variables.map(variable =>
     openLaw.getName(variable),
   );
-  const sections = openLaw.getSections(executionResult);
+  const sections = sectionsProp ? sectionsProp : openLaw.getSections(executionResult);
   const variableObjects = allVariables
     .filter(variable =>
       openLaw.showInForm(variable, executionResult),
@@ -165,7 +173,7 @@ export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
 
   // loop to render sections
   if (sections.length > 0) {
-    formContent = renderSections({
+    formContent = renderSectionsAndInputs({
       sections,
       variablesMap,
       variableObjects,

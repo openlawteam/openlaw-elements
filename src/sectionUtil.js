@@ -1,60 +1,62 @@
 // @flow
 
-type SectionCollectionType = Array<any>;
+type SectionVariablesMapType = { [string]: Array<string> };
 
 type GetSectionConfigType = {
-  transform?: (SectionCollectionType, number) => {},
+  sectionTransform?: (any, number) => {},
+  sectionVariablesMap?: (any, number) => SectionVariablesMapType,
   unsectionedTitle?: string,
 };
 
-const getVariablesForSection = (
-  section: string,
-  variables: Array<string>,
-  sectionVariables: {[string]: Array<string>},
-  addedVariables: Array<string>,
-) => {
-  return sectionVariables[section]
-    .map(name => variables.filter(variable => variable === name)[0])
-    .filter(
-      variable => !!variable && addedVariables.indexOf(variable) === -1,
-    );
-};
+const getVariablesForSection = (sectionVariables, variables) => (
+  sectionVariables
+    .map(name => variables[variables.indexOf(name)])
+    // get rid of any `undefined` slots
+    .filter(section => section && true)
+);
 
 export const GetSections = (
   variables: Array<string>,
-  sectionVariables: {[string]: any},
-  sections: SectionCollectionType,
+  sectionVariables: SectionVariablesMapType,
+  sections: Array<any>,
   config: GetSectionConfigType,
 ) => {
   const getUnsectionedTitle = () => {
     const { unsectionedTitle } = config;
     // set to string null value by the user
     if (unsectionedTitle === '') return '';
-
     // there's a value set by the user
     if (unsectionedTitle) return unsectionedTitle;
-
     // default
     return 'Miscellaneous';
   };
 
   const mappedSections: Array<any> = sections
     .map((section, index) => {
-      const currentVariables = getVariablesForSection(section, variables, sectionVariables, []);
-      const { transform } = config;
+      const { sectionTransform, sectionVariablesMap } = config;
+      const sectionVariablesFromConfig = sectionVariablesMap && sectionVariablesMap(section, index);
 
-      if (currentVariables.length > 0) {
-        // user has a desired section data shape
-        if (transform) {
+      const [ userSectionKey ] = sectionVariablesFromConfig ? Object.keys(sectionVariablesFromConfig) : [];
+
+      const currentSectionVariables =
+        (sectionVariablesFromConfig && Object.keys(sectionVariablesFromConfig).length)
+          // user provided an object with the same shape via props
+          ? getVariablesForSection(sectionVariablesFromConfig[userSectionKey], variables)
+          // normal
+          : getVariablesForSection(sectionVariables[section], variables);
+
+      if (currentSectionVariables.length) {
+        // user has a desired section data shape for display purposes
+        if (sectionTransform) {
           return {
-            ...transform(section, index),
-            variables: currentVariables,
+            ...sectionTransform(section, index),
+            variables: currentSectionVariables,
           };
         }
 
         return {
           section,
-          variables: currentVariables,
+          variables: currentSectionVariables,
         };
       }
     })

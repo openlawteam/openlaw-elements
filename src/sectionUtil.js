@@ -1,6 +1,9 @@
 // @flow
 
+type SectionCollectionType = Array<any>;
+
 type GetSectionConfigType = {
+  transform?: (SectionCollectionType, number) => {},
   unsectionedTitle?: string,
 };
 
@@ -20,7 +23,7 @@ const getVariablesForSection = (
 export const GetSections = (
   variables: Array<string>,
   sectionVariables: {[string]: any},
-  sections: Array<string>,
+  sections: SectionCollectionType,
   config: GetSectionConfigType,
 ) => {
   const getUnsectionedTitle = () => {
@@ -36,9 +39,19 @@ export const GetSections = (
   };
 
   const mappedSections: Array<any> = sections
-    .map(section => {
+    .map((section, index) => {
       const currentVariables = getVariablesForSection(section, variables, sectionVariables, []);
+      const { transform } = config;
+
       if (currentVariables.length > 0) {
+        // user has a desired section data shape
+        if (transform) {
+          return {
+            ...transform(section, index),
+            variables: currentVariables,
+          };
+        }
+
         return {
           section,
           variables: currentVariables,

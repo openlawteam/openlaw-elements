@@ -17,6 +17,7 @@ type Props = {
     children: React.Node,
     section: string,
   }) => React.Node,
+  sectionTransform?: (Array<any>, number) => {},
   textLikeInputClass?: string,
   triggerDisabled?: boolean,
   unsectionedTitle?: string,
@@ -103,15 +104,20 @@ const renderSections = (props: RendererSectionProps) => {
     openLaw = {},
     renderSections:renderSectionsProp,
     sections,
+    sectionTransform,
     unsectionedTitle,
     variablesMap,
     variableObjects,
   } = props;
   const sectionVariables = openLaw.getVariableSections(executionResult);
   const variableNames = variableObjects.map(v => openLaw.getName(v));
+  const sectionsConfig = {
+    transform: sectionTransform,
+    unsectionedTitle,
+  };
 
-  return GetSections(variableNames, sectionVariables, sections, { unsectionedTitle })
-    .map(({ section, variables }) => {
+  return GetSections(variableNames, sectionVariables, sections, sectionsConfig)
+    .map(({ variables, ...sectionData }) => {
       if (renderSectionsProp) {
         const inputsChildrenComponent = () => (
           variables
@@ -121,7 +127,7 @@ const renderSections = (props: RendererSectionProps) => {
 
         return renderSectionsProp({
           children: React.createElement(inputsChildrenComponent),
-          section,
+          ...sectionData,
         });
       }
 

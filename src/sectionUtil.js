@@ -4,7 +4,7 @@ type SectionVariablesMapType = { [string]: Array<string> };
 
 type GetSectionConfigType = {
   sectionTransform?: (any, number) => {},
-  sectionVariablesMap?: (any, number) => SectionVariablesMapType,
+  sectionVariablesMap?: (any, number, Array<string>) => SectionVariablesMapType,
   unsectionedTitle?: string,
 };
 

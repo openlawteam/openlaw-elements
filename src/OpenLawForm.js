@@ -7,8 +7,13 @@ import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
 
+const {
+  Fragment
+} = React;
+
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
+  disableStyles?: booleans,
   executionResult: {},
   onChangeFunction: (any) => mixed,
   openLaw: Object, // opt-out of type checker
@@ -149,6 +154,11 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
 
 export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
   const { executionResult, openLaw, sections:sectionsProp, variables } = props;
+
+  if (!props.disableStyles) {
+    require('./style.scss');
+  }
+
   const allVariables = openLaw.getVariables(executionResult, {});
   const executedVariables = variables.map(variable =>
     openLaw.getName(variable),

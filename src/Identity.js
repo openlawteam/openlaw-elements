@@ -35,44 +35,24 @@ export class Identity extends React.Component<Props, State> {
   componentDidMount() {
     try {
       if (this.props.savedValue) {
-        const identity = this.openLaw.checkValidity(this.props.savedValue);
-        this.setState({
-          email: this.openLaw.getIdentityEmail(identity),
-          validationError: false,
-        });
-      } else {
-        this.setState({
-          email: '',
-          validationError: false,
-        });
-      }
-    } catch (ex) {
-      this.setState({
-        email: '',
-        validationError: false,
-      });
-    }
-  }
-
-  componentDidUpdate() {
-    try {
-      if (this.props.savedValue) {
         const identity = this.openLaw.checkValidity(
           this.props.variable,
           this.props.savedValue,
           this.props.executionResult,
         );
 
-        if (!this.state.email) {
-          this.setState({
-            email: this.openLaw.getIdentityEmail(identity),
-          });
-        }
+        this.setState({
+          email: this.openLaw.getIdentityEmail(identity),
+        });
+      } else {
+        this.setState({
+          email: '',
+        });
       }
     } catch (error) {
-      // TODO actually handle error
-      // eslint-disable-next-line no-undef
-      console.error(error);
+      this.setState({
+        email: '',
+      });
     }
   }
 
@@ -82,8 +62,8 @@ export class Identity extends React.Component<Props, State> {
     try {
       if (!eventValue) {
         this.setState({
+          email: '',
           validationError: false,
-          email: eventValue,
         }, () => {
           this.props.onChange(this.openLaw.getName(this.props.variable), '');
         });
@@ -93,15 +73,17 @@ export class Identity extends React.Component<Props, State> {
           validationError: false,
         });
 
+        const variableName = this.openLaw.getName(this.props.variable);
+
         this.props.onChange(
-          this.openLaw.getName(this.props.variable),
+          variableName,
           this.openLaw.createIdentityInternalValue('', eventValue),
         );
 
         this.props.apiClient.getUserDetails(eventValue).then(result => {
           if (result.email) {
             this.props.onChange(
-              this.openLaw.getName(this.props.variable),
+              variableName,
               this.openLaw.createIdentityInternalValue(result.id, result.email),
             );
 

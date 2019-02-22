@@ -9,7 +9,7 @@ import { Structure } from './Structure';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
-  disableStyles?: booleans,
+  disableStyles?: boolean,
   executionResult: {},
   onChangeFunction: (any) => mixed,
   openLaw: Object, // opt-out of type checker

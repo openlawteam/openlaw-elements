@@ -67,6 +67,7 @@ export class YesNo extends React.Component<Props, State> {
               name={cleanName}
               type="radio"
               value="true"
+              checked={this.state.currentValue === 'true'}
             />
             <span>Yes</span>
           </label>
@@ -78,6 +79,7 @@ export class YesNo extends React.Component<Props, State> {
               onChange={this.onChange}
               type="radio"
               value="false"
+              checked={this.state.currentValue === 'false'}
             />
             <span>No</span>
           </label>

@@ -172,7 +172,7 @@ export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
   let formContent;
 
   // loop to render sections
-  if (sections.length > 0) {
+  if (sections.length) {
     formContent = renderSectionsAndInputs({
       sections,
       variablesMap,

@@ -30,11 +30,11 @@ export const GetSections = (
     // default
     return 'Miscellaneous';
   };
+  const { sectionTransform, sectionVariablesMap } = config;
 
   const mappedSections: Array<any> = sections
     .map((section, index) => {
-      const { sectionTransform, sectionVariablesMap } = config;
-      const sectionVariablesFromConfig = sectionVariablesMap && sectionVariablesMap(section, index);
+      const sectionVariablesFromConfig = sectionVariablesMap && sectionVariablesMap(section, index, variables);
 
       const [ userSectionKey ] = sectionVariablesFromConfig ? Object.keys(sectionVariablesFromConfig) : [];
 
@@ -63,7 +63,7 @@ export const GetSections = (
     // get rid of any `undefined` slots
     .filter(section => section && true);
 
-  const orphanVariables = (
+  const unsectionedVariables = (
     variables
       .filter(v => {
         const flattedSectionVariables = mappedSections
@@ -73,11 +73,26 @@ export const GetSections = (
       })
   );
 
-  if (orphanVariables.length > 0) {
-    mappedSections.push({
-      section: getUnsectionedTitle(),
-      variables: orphanVariables,
-    });
+  // give the unsectioned variables a home in their own section
+  if (unsectionedVariables.length) {
+    let sectionData;
+
+    // user has a desired section data shape for display purposes
+    if (sectionTransform) {
+      const index = mappedSections.length;
+
+      sectionData = {
+        ...sectionTransform(getUnsectionedTitle(), index),
+        variables: unsectionedVariables,
+      };
+    } else {
+      sectionData = {
+        section: getUnsectionedTitle(),
+        variables: unsectionedVariables,
+      };
+    }
+
+    mappedSections.push(sectionData);
   }
 
   return mappedSections;

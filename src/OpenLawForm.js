@@ -120,7 +120,7 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
   };
 
   return GetSections(variableNames, sectionVariables, sections, getSectionsConfig)
-    .map(({ variables, ...sectionData }, index) => {
+    .map(({ variables, ...sectionData }, index, { length:sectionCount }) => {
       if (renderSections) {
         const inputsChildrenComponent = () => (
           variables
@@ -131,6 +131,7 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
         return renderSections({
           children: inputsChildrenComponent,
           ...sectionData,
+          sectionCount,
         });
       }
 

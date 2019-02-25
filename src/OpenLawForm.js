@@ -6,6 +6,7 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
+import style from './style.useable.scss';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
@@ -46,6 +47,8 @@ const renderInputs = (props: RendererInputProps) => {
     parameters = {},
     variable = {},
   } = props;
+
+  if (!props.disableStyles) style.use();
 
   const savedValue = parameters[openLaw.getName(variable)] || '';
   const cleanName = openLaw.getCleanName(variable);

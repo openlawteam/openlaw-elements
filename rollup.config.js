@@ -63,12 +63,11 @@ const umd = {
     format: 'umd',
     name: 'OpenLawForm',
     globals: {
-      'prop-types': 'PropTypes',
       react: 'React',
       'react-dom': 'ReactDOM',
     },
   },
-  external: ['prop-types', 'react', 'react-dom'],
+  external: ['react', 'react-dom'],
   plugins: [
     babel({
       runtimeHelpers: true,

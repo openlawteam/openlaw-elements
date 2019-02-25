@@ -1,11 +1,17 @@
-import React, {Component, Fragment, useEffect, useState} from 'react';
-import {render} from 'react-dom';
-import {APIClient, Openlaw} from 'openlaw';
+import React, { Component, Fragment, useEffect, useState } from 'react';
+import { render } from 'react-dom';
+import { APIClient, Openlaw } from 'openlaw';
 
-import OpenLawForm from '../src';
+// DO NOT COPY the lines below;
+// if your app is bundled and using our `esm/ lib,
+// in your app they will become:
+//   import OpenLawForm from 'openlaw-elements';
+//   import 'openlaw-elements/dist/esm/openlaw-elements.min.css';
+import OpenLawForm from '../dist/esm';
+import '../dist/openlaw-elements.min.css';
+
 import Collapsible from './Collapsible';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
-import './style.scss';
 
 /**
  * Example app showing how you can render `OpenLawForm`
@@ -68,12 +74,12 @@ class Form extends Component {
         this.state.parameters
       );
 
-    this.setState(({parameters}) => {
-      const concatParameters = {...parameters, ...updatedDraftParameters};
+    this.setState(({ parameters }) => {
+      const concatParameters = { ...parameters, ...updatedDraftParameters };
       // https://docs.openlaw.io/openlaw-object/#compiletemplate
-      const {compiledTemplate} = Openlaw.compileTemplate(SampleTemplateText);
+      const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
       // https://docs.openlaw.io/openlaw-object/#execute
-      const {executionResult, errorMessage} = Openlaw.execute(compiledTemplate, {}, concatParameters);
+      const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, concatParameters);
 
       if (errorMessage) {
         // eslint-disable-next-line no-undef
@@ -172,8 +178,8 @@ const styles = {
 };
 
 const renderPreviewHTML = (formState, callback) => () => {
-  const {executionResult} = formState;
-  const {agreement} = Openlaw.getAgreements(executionResult)[0];
+  const { executionResult } = formState;
+  const { agreement } = Openlaw.getAgreements(executionResult)[0];
 
   callback(Openlaw.renderForPreview(agreement, {}, {}));
 };
@@ -193,7 +199,7 @@ const App = () => {
       {previewHTML && (
         <Fragment>
           <div
-            dangerouslySetInnerHTML={{__html: previewHTML}}
+            dangerouslySetInnerHTML={{ __html: previewHTML }}
             id="openlaw-preview-html"
           />
 

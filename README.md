@@ -4,13 +4,9 @@ Dynamically render React form components from an OpenLaw template.
 
 ## ⚠️ Production-ready status
 
-Currently, OpenLaw is making use of this library in our internal projects, but our aim is to make it as easy to use as possible for others. While the library can be used today (and will likely work as-is), there are some things to note:
+Currently, OpenLaw is making use of this library in our internal projects, but our aim is to make it as easy to use as possible for others. While the library can be used today (and will likely work as-is), we kindly ask that you help us by reporting any bugs - and do ask us any questions - if you decide to use it.
 
-1) Our component classnames for CSS are heavily geared toward our internal stylesheets. However, no styles are shipped with this library to make it easier for you to use your own stylesheet.
-2) There is currently no proper namespacing (or a way to create one) for CSS classes.
-3) There are no unit or integration tests.
-
-We appreciate your patience as we make these improvements in our forthcoming releases.
+We appreciate your patience as we make improvements in our forthcoming releases.
 
 ## Install
 
@@ -20,17 +16,15 @@ npm install --save openlaw-elements@beta
 
 ## Usage
 
-### A note about dependencies' CSS
-
-Before using the `<OpenLawForm />` component in your bundled app, be sure to add a way to import CSS into your bundle. While we don't have any of our own styles in the library, we rely on `flatpickr` for dates and `react-image-crop` for images. As an example, using Webpack's [css-loader](https://github.com/webpack-contrib/css-loader) or [style-loader](https://github.com/webpack-contrib/style-loader) you will be ready to load styles. If you are using [create-react-app](https://github.com/facebook/create-react-app) this is already done for you.
-
-### Using the component
+The example below shows usage in a bundled app (e.g. using Webpack), or create-react-app.
 
 ```js
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { APIClient, Openlaw } from 'openlaw';
 import OpenLawForm from 'openlaw-elements';
+// our optional base styles - feel free to use them!
+import 'openlaw-elements/dist/openlaw-elements.min.css';
 
 // OpenLaw APIClient: https://docs.openlaw.io/api-client/#authentication
 //  - Used to fetch geo data in our `Address` field type
@@ -40,9 +34,9 @@ const apiClient = new APIClient('https://app.openlaw.io');
 apiClient.login('[YOUR_OPENLAW_EMAIL]', '[YOUR_OPENLAW_PASSWORD]');
 
 // https://docs.openlaw.io/openlaw-object/#compiletemplate
-const {compiledTemplate} = Openlaw.compileTemplate('**Name**: [[First Name]] [[Last Name]]');
+const { compiledTemplate } = Openlaw.compileTemplate('**Name**: [[First Name]] [[Last Name]]');
 // https://docs.openlaw.io/openlaw-object/#execute
-const {executionResult, errorMessage} = Openlaw.execute(compiledTemplate, {}, {});
+const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, {});
 // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
 const variables = Openlaw.getExecutedVariables(executionResult, {});
 // typically the parameters object will be updated in
@@ -68,15 +62,41 @@ const App = () => (
     openLaw={Openlaw}
     // Optional: This is utilized to apply a class to all elements that present as text input
     textLikeInputClass="input"
-    // Optional: This will disable collapsible behavior on Collapsible elements when true
-    // https://docs.openlaw.io/markup-language/#groupings
-    triggerDisabled={false}
     variables={variables}
   />
 );
 
 ReactDOM.render(<App />, document.getElementById('your-id-here'));
 ```
+
+### Using our default styles
+
+Our component comes with a separate file of base styles which you can include in your app JS (via an `import`) or HTML. If you decide to import the styles into your JS, be sure to add a way to import CSS into your bundle. As an example, using Webpack's [css-loader](https://github.com/webpack-contrib/css-loader) + [style-loader](https://github.com/webpack-contrib/style-loader). If you are using [create-react-app](https://github.com/facebook/create-react-app) this is already done for you.
+
+#### Including the styles
+
+Via JavaScript `import`:
+
+```js
+// our esm build is most commonly selected if
+// you're using webpack 4+, for example.
+import 'openlaw-elements/dist/openlaw-elements.min.css';
+```
+
+If you'd like to load the styles via an HTML file, you can copy the path (or file):
+
+```html
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="node_modules/openlaw-elements/dist/openlaw-elements.min.css"
+  <!-- or your path -->
+>
+```
+
+#### Overriding our styles
+
+If you want to leave out our styles, that's completely OK. We've set up our components with simple classnames so you can target what you need to, easily. Just add your own stylesheet and take a look at what classes and elements you can style. We find the simplest way to prototype can be using browser developer tools.
 
 ## Running the example app
 

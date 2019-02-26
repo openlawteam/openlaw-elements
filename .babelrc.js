@@ -1,12 +1,20 @@
 const env = process.env.NODE_ENV;
 
+const pluginsCommon = [
+  ["@babel/transform-runtime", {
+    "regenerator": true
+  }],
+  '@babel/plugin-proposal-class-properties',
+  '@babel/plugin-proposal-object-rest-spread',
+];
+
 const presetsCommon = [
   "@babel/preset-react",
   '@babel/preset-flow',
-  ['@babel/preset-env', { modules: env === 'commonjs' ? 'commonjs' : false }],
+  ['@babel/preset-env', { modules: false }],
 ];
 
-if (env === 'commonjs' || env === 'esm') {
+if (env === 'cjs' || env === 'esm') {
   module.exports = {
     plugins: [
       // keep the order as-is
@@ -21,29 +29,17 @@ if (env === 'commonjs' || env === 'esm') {
   };
 }
 
-if (env === 'rollup') {
+if (env === 'umd') {
   module.exports = {
     comments: false,
-    plugins: [
-      ["@babel/transform-runtime", {
-        "regenerator": true
-      }],
-      '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-proposal-object-rest-spread',
-    ],
+    plugins: pluginsCommon.concat([['transform-react-remove-prop-types', { removeImport: true }]]),
     presets: presetsCommon,
   };
 }
 
 if (env === 'development') {
   module.exports = {
-    plugins: [
-      ["@babel/transform-runtime", {
-        "regenerator": true
-      }],
-      '@babel/plugin-proposal-class-properties',
-      '@babel/plugin-proposal-object-rest-spread',
-    ],
+    plugins: pluginsCommon,
     presets: presetsCommon,
   };
 }

@@ -7,8 +7,8 @@ import { APIClient, Openlaw } from 'openlaw';
 // in your app they will become:
 //   import OpenLawForm from 'openlaw-elements';
 //   import 'openlaw-elements/dist/esm/openlaw-elements.min.css';
-import OpenLawForm from '../dist/esm';
-import '../dist/openlaw-elements.min.css';
+import OpenLawForm from '../src';
+import '../src/style.scss';
 
 import Collapsible from './Collapsible';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';

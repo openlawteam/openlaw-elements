@@ -41,7 +41,10 @@ module.exports = {
         // style-loader injects the styles into the <head>
         // css-loader handles the import
         use: ['style-loader', 'css-loader'],
-      },
+      }, {
+       test: /\.scss$/,
+       use: ['style-loader', 'css-loader', 'sass-loader'],
+     },
     ]
   },
   devServer: {

@@ -60,7 +60,7 @@ export class YesNo extends React.Component<Props, State> {
         <label className="label">{description}</label>
 
         <div>
-          <label className="radio-label">
+          <label>
             <input
               className={cleanName}
               onChange={this.onChange}
@@ -72,7 +72,7 @@ export class YesNo extends React.Component<Props, State> {
             <span>Yes</span>
           </label>
 
-          <label className="radio-label">
+          <label>
             <input
               className={cleanName}
               name={cleanName}

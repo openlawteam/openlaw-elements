@@ -10,10 +10,6 @@
 [[Contestant BBQ Experience Years]]
 [[Contestant Longest BBQ]]
 [[BBQ Contestant Status]]
-[[BBQ Certifications: Structure(
-  Title: Text;
-  Date: Date
-)]]
 [[CertList: Collection<BBQ Certifications>]]
 
 ==Preferences==
@@ -25,12 +21,7 @@
 ==Medical Info==
 [[Contestant BBQ Medical]]
 [[Please explain your BBQ sauce medical history]]
-[[Contestant Emergency Contact: Structure(
-  Emergency Contact Name: Text;
-  Emergency Contact Phone: Text
-)]]
 [[MedicalContact: Contestant Emergency Contact]]
-
 %>
 
 \centered **International BBQ Cookoff Registration**
@@ -61,7 +52,7 @@
 }}
 
 # Nested conditional
-{{ Contestant BBQ Medical "Do you have any medical complications related to BBQ sauces?" =>
+{{Contestant BBQ Medical "Do you have any medical complications related to BBQ sauces?" =>
   [[Please explain your BBQ sauce medical history: LargeText]]
 }}
 
@@ -73,6 +64,9 @@
 
 # DateTime
 [[Contestant Signature Date Time: DateTime "Date & Time of Signature"]]
+
+# Identity
+[[Contestant Email: Identity | Signature]]
 
 # Structure definition
 [[Contestant Emergency Contact: Structure(

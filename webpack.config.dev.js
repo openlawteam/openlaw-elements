@@ -1,3 +1,7 @@
+/**
+ * THIS CONFIG FOR OUR EXAMPLE, CONSUMING APP
+ */
+
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 const path = require('path')
 const webpack = require('webpack')
@@ -34,10 +38,9 @@ module.exports = {
         use: 'raw-loader'
       }, {
         test: /\.css$/,
+        // style-loader injects the styles into the <head>
+        // css-loader handles the import
         use: ['style-loader', 'css-loader'],
-      }, {
-        test: /\.scss$/,
-        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
     ]
   },

@@ -7,8 +7,8 @@ import { APIClient, Openlaw } from 'openlaw';
 // in your app they will become:
 //   import OpenLawForm from 'openlaw-elements';
 //   import 'openlaw-elements/dist/esm/openlaw-elements.min.css';
-import OpenLawForm from '../dist/esm';
-import '../dist/openlaw-elements.min.css';
+import OpenLawForm from '../src';
+import '../src/style.scss';
 
 import Collapsible from './Collapsible';
 import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
@@ -102,8 +102,16 @@ class Form extends Component {
   };
 
   render() {
+    const inlineStyle = `
+      .openlaw-form {
+        margin-right: 24px;
+        width: 50%;
+      }
+    `;
+
     return (
       <Fragment>
+        <style type="text/css">{inlineStyle}</style>
         {Object.keys(this.state.executionResult).length && (
           <OpenLawForm
             apiClient={apiClient}

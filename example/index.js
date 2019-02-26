@@ -102,8 +102,16 @@ class Form extends Component {
   };
 
   render() {
+    const inlineStyle = `
+      .openlaw-form {
+        margin-right: 24px;
+        width: 50%;
+      }
+    `;
+
     return (
       <Fragment>
+        <style type="text/css">{inlineStyle}</style>
         {Object.keys(this.state.executionResult).length && (
           <OpenLawForm
             apiClient={apiClient}

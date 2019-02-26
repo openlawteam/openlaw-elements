@@ -91,7 +91,7 @@ export class Choice extends React.Component<Props, State> {
     );
 
     return (
-      <div className="contract-variable">
+      <div className="contract-variable choice">
         <label className="label">
           <span>{description}</span>
 

@@ -18,6 +18,25 @@ $white: #fff;
 // We should find descriptive names, or unify to other greys
 $button-text: #363636;
 
+%text-input {
+  -webkit-appearance: none;
+  align-items: center;
+  background: $white;
+  border-radius: 0;
+  box-sizing: border-box;
+  color: $black;
+  display: inline-flex;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 300;
+  justify-content: flex-start;
+  line-height: 1.5;
+  padding: .375rem .625rem;
+  vertical-align: top;
+  max-width: 100%;
+  width: 100%;
+}
+
 .flatpickr-calendar {
   font-family: $sans;
 }
@@ -51,28 +70,14 @@ $button-text: #363636;
     [type="email"],
     [type="number"],
     [type="text"],
-    select,
-    textarea {
-      -webkit-appearance: none;
-      align-items: center;
-      background: $white;
+    select {
+      @extend %text-input;
+
       // Must procede border-bottom line
       border: 0;
       border-bottom: 1px solid $grey;
-      border-radius: 0;
-      box-sizing: border-box;
-      color: $black;
-      display: inline-flex;
-      font-family: inherit;
-      font-size: 1rem;
-      font-weight: 300;
+
       height: 2.25rem;
-      justify-content: flex-start;
-      line-height: 1.5;
-      padding: .375rem .625rem;
-      vertical-align: top;
-      max-width: 100%;
-      width: 100%;
 
       &:focus {
         border-bottom-color: $light-blue;
@@ -90,6 +95,13 @@ $button-text: #363636;
         top: .3125rem;
         left: .5625rem;
       }
+    }
+
+    textarea {
+      @extend %text-input;
+
+      border: 1px solid $grey;
+      height: 9rem;
     }
 
     &.file {

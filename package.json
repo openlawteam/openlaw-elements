@@ -41,7 +41,7 @@
     "prepublishOnly": "npm run lint && npm run flow && npm run build",
     "release": "np",
     "sass": "npx node-sass src/style.scss csstmp/openlaw-elements.min.css --output-style compressed",
-    "start": "npm run build:example && cross-env NODE_ENV=esm webpack-dev-server --hot --config webpack.config.dev.js"
+    "start": "cross-env NODE_ENV=esm webpack-dev-server --hot --config webpack.config.dev.js"
   },
   "browserslist": [
     "last 1 version",
@@ -84,6 +84,7 @@
     "rollup-plugin-postcss": "^2.0.3",
     "rollup-plugin-replace": "^2.1.0",
     "rollup-plugin-terser": "^4.0.4",
+    "sass-loader": "^7.1.0",
     "style-loader": "^0.23.1",
     "webpack": "^4.29.3",
     "webpack-cli": "^3.2.3",

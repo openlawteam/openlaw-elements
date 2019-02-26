@@ -92,7 +92,6 @@ export class LargeText extends React.Component<Props, State> {
             onChange={this.onChange}
             placeholder={description}
             title={description}
-            type="text"
             value={this.state.currentValue}
           />
         </label>

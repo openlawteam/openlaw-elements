@@ -32,7 +32,7 @@ if (env === 'cjs' || env === 'esm') {
 if (env === 'umd') {
   module.exports = {
     comments: false,
-    plugins: pluginsCommon.concat([['transform-react-remove-prop-types', { removeImport: true }]]),
+    plugins: pluginsCommon.concat(['transform-react-remove-prop-types']),
     presets: presetsCommon,
   };
 }

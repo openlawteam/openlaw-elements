@@ -41,7 +41,7 @@
     "prepublishOnly": "npm run lint && npm run flow && npm run build",
     "release": "np",
     "sass": "npx node-sass src/style.scss csstmp/openlaw-elements.min.css --output-style compressed",
-    "start": "npm run build:example && cross-env NODE_ENV=esm webpack-dev-server --hot --config webpack.config.dev.js"
+    "start": "cross-env NODE_ENV=esm webpack-dev-server --hot --config webpack.config.dev.js"
   },
   "browserslist": [
     "last 1 version",

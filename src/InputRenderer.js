@@ -1,6 +1,6 @@
 // @flow
 
-import React from 'react';
+import * as React from 'react';
 
 import { Address } from './Address';
 import { Choice } from './Choice';
@@ -16,6 +16,7 @@ type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
   onChangeFunction: (string, ?string, ?boolean) => mixed,
+  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -27,6 +28,7 @@ export const InputRenderer = (props: RendererProps) => {
     apiClient,
     executionResult,
     onChangeFunction,
+    onKeyUp,
     openLaw,
     savedValue,
     textLikeInputClass,
@@ -59,6 +61,7 @@ export const InputRenderer = (props: RendererProps) => {
           apiClient={apiClient} // for API call to Google for geo data
           key={`${nameWithDashes}-address`}
           onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
           openLaw={openLaw}
           savedValue={
             savedValue
@@ -103,6 +106,7 @@ export const InputRenderer = (props: RendererProps) => {
           executionResult={executionResult}
           key={`${nameWithDashes}-identity`}
           onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
@@ -141,6 +145,7 @@ export const InputRenderer = (props: RendererProps) => {
           executionResult={executionResult}
           key={`${nameWithDashes}-number`}
           onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
@@ -168,6 +173,7 @@ export const InputRenderer = (props: RendererProps) => {
           executionResult={executionResult}
           key={`${nameWithDashes}-text`}
           onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}

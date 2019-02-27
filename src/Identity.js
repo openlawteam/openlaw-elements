@@ -6,6 +6,7 @@ type Props = {
   apiClient: Object, // opt-out of type checker until Flow types are exported for APIClient
   executionResult: {},
   onChange: (string, ?string) => mixed,
+  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -114,8 +115,9 @@ export class Identity extends React.Component<Props, State> {
           <span>{description}</span>
 
           <input
-            className={`${this.props.textLikeInputClass}${cleanName}-email${additionalClassName}`}
+            className={`${this.props.textLikeInputClass}${cleanName} ${cleanName}-email${additionalClassName}`}
             onChange={this.onChange}
+            onKeyUp={this.props.onKeyUp}
             placeholder={description}
             title={description}
             type="email"

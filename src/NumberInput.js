@@ -5,6 +5,7 @@ import * as React from 'react';
 type Props = {
   executionResult: {},
   onChange: (string, ?string) => mixed,
+  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -86,6 +87,7 @@ export class NumberInput extends React.Component<Props, State> {
           <input
             className={`${this.props.textLikeInputClass}${cleanName}`}
             onChange={this.onChange}
+            onKeyUp={this.props.onKeyUp}
             placeholder={description}
             type="number"
             value={this.state.currentValue}

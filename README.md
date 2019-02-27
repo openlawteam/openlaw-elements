@@ -60,8 +60,6 @@ const App = () => (
     onChangeFunction={onChange}
     // https://docs.openlaw.io/openlaw-object/
     openLaw={Openlaw}
-    // Optional: This is utilized to apply a class to all elements that present as text input
-    textLikeInputClass="input"
     variables={variables}
   />
 );
@@ -97,6 +95,36 @@ If you'd like to load the styles via an HTML file, you can copy the path (or fil
 #### Overriding our styles
 
 If you want to leave out our styles, that's completely OK. We've set up our components with simple classnames so you can target what you need to, easily. Just add your own stylesheet and take a look at what classes and elements you can style. We find the simplest way to prototype can be using browser developer tools.
+
+## Optional Parameters
+In addition to our regular parameters, we offer support for the following additional parameters
+
+#### renderSections
+This will render sections generated with the Openlaw client
+```
+renderSections?: ({
+ children: React.Node,
+ section: string,
+}) => React.Node,
+```
+
+#### sectionTransform
+If you need to apply transformations to sections on render, this parameter can be used to do so
+```
+sectionTransform: (any, number) => {},
+```
+
+#### textLikeInputClass
+This will apply a class to all elements that are text-input like including text, email, number, and textarea
+```
+textLikeInputClass: "any-valid-class",
+```
+
+#### unsectionedTitle
+This will apply the title to generated sections that have none.
+```
+unsectionedTitle: "My Unsectioned Title",
+```
 
 ## Running the example app
 

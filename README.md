@@ -78,8 +78,6 @@ Our component comes with a separate file of base styles which you can include in
 Via JavaScript `import`:
 
 ```js
-// our esm build is most commonly selected if
-// you're using webpack 4+, for example.
 import 'openlaw-elements/dist/openlaw-elements.min.css';
 ```
 

@@ -6,7 +6,7 @@ import Autosuggest from 'react-autosuggest';
 type Props = {
   apiClient: Object, // opt-out of type checker until we export APIClient flow types
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -26,7 +26,7 @@ const renderSuggestion = suggestion => <div>{suggestion.address}</div>;
 export class Address extends React.Component<Props, State> {
   openLaw = this.props.openLaw;
 
-  onKeyUpReady = false;
+  isDataValid = false;
 
   state = {
     currentValue: this.props.savedValue,
@@ -40,7 +40,6 @@ export class Address extends React.Component<Props, State> {
 
     const self: any = this;
     self.onChange = this.onChange.bind(this);
-    self.onKeyUp = this.onKeyUp.bind(this);
     self.submitAddress = this.submitAddress.bind(this);
   }
 
@@ -66,8 +65,8 @@ export class Address extends React.Component<Props, State> {
         this.props.apiClient
           .getAddressDetails(place.placeId)
           .then(this.submitAddress)
-          .then(() => { this.onKeyUpReady = true; })
-          .catch(() => { this.onKeyUpReady = false; });
+          .then(() => { this.isDataValid = true; })
+          .catch(() => { this.isDataValid = false; });
       }
     } else {
       const variable = this.props.variable;
@@ -77,18 +76,13 @@ export class Address extends React.Component<Props, State> {
         currentValue: eventValue,
         validationError: true,
       }, () => {
-        this.onKeyUpReady = false;
+        this.isDataValid = false;
 
         if (this.props.savedValue) {
           this.props.onChange(name);
         }
       });
     }
-  }
-
-  onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    const { onKeyUp } = this.props;
-    if (onKeyUp && this.onKeyUpReady) onKeyUp(event);
   }
 
   // Autosuggest will call this function every time you need to clear suggestions.
@@ -150,7 +144,7 @@ export class Address extends React.Component<Props, State> {
       autoComplete: 'new-password',
       className: `${this.props.textLikeInputClass}${cleanName}${additionalClassName}`,
       onChange: this.onChange,
-      onKeyUp: this.onKeyUp,
+      onKeyUp: (event) => this.props.onKeyUp ? this.props.onKeyUp(event, this.isDataValid) : undefined,
       placeholder: description,
       title: description,
       type: 'text',

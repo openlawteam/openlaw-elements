@@ -163,7 +163,7 @@ export class Collection extends React.Component<Props, State> {
     }
   }
 
-  onEnter(event: SyntheticKeyboardEvent<HTMLElement>) {
+  onEnter(event: SyntheticKeyboardEvent<HTMLElement>, isDataValid: ?boolean) {
     // do nothing if the event was already processed
     if (event.defaultPrevented) {
       return;
@@ -171,7 +171,7 @@ export class Collection extends React.Component<Props, State> {
 
     switch (event.key) {
       case 'Enter':
-        this.add();
+        if (isDataValid !== undefined && isDataValid) this.add();
         break;
       default:
         return;

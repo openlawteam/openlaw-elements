@@ -6,7 +6,7 @@ type Props = {
   apiClient: Object, // opt-out of type checker until Flow types are exported for APIClient
   executionResult: {},
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -20,6 +20,10 @@ type State = {
 
 export class Identity extends React.Component<Props, State> {
   openLaw = this.props.openLaw;
+
+  // currently used as a helper to send the parent's "on[Event]" props
+  // e.g. if it wants to be sure to do a Collection addition on enter press
+  isDataValid = false;
 
   state = {
     email: '',
@@ -67,6 +71,8 @@ export class Identity extends React.Component<Props, State> {
           validationError: false,
         }, () => {
           this.props.onChange(this.openLaw.getName(this.props.variable), '');
+
+          this.isDataValid = false;
         });
       } else {
         this.setState({
@@ -80,6 +86,8 @@ export class Identity extends React.Component<Props, State> {
           variableName,
           this.openLaw.createIdentityInternalValue('', eventValue),
         );
+
+        this.isDataValid = true;
 
         this.props.apiClient.getUserDetails(eventValue).then(result => {
           if (result.email) {
@@ -96,6 +104,8 @@ export class Identity extends React.Component<Props, State> {
         });
       }
     } catch (error) {
+      this.isDataValid = false;
+
       this.setState({
         email: eventValue,
         validationError: true,
@@ -117,7 +127,7 @@ export class Identity extends React.Component<Props, State> {
           <input
             className={`${this.props.textLikeInputClass}${cleanName} ${cleanName}-email${additionalClassName}`}
             onChange={this.onChange}
-            onKeyUp={this.props.onKeyUp}
+            onKeyUp={(event) => this.props.onKeyUp ? this.props.onKeyUp(event, this.isDataValid) : undefined}
             placeholder={description}
             title={description}
             type="email"

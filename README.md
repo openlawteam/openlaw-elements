@@ -137,7 +137,7 @@ npm start
 
 ## Contributing 
 
-See information about contributing [here](https://github.com/openlawteam/openlaw-client/blob/develop/CONTRIBUTING.md).
+See information about contributing [here](https://github.com/openlawteam/openlaw-elements/blob/master/CONTRIBUTING.md).
 
 ## License
 

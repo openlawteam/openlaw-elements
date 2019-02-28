@@ -111,7 +111,7 @@ OPENLAW_EMAIL=alex@email.com OPENLAW_PASSWORD=password npm start
 
 ### About the app
 
-The example app (`openlaw-elements/example`) can help you gain ideas and understanding to build your own OpenLaw app in JavaScript and React. In contrast to the example app, the [Usage](#usage) section above intentionally leaves out more complex behavior to simply illustrate the required dependencies in order to use `<OpenLawForm />` correctly.
+The example app (`openlaw-elements/example`) can help you gain ideas and understanding to build your own OpenLaw app in JavaScript and React. In contrast to the example app, the "Usage" section above intentionally leaves out more complex behavior to simply illustrate the required dependencies in order to use `<OpenLawForm />` correctly.
 
 We use Webpack to bundle a small app that changes the app's state tree every time an edit is made to the rendered `<OpenLawForm />`. Additionally, each time you click the `Preview` button, it will generate a preview of what the final document will look like at the top of the webpage.
 
@@ -137,7 +137,7 @@ npm start
 
 ## Contributing 
 
-See information about contributing [here](CONTRIBUTING.md).
+See information about contributing [here](https://github.com/openlawteam/openlaw-client/blob/develop/CONTRIBUTING.md).
 
 ## License
 

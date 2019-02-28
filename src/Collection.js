@@ -18,7 +18,7 @@ type Props = {
 type State = {
   currentValue: string,
   validationError: boolean,
-  focusIndex: ?number,
+  focusIndex: number | null,
   errorMsg: string,
 };
 
@@ -36,13 +36,17 @@ export class Collection extends React.Component<Props, State> {
     super(props);
 
     const self: any = this;
-    self.onChange = this.onChange.bind(this);
     self.add = this.add.bind(this);
+    self.onChange = this.onChange.bind(this);
+    self.onEnter = this.onEnter.bind(this);
   }
 
   componentDidUpdate() {
     if (this.state.focusIndex !== null) {
-      const index = this.state.focusIndex || '';
+      const index = (this.state.focusIndex >= 0) ? this.state.focusIndex : -1;
+
+      if (index === -1) return;
+
       // TODO should replace things like this with a ref
       const element = document.querySelector(`.${this.openLaw.getCleanName(this.props.variable)}_${index}`);
 
@@ -105,13 +109,14 @@ export class Collection extends React.Component<Props, State> {
               apiClient={this.props.apiClient}
               executionResult={this.props.executionResult}
               onChangeFunction={this.onChange}
+              onKeyUp={this.onEnter}
               openLaw={this.openLaw}
               savedValue={savedValue}
               textLikeInputClass={this.props.textLikeInputClass}
               variable={subVariable}
             />
           )
-        }{' '}
+        }
         <div
           className="collection-variable-remove"
           onClick={() => this.remove(index)}
@@ -158,6 +163,23 @@ export class Collection extends React.Component<Props, State> {
     }
   }
 
+  onEnter(event: SyntheticKeyboardEvent<HTMLElement>, isDataValid: ?boolean = true) {
+    // do nothing if the event was already processed
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    switch (event.key) {
+      case 'Enter':
+        if (isDataValid) this.add();
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+  }
+
   remove(index: number) {
     const variable = this.props.variable;
     const variableName = this.openLaw.getName(variable);
@@ -198,8 +220,6 @@ export class Collection extends React.Component<Props, State> {
     return (
       <div className={`contract-variable collection-variable ${cleanName}`}>
         <div className="collection-variable-description">{description}</div>
-        {/* TODO we shouldn't need to use space-occupying divs */}
-        <div className="collection-variable-row" />
 
         {variables}
 

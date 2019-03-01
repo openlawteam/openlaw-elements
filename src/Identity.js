@@ -70,7 +70,7 @@ export class Identity extends React.Component<Props, State> {
           email: '',
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(this.props.variable), '');
+          this.props.onChange(this.openLaw.getName(this.props.variable), undefined);
 
           this.isDataValid = false;
         });

@@ -133,7 +133,6 @@ npm start
 - [ ] Style configuration prop to override certain element classes (e.g. `{ error: 'my-error-class' }`)
 - [ ] Address input type will be able to be used without the `APIClient`
 - [ ] Ability to choose input labels and/or placeholders. A current workaround is to hide them with your own CSS.
-- [ ] Ability to enable or disable collapsible sections (generated from the template sections)
 
 ## Contributing 
 

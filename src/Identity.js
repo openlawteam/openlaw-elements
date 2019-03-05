@@ -61,6 +61,31 @@ export class Identity extends React.Component<Props, State> {
     }
   }
 
+  componentDidUpdate(prevProps: Props) {
+    if (
+      !this.state.validationError
+      && (this.props.savedValue !== prevProps.savedValue)
+    ) {
+      try {
+        const identity = this.openLaw.checkValidity(
+          this.props.variable,
+          this.props.savedValue,
+          this.props.executionResult,
+        );
+
+        this.setState({
+          email: this.openLaw.getIdentityEmail(identity) || '',
+        });
+      }
+      catch (error) {
+        this.setState({
+          email: '',
+          validationError: true,
+        });
+      }
+    }
+  }
+
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
 

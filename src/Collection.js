@@ -42,21 +42,7 @@ export class Collection extends React.Component<Props, State> {
   }
 
   componentDidUpdate() {
-    if (this.state.focusIndex !== null) {
-      const index = (this.state.focusIndex >= 0) ? this.state.focusIndex : -1;
-
-      if (index === -1) return;
-
-      // TODO should replace things like this with a ref
-      const element = document.querySelector(`.${this.openLaw.getCleanName(this.props.variable)}_${index}`);
-
-      if (element) element.focus();
-
-      // reset
-      this.setState({
-        focusIndex: null,
-      });
-    }
+    this.handleElementFocus();
   }
 
   add() {
@@ -127,6 +113,24 @@ export class Collection extends React.Component<Props, State> {
     );
   }
 
+  handleElementFocus() {
+    if (this.state.focusIndex !== null) {
+      const index = (this.state.focusIndex >= 0) ? this.state.focusIndex : -1;
+
+      if (index === -1) return;
+
+      // TODO should replace things like this with a ref
+      const element = document.querySelector(`.${this.openLaw.getCleanName(this.props.variable)}_${index}`);
+
+      if (element) element.focus();
+
+      // reset
+      this.setState({
+        focusIndex: null,
+      });
+    }
+  }
+
   onChange(key: string, value: ?string) {
     const variable = this.props.variable;
     const variableName = this.openLaw.getName(variable);
@@ -169,26 +173,23 @@ export class Collection extends React.Component<Props, State> {
       return;
     }
 
-    switch (event.key) {
-      case 'Enter':
-        if (isDataValid) this.add();
-        break;
-      default:
-        return;
+    if (event.key === 'Enter' && isDataValid) {
+      this.add();
     }
 
     event.preventDefault();
   }
 
   remove(index: number) {
-    const variable = this.props.variable;
+    const { variable } = this.props;
     const variableName = this.openLaw.getName(variable);
     const newValue = this.openLaw.removeElementFromCollection(
       index,
-      this.props.variable,
+      variable,
       this.props.executionResult,
       this.props.savedValue,
     );
+
     this.props.onChange(variableName, newValue);
   }
 
@@ -204,15 +205,15 @@ export class Collection extends React.Component<Props, State> {
 
     const variables = [];
 
-    for (let i = 0; i < collectionSize; i++) {
+    for (let index = 0; index < collectionSize; index++) {
       variables.push(
         this.generateInput(
           this.openLaw.createVariableFromCollection(
             variable,
-            i,
+            index,
             this.props.executionResult,
           ),
-          i,
+          index,
         ),
       );
     }

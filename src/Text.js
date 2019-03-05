@@ -35,7 +35,7 @@ export class Text extends React.Component<Props, State> {
   componentDidUpdate(prevProps: Props) {
     if (
       !this.state.validationError &&
-      this.props.savedValue !== prevProps.savedValue
+      (this.props.savedValue !== prevProps.savedValue)
     ) {
       this.setState({
         currentValue: this.props.savedValue || '',

@@ -35,7 +35,6 @@ export const InputRenderer = (props: RendererProps) => {
     variable,
   } = props;
 
-  const nameWithDashes = openLaw.getCleanName(variable);
   // TODO refactor; `force = true` is specific to the OpenLaw apps
   const onChangeFunctionForce = (key, value) => onChangeFunction(key, value, true);
 
@@ -44,7 +43,6 @@ export const InputRenderer = (props: RendererProps) => {
     return (
       <Choice
         executionResult={executionResult}
-        key={`${nameWithDashes}-choice`}
         onChange={onChangeFunction}
         openLaw={openLaw}
         savedValue={savedValue}
@@ -59,7 +57,6 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <Address
           apiClient={apiClient} // for API call to Google for geo data
-          key={`${nameWithDashes}-address`}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
           openLaw={openLaw}
@@ -77,7 +74,6 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <DatePicker
           enableTime={false}
-          key={`${nameWithDashes}-date`}
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
@@ -90,7 +86,6 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <DatePicker
           enableTime
-          key={`${nameWithDashes}-date`}
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
@@ -104,7 +99,6 @@ export const InputRenderer = (props: RendererProps) => {
         <Identity
           apiClient={apiClient}
           executionResult={executionResult}
-          key={`${nameWithDashes}-identity`}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
           openLaw={openLaw}
@@ -118,7 +112,6 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <ImageInput
           executionResult={executionResult}
-          key={`${nameWithDashes}-image`}
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
@@ -130,7 +123,6 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <LargeText
           executionResult={executionResult}
-          key={`${nameWithDashes}-large-text`}
           onChange={onChangeFunction}
           openLaw={openLaw}
           savedValue={savedValue}
@@ -143,7 +135,6 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <NumberInput
           executionResult={executionResult}
-          key={`${nameWithDashes}-number`}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
           openLaw={openLaw}
@@ -156,7 +147,6 @@ export const InputRenderer = (props: RendererProps) => {
     case 'YesNo':
       return (
         <YesNo
-          key={`${nameWithDashes}-yesno`}
           // uses a param `force` set to `true`
           // TODO re-evaluate overriding onChange from the top-level
           // as we really only use this function in OpenLaw's front-end to tell Redux something.
@@ -171,7 +161,6 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <Text
           executionResult={executionResult}
-          key={`${nameWithDashes}-text`}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
           openLaw={openLaw}

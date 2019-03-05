@@ -15,21 +15,21 @@ const getVariablesForSection = (sectionVariables, variables) => (
     .filter(section => section && true)
 );
 
+const getUnsectionedTitle = (unsectionedTitle) => {
+  // set to string null value by the user
+  if (unsectionedTitle === '') return '';
+  // there's a value set by the user
+  if (unsectionedTitle) return unsectionedTitle;
+  // default
+  return 'Miscellaneous';
+};
+
 export const GetSections = (
   variables: Array<string>,
   sectionVariables: SectionVariablesMapType,
   sections: Array<any>,
   config: GetSectionConfigType,
 ) => {
-  const getUnsectionedTitle = () => {
-    const { unsectionedTitle } = config;
-    // set to string null value by the user
-    if (unsectionedTitle === '') return '';
-    // there's a value set by the user
-    if (unsectionedTitle) return unsectionedTitle;
-    // default
-    return 'Miscellaneous';
-  };
   const { sectionTransform, sectionVariablesMap } = config;
 
   const mappedSections: Array<any> = sections
@@ -82,12 +82,12 @@ export const GetSections = (
       const index = mappedSections.length;
 
       sectionData = {
-        ...sectionTransform(getUnsectionedTitle(), index),
+        ...sectionTransform(getUnsectionedTitle(config.unsectionedTitle), index),
         variables: unsectionedVariables,
       };
     } else {
       sectionData = {
-        section: getUnsectionedTitle(),
+        section: getUnsectionedTitle(config.unsectionedTitle),
         variables: unsectionedVariables,
       };
     }

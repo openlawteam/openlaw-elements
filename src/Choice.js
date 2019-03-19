@@ -3,12 +3,14 @@
 import * as React from 'react';
 
 type Props = {
-  executionResult: {},
+  choiceValues: Array<string>,
+  cleanName: string,
+  description: string,
+  getValidity: (string) => string | false,
+  name: string,
   onChange: (string, ?string) => mixed,
-  openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
-  variable: {},
 };
 
 type State = {
@@ -16,12 +18,10 @@ type State = {
   validationError: boolean,
 };
 
-export class Choice extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class Choice extends React.PureComponent<Props, State> {
   state = {
-    validationError: false,
     currentValue: this.props.savedValue || '',
+    validationError: false,
   };
 
   constructor(props: Props) {
@@ -31,42 +31,38 @@ export class Choice extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
+  choiceValuesOption(choice: string) {
+    return (
+      <option key={choice} value={choice}>
+        {choice}
+      </option>
+    );
+  }
+
   onChange(event: SyntheticEvent<HTMLOptionElement>) {
-    const variable = this.props.variable;
     const eventValue = event.currentTarget.value;
+    const { getValidity, name } = this.props;
 
-    try {
-      if (variable) {
-        if (!eventValue) {
-          this.setState({
-            currentValue: '',
-            validationError: false,
-          }, () => {
-            this.props.onChange(this.openLaw.getName(variable));
-          });
-        } else {
-          this.openLaw.checkValidity(
-            variable,
-            eventValue,
-            this.props.executionResult,
-          );
+    if (!eventValue) {
+      this.setState({
+        currentValue: '',
+        validationError: false,
+      }, () => {
+        this.props.onChange(name);
+      });
 
-          this.setState({
-            currentValue: eventValue,
-            validationError: false,
-          }, () => {
-            this.props.onChange(this.openLaw.getName(variable), eventValue);
-          });
-        }
-      } else {
-        this.setState({
-          currentValue: '',
-          validationError: false,
-        }, () => {
-          this.props.onChange(this.openLaw.getName(variable));
-        });
-      }
-    } catch (error) {
+      // exit
+      return;
+    }
+
+    if (getValidity(eventValue)) {
+      this.setState({
+        currentValue: eventValue,
+        validationError: false,
+      }, () => {
+        this.props.onChange(name, eventValue);
+      });
+    } else {
       this.setState({
         currentValue: eventValue,
         validationError: true,
@@ -75,20 +71,8 @@ export class Choice extends React.Component<Props, State> {
   }
 
   render() {
-    const variable = this.props.variable;
-    const choices = this.openLaw.getChoiceValues(
-      variable,
-      this.props.executionResult,
-    );
-    const cleanName = this.openLaw.getCleanName(variable);
+    const { choiceValues, cleanName, description } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
-    const description = this.openLaw.getDescription(variable);
-
-    const f = choice => (
-      <option key={choice} value={choice}>
-        {choice}
-      </option>
-    );
 
     return (
       <div className="contract-variable choice">
@@ -101,7 +85,7 @@ export class Choice extends React.Component<Props, State> {
             className={`${this.props.textLikeInputClass}${cleanName}${additionalClassName}`}
           >
             <option value="">-- Please choose from the list --</option>
-            {choices.map(f)}
+            {choiceValues.map(this.choiceValuesOption)}
           </select>
         </label>
       </div>

@@ -4,13 +4,15 @@ import * as React from 'react';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until Flow types are exported for APIClient
-  executionResult: {},
+  cleanName: string,
+  description: string,
+  getValidity: (string) => string | false,
+  name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
-  openLaw: Object, // opt-out of type checker
+  openLaw: Object,
   savedValue: string,
   textLikeInputClass: string,
-  variable: {},
 };
 
 type State = {
@@ -18,9 +20,7 @@ type State = {
   validationError: boolean,
 };
 
-export class Identity extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class Identity extends React.PureComponent<Props, State> {
   // currently used as a helper to send the parent's "on[Event]" props
   // e.g. if it wants to be sure to do a Collection addition on enter press
   isDataValid = false;
@@ -38,46 +38,36 @@ export class Identity extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    try {
-      if (this.props.savedValue) {
-        const identity = this.openLaw.checkValidity(
-          this.props.variable,
-          this.props.savedValue,
-          this.props.executionResult,
-        );
+    const { getValidity, openLaw, savedValue } = this.props;
 
-        this.setState({
-          email: this.openLaw.getIdentityEmail(identity),
-        });
-      } else {
-        this.setState({
-          email: '',
-        });
-      }
-    } catch (error) {
+    const identity = getValidity(savedValue);
+
+    if (savedValue && identity) {
       this.setState({
-        email: '',
+        email: openLaw.getIdentityEmail(identity),
       });
+
+      // exit
+      return;
     }
+
+    this.setState({ email: '' });
   }
 
   componentDidUpdate(prevProps: Props) {
+    const { getValidity, openLaw, savedValue } = this.props;
+
     if (
       !this.state.validationError
       && (this.props.savedValue !== prevProps.savedValue)
     ) {
-      try {
-        const identity = this.openLaw.checkValidity(
-          this.props.variable,
-          this.props.savedValue,
-          this.props.executionResult,
-        );
+      const identity = getValidity(this.props.savedValue);
 
+      if (identity) {
         this.setState({
-          email: this.openLaw.getIdentityEmail(identity) || '',
+          email: openLaw.getIdentityEmail(identity) || '',
         });
-      }
-      catch (error) {
+      } else {
         this.setState({
           email: '',
           validationError: true,
@@ -88,6 +78,7 @@ export class Identity extends React.Component<Props, State> {
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
+    const { apiClient, name, openLaw } = this.props;
 
     try {
       if (!eventValue) {
@@ -95,7 +86,7 @@ export class Identity extends React.Component<Props, State> {
           email: '',
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(this.props.variable), undefined);
+          this.props.onChange(name, undefined);
 
           this.isDataValid = false;
         });
@@ -105,20 +96,18 @@ export class Identity extends React.Component<Props, State> {
           validationError: false,
         });
 
-        const variableName = this.openLaw.getName(this.props.variable);
-
         this.props.onChange(
-          variableName,
-          this.openLaw.createIdentityInternalValue('', eventValue),
+          name,
+          openLaw.createIdentityInternalValue('', eventValue),
         );
 
         this.isDataValid = true;
 
-        this.props.apiClient.getUserDetails(eventValue).then(result => {
+        apiClient.getUserDetails(eventValue).then(result => {
           if (result.email) {
             this.props.onChange(
-              variableName,
-              this.openLaw.createIdentityInternalValue(result.id, result.email),
+              name,
+              openLaw.createIdentityInternalValue(result.id, result.email),
             );
 
             this.setState({
@@ -139,9 +128,7 @@ export class Identity extends React.Component<Props, State> {
   }
 
   render() {
-    const variable = this.props.variable;
-    const cleanName = this.openLaw.getCleanName(variable);
-    const description = this.openLaw.getDescription(variable);
+    const { cleanName, description, name } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     return (

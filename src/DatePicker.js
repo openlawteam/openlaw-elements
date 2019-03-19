@@ -5,23 +5,22 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 
 type Props = {
+  cleanName: string,
+  description: string,
   enableTime: boolean,
+  name: string,
   onChange: (string, ?string) => mixed,
-  openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
-  variable: {},
 };
 
 type State = {
   enableTime: boolean,
 };
 
-export class DatePicker extends React.Component<Props, State> {
+export class DatePicker extends React.PureComponent<Props, State> {
   id: string;
   flatpickr: flatpickr;
-
-  openLaw = this.props.openLaw;
 
   state = {
     enableTime: this.props.enableTime,
@@ -30,7 +29,7 @@ export class DatePicker extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
 
-    const cleanName = this.openLaw.getCleanName(this.props.variable);
+    const { cleanName } = this.props;
     const timestamp = new Date().getTime().toString();
     this.id = this.id || `date_${cleanName}_${timestamp}`;
 
@@ -39,6 +38,7 @@ export class DatePicker extends React.Component<Props, State> {
   }
 
   componentDidMount() {
+    const { name } = this.props;
     let options = {};
 
     // display in a friendly format (e.g. January, 1, 1971)
@@ -50,7 +50,7 @@ export class DatePicker extends React.Component<Props, State> {
 
     if (this.props.textLikeInputClass) {
       // Flatpickr inherits our classnames from the original input element
-      options.altInputClass = `${this.props.textLikeInputClass} ${this.openLaw.getCleanName(this.props.variable)}`;
+      options.altInputClass = `${this.props.textLikeInputClass} ${name}`;
     }
 
     if (this.props.savedValue) {
@@ -73,16 +73,14 @@ export class DatePicker extends React.Component<Props, State> {
   }
 
   onChange(selectedDates: Array<any>) {
-    const variable = this.props.variable;
-    const name = this.openLaw.getName(variable);
+    const { description, name } = this.props;
     const epochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : undefined);
 
     this.props.onChange(name, epochUTCString);
   }
 
   render() {
-    const variable = this.props.variable;
-    const description = this.openLaw.getDescription(variable);
+    const { description } = this.props;
 
     return (
       <div className="contract-variable">

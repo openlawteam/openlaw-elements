@@ -5,12 +5,14 @@ import Autosuggest from 'react-autosuggest';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export APIClient flow types
+  cleanName: string,
+  description: string,
+  name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
-  variable: {},
 };
 
 type State = {
@@ -23,9 +25,7 @@ type State = {
 const getSuggestionValue = suggestion => suggestion.address;
 const renderSuggestion = suggestion => <div>{suggestion.address}</div>;
 
-export class Address extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class Address extends React.PureComponent<Props, State> {
   isDataValid = false;
 
   state = {
@@ -69,8 +69,7 @@ export class Address extends React.Component<Props, State> {
           .catch(() => { this.isDataValid = false; });
       }
     } else {
-      const variable = this.props.variable;
-      const name = this.openLaw.getName(variable);
+      const { name } = this.props;
 
       this.setState({
         currentValue: eventValue,
@@ -103,30 +102,30 @@ export class Address extends React.Component<Props, State> {
 
   submitAddress(address: Object): Promise<any> {
     return new Promise((resolve, reject) => {
-      const variable = this.props.variable;
+      const { name, openLaw } = this.props;
 
       try {
-        if (variable) {
+        if (address) {
           this.setState({
             validationError: false,
             currentValue: address.address,
           }, () => {
-            this.props.onChange(this.openLaw.getName(variable), this.openLaw.createAddress(address));
+            this.props.onChange(name, openLaw.createAddress(address));
 
             resolve();
           });
         } else {
           this.setState({
-            validationError: false,
             currentValue: undefined,
+            validationError: false,
           }, () => {
-            this.props.onChange(this.openLaw.getName(variable));
+            this.props.onChange(name);
           });
         }
       } catch (error) {
         this.setState({
-          validationError: true,
           currentValue: '',
+          validationError: true,
         });
 
         reject();
@@ -135,9 +134,7 @@ export class Address extends React.Component<Props, State> {
   }
 
   render() {
-    const variable = this.props.variable;
-    const cleanName = this.openLaw.getCleanName(variable);
-    const description = this.openLaw.getDescription(variable);
+    const { description, cleanName } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     const inputProps = {

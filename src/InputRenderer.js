@@ -1,6 +1,7 @@
 // @flow
 
 import * as React from 'react';
+import deepEqual from 'deep-equal';
 
 import { Address } from './Address';
 import { Choice } from './Choice';
@@ -11,6 +12,7 @@ import { LargeText } from './LargeText';
 import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
+import { cacheValue } from './utils';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
@@ -22,6 +24,43 @@ type RendererProps = {
   textLikeInputClass: string,
   variable: {},
 };
+
+// keep React rendering happy with the same Array reference, if not changed.
+const getChoiceValuesCached = cacheValue(deepEqual);
+let getValidityFunctionCached;
+let onChangeForceFunctionCached;
+
+const attemptCheckValidity = (variable, value, executionResult, openLaw) => {
+  try {
+    return openLaw.checkValidity(variable, value, executionResult);
+  } catch (error) {
+    return false;
+  }
+};
+
+const getVariableData = (variable: {}, openLaw: Object) => ({
+  cleanName: openLaw.getCleanName(variable),
+  description: openLaw.getDescription(variable),
+  getValidity: (variable: {}, executionResult: {}) => {
+    if (!getValidityFunctionCached) {
+      getValidityFunctionCached = (value) => (
+        attemptCheckValidity(variable, value, executionResult, openLaw)
+      );
+    }
+
+    return getValidityFunctionCached;
+  },
+  name: openLaw.getName(variable),
+});
+
+// TODO refactor; `force = true` is specific to the OpenLaw web app
+const onChangeFunctionForce = (onChangeFunction) => {
+  if (!onChangeForceFunctionCached) {
+    onChangeForceFunctionCached = (key, value) => onChangeFunction(key, value, true);
+  }
+
+  return onChangeForceFunctionCached;
+}
 
 export const InputRenderer = (props: RendererProps) => {
   const {
@@ -35,19 +74,27 @@ export const InputRenderer = (props: RendererProps) => {
     variable,
   } = props;
 
-  // TODO refactor; `force = true` is specific to the OpenLaw apps
-  const onChangeFunctionForce = (key, value) => onChangeFunction(key, value, true);
+  const {
+    cleanName,
+    description,
+    getValidity,
+    name,
+  } = getVariableData(variable, openLaw);
 
   // Choice type detection is different
   if (openLaw.isChoiceType(variable, executionResult)) {
+    const choiceValues = getChoiceValuesCached(openLaw.getChoiceValues(variable, executionResult));
+
     return (
       <Choice
-        executionResult={executionResult}
+        choiceValues={choiceValues}
+        cleanName={cleanName}
+        description={description}
+        getValidity={getValidity(variable, executionResult)}
+        name={name}
         onChange={onChangeFunction}
-        openLaw={openLaw}
         savedValue={savedValue}
         textLikeInputClass={textLikeInputClass}
-        variable={variable}
       />
     );
   }
@@ -57,6 +104,9 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <Address
           apiClient={apiClient} // for API call to Google for geo data
+          cleanName={cleanName}
+          description={description}
+          name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
           openLaw={openLaw}
@@ -66,31 +116,32 @@ export const InputRenderer = (props: RendererProps) => {
               : ''
           }
           textLikeInputClass={textLikeInputClass}
-          variable={variable}
         />
       );
 
     case 'Date':
       return (
         <DatePicker
+          cleanName={cleanName}
+          description={description}
           enableTime={false}
+          name={name}
           onChange={onChangeFunction}
-          openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
-          variable={variable}
         />
       );
 
     case 'DateTime':
       return (
         <DatePicker
+          cleanName={cleanName}
+          description={description}
           enableTime
+          name={name}
           onChange={onChangeFunction}
-          openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
-          variable={variable}
         />
       );
 
@@ -98,75 +149,81 @@ export const InputRenderer = (props: RendererProps) => {
       return (
         <Identity
           apiClient={apiClient}
-          executionResult={executionResult}
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity(variable, executionResult)}
+          name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
-          variable={variable}
         />
       );
 
     case 'Image':
       return (
         <ImageInput
-          executionResult={executionResult}
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity(variable, executionResult)}
+          name={name}
           onChange={onChangeFunction}
-          openLaw={openLaw}
           savedValue={savedValue}
-          variable={variable}
         />
       );
 
     case 'LargeText':
       return (
         <LargeText
-          executionResult={executionResult}
+          cleanName={cleanName}
+          description={description}
+          name={name}
           onChange={onChangeFunction}
-          openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
-          variable={variable}
         />
       );
 
     case 'Number':
       return (
         <NumberInput
-          executionResult={executionResult}
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity(variable, executionResult)}
+          name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
-          openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
-          variable={variable}
         />
       );
 
     case 'YesNo':
       return (
         <YesNo
+          cleanName={cleanName}
+          description={description}
+          name={name}
           // uses a param `force` set to `true`
           // TODO re-evaluate overriding onChange from the top-level
           // as we really only use this function in OpenLaw's front-end to tell Redux something.
-          onChange={onChangeFunctionForce}
-          openLaw={openLaw}
+          onChange={onChangeFunctionForce(onChangeFunction)}
           savedValue={savedValue}
-          variable={variable}
         />
       );
 
     default:
       return (
         <Text
-          executionResult={executionResult}
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity(variable, executionResult)}
+          name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
-          openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
-          variable={variable}
         />
       );
   }

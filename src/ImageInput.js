@@ -5,11 +5,12 @@ import * as React from 'react';
 import ImageCrop from './ImageCrop';
 
 type Props = {
-  executionResult: {},
+  cleanName: string,
+  description: string,
+  getValidity: (string) => string | false,
+  name: string,
   onChange: (string, string) => mixed,
-  openLaw: Object, // opt-out of type checker
   savedValue: string,
-  variable: {},
 };
 
 type State = {
@@ -37,10 +38,8 @@ type DimensionsType = {
 const { Fragment } = React;
 const IMG_MAX_WIDTH = 600;
 
-export class ImageInput extends React.Component<Props, State> {
+export class ImageInput extends React.PureComponent<Props, State> {
   fileRef: {current: null | HTMLInputElement} = React.createRef();
-
-  openLaw = this.props.openLaw;
 
   state = {
     currentValue: this.props.savedValue,
@@ -245,34 +244,35 @@ export class ImageInput extends React.Component<Props, State> {
   }
 
   async updateImage() {
-    const { executionResult, variable } = this.props;
+    const { getValidity, name } = this.props;
     const { croppedValue, currentValue } = this.state;
     const imageDataURL = croppedValue || currentValue;
 
+    let resizedImageDataURL;
+
     try {
-      let resizedImageDataURL;
+      resizedImageDataURL = await this.resizeImageSource(imageDataURL);
+    } catch (error) {
+      resizedImageDataURL = '';
+    }
 
-      try {
-        resizedImageDataURL = await this.resizeImageSource(imageDataURL);
-      } catch (error) {
-        resizedImageDataURL = '';
-      }
+    const validity = getValidity(resizedImageDataURL);
+    // if string either has length, or is empty, it's valid
+    const isImageDataValid = (validity && validity.length > 0) || (validity && validity.length === 0);
 
+    if (isImageDataValid) {
       if (resizedImageDataURL) {
-        this.openLaw.checkValidity(variable, resizedImageDataURL, executionResult);
-
         this.setState({
           croppedValue: '',
           showModal: false,
           validationError: false,
         }, () => {
-          this.props.onChange(this.openLaw.getName(variable), resizedImageDataURL);
+          this.props.onChange(name, resizedImageDataURL);
         });
       } else {
-        this.openLaw.checkValidity(variable, resizedImageDataURL, executionResult);
-        this.props.onChange(this.openLaw.getName(variable), '');
+        this.props.onChange(name, '');
       }
-    } catch (error) {
+    } else {
       this.setState({
         validationError: true,
       });
@@ -280,10 +280,8 @@ export class ImageInput extends React.Component<Props, State> {
   }
 
   render() {
-    const { variable } = this.props;
+    const { cleanName, description, name } = this.props;
     const { disableEditRemoteImage } = this.state;
-    const cleanName = this.openLaw.getCleanName(variable);
-    const description = this.openLaw.getDescription(variable);
 
     /* eslint-disable complexity */
     return (

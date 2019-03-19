@@ -3,19 +3,18 @@
 import * as React from 'react';
 
 type Props = {
+  cleanName: string,
+  description: string,
+  name: string,
   onChange: (string, string) => mixed,
-  openLaw: Object, // opt-out of type checker
   savedValue: string,
-  variable: {},
 };
 
 type State = {
   currentValue: string,
 };
 
-export class YesNo extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class YesNo extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue,
   };
@@ -28,7 +27,7 @@ export class YesNo extends React.Component<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    if (this.props.savedValue !== prevProps.savedValue) {
+    if (prevProps.savedValue !== this.props.savedValue) {
       this.setState({
         currentValue: this.props.savedValue,
       });
@@ -36,9 +35,8 @@ export class YesNo extends React.Component<Props, State> {
   }
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const variable = this.props.variable;
-    const name = this.openLaw.getName(variable);
     const eventValue = event.currentTarget.value;
+    const { name } = this.props;
 
     this.setState({
       currentValue: eventValue,
@@ -48,9 +46,7 @@ export class YesNo extends React.Component<Props, State> {
   }
 
   render() {
-    const variable = this.props.variable;
-    const description = this.openLaw.getDescription(variable);
-    const cleanName = this.openLaw.getCleanName(variable);
+    const { cleanName, description } = this.props;
     const additionalClass = this.state.currentValue ? ' conditional-set' : '';
 
     return (

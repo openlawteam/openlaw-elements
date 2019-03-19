@@ -73,7 +73,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
   }
 
   onChange(selectedDates: Array<any>) {
-    const { description, name } = this.props;
+    const { name } = this.props;
     const epochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : undefined);
 
     this.props.onChange(name, epochUTCString);

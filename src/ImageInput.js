@@ -280,7 +280,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description, name } = this.props;
+    const { cleanName, description } = this.props;
     const { disableEditRemoteImage } = this.state;
 
     /* eslint-disable complexity */

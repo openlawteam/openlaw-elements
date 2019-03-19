@@ -60,7 +60,7 @@ const onChangeFunctionForce = (onChangeFunction) => {
   }
 
   return onChangeForceFunctionCached;
-}
+};
 
 export const InputRenderer = (props: RendererProps) => {
   const {

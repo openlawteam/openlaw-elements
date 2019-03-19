@@ -134,7 +134,7 @@ export class Identity extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description, name } = this.props;
+    const { cleanName, description } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     return (

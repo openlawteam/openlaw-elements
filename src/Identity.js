@@ -40,18 +40,23 @@ export class Identity extends React.PureComponent<Props, State> {
   componentDidMount() {
     const { getValidity, openLaw, savedValue } = this.props;
 
-    const identity = getValidity(savedValue);
+    try {
+      if (this.props.savedValue) {
+        const identity = getValidity(savedValue);
 
-    if (savedValue && identity) {
+        this.setState({
+          email: openLaw.getIdentityEmail(identity),
+        });
+      } else {
+        this.setState({
+          email: '',
+        });
+      }
+    } catch (error) {
       this.setState({
-        email: openLaw.getIdentityEmail(identity),
+        email: '',
       });
-
-      // exit
-      return;
     }
-
-    this.setState({ email: '' });
   }
 
   componentDidUpdate(prevProps: Props) {
@@ -59,15 +64,16 @@ export class Identity extends React.PureComponent<Props, State> {
 
     if (
       !this.state.validationError
-      && (this.props.savedValue !== prevProps.savedValue)
+      && (savedValue !== prevProps.savedValue)
     ) {
-      const identity = getValidity(this.props.savedValue);
+      try {
+        const identity = getValidity(savedValue);
 
-      if (identity) {
         this.setState({
           email: openLaw.getIdentityEmail(identity) || '',
         });
-      } else {
+      }
+      catch (error) {
         this.setState({
           email: '',
           validationError: true,

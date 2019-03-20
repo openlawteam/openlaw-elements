@@ -38,7 +38,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    const { name } = this.props;
+    const { cleanName } = this.props;
     let options = {};
 
     // display in a friendly format (e.g. January, 1, 1971)
@@ -50,7 +50,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
 
     if (this.props.textLikeInputClass) {
       // Flatpickr inherits our classnames from the original input element
-      options.altInputClass = `${this.props.textLikeInputClass} ${name}`;
+      options.altInputClass = `${this.props.textLikeInputClass} ${cleanName}`;
     }
 
     if (this.props.savedValue) {

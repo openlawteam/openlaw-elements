@@ -76,7 +76,7 @@ export const InputRenderer = (props: RendererProps) => {
   // store latest executionResult for access outside React
   executionResultCached = executionResult;
   // store openLaw for access outside React
-  openLawCached = openLaw;
+  if (!openLawCached) openLawCached = openLaw;
   // store { [name]: variable } for access outside React
   variableCache[name] = variable;
 

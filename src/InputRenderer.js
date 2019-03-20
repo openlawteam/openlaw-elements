@@ -28,7 +28,6 @@ type RendererProps = {
 // keep React rendering happy with the same Array reference, if not changed.
 const getChoiceValuesCached = cacheValue(deepEqual);
 const variableCache = {};
-let getValidityFunctionCached;
 let onChangeForceFunctionCached;
 let executionResultCached;
 let openLawCached;

@@ -5,7 +5,7 @@ import * as React from 'react';
 type Props = {
   cleanName: string,
   description: string,
-  getValidity: (string) => string | false,
+  getValidity: (string, string) => any | false,
   name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
@@ -60,7 +60,7 @@ export class Text extends React.PureComponent<Props, State> {
       return;
     }
 
-    if (getValidity(eventValue)) {
+    if (getValidity(name, eventValue)) {
       this.setState({
         currentValue: eventValue,
         validationError: false,

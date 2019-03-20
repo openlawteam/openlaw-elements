@@ -27,12 +27,15 @@ type RendererProps = {
 
 // keep React rendering happy with the same Array reference, if not changed.
 const getChoiceValuesCached = cacheValue(deepEqual);
+const variableCache = {};
 let getValidityFunctionCached;
 let onChangeForceFunctionCached;
+let executionResultCached;
+let openLawCached;
 
-const attemptCheckValidity = (variable, value, executionResult, openLaw) => {
+const attemptCheckValidity = (name: string, value: string) => {
   try {
-    return openLaw.checkValidity(variable, value, executionResult);
+    return openLawCached.checkValidity(variableCache[name], value, executionResultCached);
   } catch (error) {
     return false;
   }
@@ -41,15 +44,6 @@ const attemptCheckValidity = (variable, value, executionResult, openLaw) => {
 const getVariableData = (variable: {}, openLaw: Object) => ({
   cleanName: openLaw.getCleanName(variable),
   description: openLaw.getDescription(variable),
-  getValidity: (variable: {}, executionResult: {}) => {
-    if (!getValidityFunctionCached) {
-      getValidityFunctionCached = (value) => (
-        attemptCheckValidity(variable, value, executionResult, openLaw)
-      );
-    }
-
-    return getValidityFunctionCached;
-  },
   name: openLaw.getName(variable),
 });
 
@@ -73,13 +67,19 @@ export const InputRenderer = (props: RendererProps) => {
     textLikeInputClass,
     variable,
   } = props;
-
+  
   const {
     cleanName,
     description,
-    getValidity,
     name,
   } = getVariableData(variable, openLaw);
+
+  // store latest executionResult for access outside React
+  executionResultCached = executionResult;
+  // store openLaw for access outside React
+  openLawCached = openLaw;
+  // store { [name]: variable } for access outside React
+  variableCache[name] = variable;
 
   // Choice type detection is different
   if (openLaw.isChoiceType(variable, executionResult)) {
@@ -90,7 +90,7 @@ export const InputRenderer = (props: RendererProps) => {
         choiceValues={choiceValues}
         cleanName={cleanName}
         description={description}
-        getValidity={getValidity(variable, executionResult)}
+        getValidity={attemptCheckValidity}
         name={name}
         onChange={onChangeFunction}
         savedValue={savedValue}
@@ -151,7 +151,7 @@ export const InputRenderer = (props: RendererProps) => {
           apiClient={apiClient}
           cleanName={cleanName}
           description={description}
-          getValidity={getValidity(variable, executionResult)}
+          getValidity={attemptCheckValidity}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
@@ -166,7 +166,7 @@ export const InputRenderer = (props: RendererProps) => {
         <ImageInput
           cleanName={cleanName}
           description={description}
-          getValidity={getValidity(variable, executionResult)}
+          getValidity={attemptCheckValidity}
           name={name}
           onChange={onChangeFunction}
           savedValue={savedValue}
@@ -190,7 +190,7 @@ export const InputRenderer = (props: RendererProps) => {
         <NumberInput
           cleanName={cleanName}
           description={description}
-          getValidity={getValidity(variable, executionResult)}
+          getValidity={attemptCheckValidity}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
@@ -218,7 +218,7 @@ export const InputRenderer = (props: RendererProps) => {
         <Text
           cleanName={cleanName}
           description={description}
-          getValidity={getValidity(variable, executionResult)}
+          getValidity={attemptCheckValidity}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}

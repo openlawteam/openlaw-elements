@@ -6,7 +6,7 @@ type Props = {
   apiClient: Object, // opt-out of type checker until Flow types are exported for APIClient
   cleanName: string,
   description: string,
-  getValidity: (string) => string | false,
+  getValidity: (string, string) => any | false,
   name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
@@ -38,11 +38,11 @@ export class Identity extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    const { getValidity, openLaw, savedValue } = this.props;
+    const { getValidity, name, openLaw, savedValue } = this.props;
 
     try {
       if (this.props.savedValue) {
-        const identity = getValidity(savedValue);
+        const identity = getValidity(name, savedValue);
 
         this.setState({
           email: openLaw.getIdentityEmail(identity),
@@ -60,14 +60,14 @@ export class Identity extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate(prevProps: Props) {
-    const { getValidity, openLaw, savedValue } = this.props;
+    const { getValidity, name, openLaw, savedValue } = this.props;
 
     if (
       !this.state.validationError
       && (savedValue !== prevProps.savedValue)
     ) {
       try {
-        const identity = getValidity(savedValue);
+        const identity = getValidity(name, savedValue);
 
         this.setState({
           email: openLaw.getIdentityEmail(identity) || '',

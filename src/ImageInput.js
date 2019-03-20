@@ -7,7 +7,7 @@ import ImageCrop from './ImageCrop';
 type Props = {
   cleanName: string,
   description: string,
-  getValidity: (string) => string | false,
+  getValidity: (string, string) => string | false,
   name: string,
   onChange: (string, string) => mixed,
   savedValue: string,
@@ -256,9 +256,10 @@ export class ImageInput extends React.PureComponent<Props, State> {
       resizedImageDataURL = '';
     }
 
-    const validity = getValidity(resizedImageDataURL);
-    // if string either has length, or is empty, it's valid
-    const isImageDataValid = (validity && validity.length > 0) || (validity && validity.length === 0);
+    const validity = getValidity(name, resizedImageDataURL);
+
+    // if the valid string either has length, or is empty, it's valid
+    const isImageDataValid = (validity && validity.length > 0) || (validity === '' && validity.length === 0);
 
     if (isImageDataValid) {
       if (resizedImageDataURL) {

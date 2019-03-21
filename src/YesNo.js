@@ -6,7 +6,7 @@ type Props = {
   cleanName: string,
   description: string,
   name: string,
-  onChange: (string, string) => mixed,
+  onChange: (string, string, boolean) => mixed,
   savedValue: string,
 };
 
@@ -41,7 +41,9 @@ export class YesNo extends React.PureComponent<Props, State> {
     this.setState({
       currentValue: eventValue,
     }, () => {
-      this.props.onChange(name, eventValue);
+      // uses an added param `force` set to `true`
+      // TODO change should be in openlaw app, not here!
+      this.props.onChange(name, eventValue, true);
     });
   }
 

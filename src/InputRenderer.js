@@ -28,7 +28,6 @@ type RendererProps = {
 // keep React rendering happy with the same Array reference, if not changed.
 const getChoiceValuesCached = cacheValue(deepEqual);
 const variableCache = {};
-let onChangeForceFunctionCached;
 let executionResultCached;
 let openLawCached;
 
@@ -45,15 +44,6 @@ const getVariableData = (variable: {}, openLaw: Object) => ({
   description: openLaw.getDescription(variable),
   name: openLaw.getName(variable),
 });
-
-// TODO refactor; `force = true` is specific to the OpenLaw web app
-const onChangeFunctionForce = (onChangeFunction) => {
-  if (!onChangeForceFunctionCached) {
-    onChangeForceFunctionCached = (key, value) => onChangeFunction(key, value, true);
-  }
-
-  return onChangeForceFunctionCached;
-};
 
 export const InputRenderer = (props: RendererProps) => {
   const {
@@ -204,10 +194,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           name={name}
-          // uses a param `force` set to `true`
-          // TODO re-evaluate overriding onChange from the top-level
-          // as we really only use this function in OpenLaw's front-end to tell Redux something.
-          onChange={onChangeFunctionForce(onChangeFunction)}
+          onChange={onChangeFunction}
           savedValue={savedValue}
         />
       );

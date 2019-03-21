@@ -46,7 +46,7 @@ export class YesNo extends React.PureComponent<Props, State> {
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
-    const { name, savedValue } = this.props;
+    const { name } = this.props;
 
     this.setState({
       currentValue: eventValue,
@@ -68,7 +68,7 @@ export class YesNo extends React.PureComponent<Props, State> {
     if (currentNoRef && currentYesRef && this.props.savedValue === 'false') {
       currentNoRef.checked = true;
     }
-  };
+  }
 
   render() {
     const { cleanName, description } = this.props;

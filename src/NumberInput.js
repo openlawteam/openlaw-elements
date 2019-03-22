@@ -3,13 +3,14 @@
 import * as React from 'react';
 
 type Props = {
-  executionResult: {},
+  cleanName: string,
+  description: string,
+  getValidity: (string, string) => any | false,
+  name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
-  openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
-  variable: {},
 };
 
 type State = {
@@ -17,9 +18,7 @@ type State = {
   validationError: boolean,
 };
 
-export class NumberInput extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class NumberInput extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue || '',
     validationError: false,
@@ -41,32 +40,29 @@ export class NumberInput extends React.Component<Props, State> {
   }
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const variable = this.props.variable;
     const eventValue = event.currentTarget.value;
+    const { getValidity, name } = this.props;
 
-    try {
-      if (eventValue) {
-        this.openLaw.checkValidity(
-          variable,
-          eventValue,
-          this.props.executionResult,
-        );
+    if (!eventValue) {
+      this.setState({
+        currentValue: '',
+        validationError: false,
+      }, () => {
+        this.props.onChange(name);
+      });
 
-        this.setState({
-          currentValue: eventValue,
-          validationError: false,
-        }, () => {
-          this.props.onChange(this.openLaw.getName(variable), eventValue);
-        });
-      } else {
-        this.setState({
-          currentValue: '',
-          validationError: false,
-        }, () => {
-          this.props.onChange(this.openLaw.getName(variable));
-        });
-      }
-    } catch (error) {
+      // exit
+      return;
+    }
+
+    if (getValidity(name, eventValue)) {
+      this.setState({
+        currentValue: eventValue,
+        validationError: false,
+      }, () => {
+        this.props.onChange(name, eventValue);
+      });
+    } else {
       this.setState({
         currentValue: eventValue,
         validationError: true,
@@ -75,9 +71,7 @@ export class NumberInput extends React.Component<Props, State> {
   }
 
   render() {
-    const variable = this.props.variable;
-    const cleanName = this.openLaw.getCleanName(variable);
-    const description = this.openLaw.getDescription(variable);
+    const { cleanName, description } = this.props;
 
     return (
       <div className="contract-variable">

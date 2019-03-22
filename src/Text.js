@@ -3,13 +3,14 @@
 import * as React from 'react';
 
 type Props = {
-  executionResult: {},
+  cleanName: string,
+  description: string,
+  getValidity: (string, string) => any | false,
+  name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
-  openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
-  variable: {},
 };
 
 type State = {
@@ -17,9 +18,7 @@ type State = {
   validationError: boolean,
 };
 
-export class Text extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class Text extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue || '',
     validationError: false,
@@ -44,32 +43,31 @@ export class Text extends React.Component<Props, State> {
   }
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const variable = this.props.variable;
     const eventValue = event.currentTarget.value;
+    const { getValidity, name } = this.props;
 
-    try {
-      const name = this.openLaw.getName(variable);
-
-      if (eventValue) {
-        this.openLaw.checkValidity(variable, eventValue, this.props.executionResult);
-
+    if (!eventValue) {
+      if (this.state.currentValue) {
         this.setState({
-          currentValue: eventValue,
+          currentValue: '',
           validationError: false,
         }, () => {
-          this.props.onChange(name, eventValue);
+          this.props.onChange(name);
         });
-      } else {
-        if (this.state.currentValue) {
-          this.setState({
-            currentValue: '',
-            validationError: false,
-          }, () => {
-            this.props.onChange(name);
-          });
-        }
       }
-    } catch (error) {
+
+      // exit
+      return;
+    }
+
+    if (getValidity(name, eventValue)) {
+      this.setState({
+        currentValue: eventValue,
+        validationError: false,
+      }, () => {
+        this.props.onChange(name, eventValue);
+      });
+    } else {
       this.setState({
         currentValue: eventValue,
         validationError: true,
@@ -78,9 +76,7 @@ export class Text extends React.Component<Props, State> {
   }
 
   render() {
-    const variable = this.props.variable;
-    const cleanName = this.openLaw.getCleanName(variable);
-    const description = this.openLaw.getDescription(variable);
+    const { cleanName, description } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     return (

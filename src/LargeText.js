@@ -3,12 +3,12 @@
 import * as React from 'react';
 
 type Props = {
-  executionResult: {},
+  cleanName: string,
+  description: string,
+  name: string,
   onChange: (string, ?string) => mixed,
-  openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
-  variable: {},
 };
 
 type State = {
@@ -16,9 +16,7 @@ type State = {
   validationError: boolean,
 };
 
-export class LargeText extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class LargeText extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue || '',
     validationError: false,
@@ -43,43 +41,30 @@ export class LargeText extends React.Component<Props, State> {
   }
 
   onChange(event: SyntheticEvent<*>) {
-    const variable = this.props.variable;
     const eventValue = event.currentTarget.value;
+    const { name } = this.props;
 
-    try {
-      const name = this.openLaw.getName(variable);
-
-      if (eventValue) {
-        this.openLaw.checkValidity(variable, eventValue, this.props.executionResult);
-
-        this.setState({
-          validationError: false,
-          currentValue: eventValue,
-        }, () => {
-          this.props.onChange(name, eventValue);
-        });
-      } else {
-        if (this.state.currentValue) {
-          this.setState({
-            validationError: false,
-            currentValue: '',
-          }, () => {
-            this.props.onChange(name);
-          });
-        }
-      }
-    } catch (error) {
+    if (eventValue) {
       this.setState({
         currentValue: eventValue,
-        validationError: true,
+        validationError: false,
+      }, () => {
+        this.props.onChange(name, eventValue);
       });
+    } else {
+      if (this.state.currentValue) {
+        this.setState({
+          currentValue: '',
+          validationError: false,
+        }, () => {
+          this.props.onChange(name);
+        });
+      }
     }
   }
 
   render() {
-    const variable = this.props.variable;
-    const cleanName = this.openLaw.getCleanName(variable);
-    const description = this.openLaw.getDescription(variable);
+    const { cleanName, description } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     return (

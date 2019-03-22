@@ -3,22 +3,24 @@
 import * as React from 'react';
 
 type Props = {
-  onChange: (string, string) => mixed,
-  openLaw: Object, // opt-out of type checker
+  cleanName: string,
+  description: string,
+  name: string,
+  onChange: (string, string, boolean) => mixed,
   savedValue: string,
-  variable: {},
 };
 
 type State = {
   currentValue: string,
 };
 
-export class YesNo extends React.Component<Props, State> {
-  openLaw = this.props.openLaw;
-
+export class YesNo extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue,
   };
+
+  noRef: {current: null | HTMLInputElement} = React.createRef();
+  yesRef: {current: null | HTMLInputElement} = React.createRef();
 
   constructor(props: Props) {
     super(props);
@@ -27,8 +29,15 @@ export class YesNo extends React.Component<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
+  componentDidMount() {
+    // This solves a timing issue where some uses of OpenLawForm
+    // were not replacing the savedValue value on mount.
+    // It only happens when using a PureComponent.
+    setTimeout(() => this.radioCheckedByRef(), 0);
+  }
+
   componentDidUpdate(prevProps: Props) {
-    if (this.props.savedValue !== prevProps.savedValue) {
+    if (prevProps.savedValue !== this.props.savedValue) {
       this.setState({
         currentValue: this.props.savedValue,
       });
@@ -36,21 +45,33 @@ export class YesNo extends React.Component<Props, State> {
   }
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const variable = this.props.variable;
-    const name = this.openLaw.getName(variable);
     const eventValue = event.currentTarget.value;
+    const { name } = this.props;
 
     this.setState({
       currentValue: eventValue,
     }, () => {
-      this.props.onChange(name, eventValue);
+      // uses an added param `force` set to `true`
+      // TODO change should be in openlaw app, not here!
+      this.props.onChange(name, eventValue, true);
     });
   }
 
+  // visually update the uncontrolled HTML radio, as we already have the value
+  radioCheckedByRef() {
+    const currentYesRef = this.yesRef.current;
+    const currentNoRef = this.noRef.current;
+    
+    if (currentYesRef && currentNoRef && this.props.savedValue === 'true') {
+      currentYesRef.checked = true;
+    }
+    if (currentNoRef && currentYesRef && this.props.savedValue === 'false') {
+      currentNoRef.checked = true;
+    }
+  }
+
   render() {
-    const variable = this.props.variable;
-    const description = this.openLaw.getDescription(variable);
-    const cleanName = this.openLaw.getCleanName(variable);
+    const { cleanName, description } = this.props;
     const additionalClass = this.state.currentValue ? ' conditional-set' : '';
 
     return (
@@ -65,9 +86,9 @@ export class YesNo extends React.Component<Props, State> {
               className={cleanName}
               onChange={this.onChange}
               name={cleanName}
+              ref={this.yesRef}
               type="radio"
               value="true"
-              checked={this.state.currentValue === 'true'}
             />
             <span>Yes</span>
           </label>
@@ -77,9 +98,9 @@ export class YesNo extends React.Component<Props, State> {
               className={cleanName}
               name={cleanName}
               onChange={this.onChange}
+              ref={this.noRef}
               type="radio"
               value="false"
-              checked={this.state.currentValue === 'false'}
             />
             <span>No</span>
           </label>

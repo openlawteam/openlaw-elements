@@ -6,6 +6,7 @@
   ],
   "globals": {
     "document": true,
+    "setTimeout": true,
     "window": true
   },
   "parserOptions": {

@@ -93,9 +93,13 @@ If you'd like to load the styles via an HTML file, you can copy the path (or fil
 
 If you want to leave out our styles, that's completely OK. We've set up our components with simple classnames so you can target what you need to, easily. Just add your own stylesheet and take a look at what classes and elements you can style. We find the simplest way to prototype can be using browser developer tools.
 
-## Optional Parameters
+### Optional Parameters
 
 In addition to the required parameters, we offer support for additional parameters that will give you more flexibility to apply styles and render custom form sections. You can check out our [OpenLaw Elements docs](https://docs.openlaw.io/openlaw-elements/) for more details.
+
+### OpenLaw dependency
+
+As OpenLaw Elements depends on the [openlaw](https://www.npmjs.com/package/openlaw) package, we recommend always using the [latest](https://www.npmjs.com/package/openlaw/v/latest) version.
 
 ## Running the example app
 
@@ -107,7 +111,11 @@ If you would like to use our Address or input type, please authenticate by sendi
 OPENLAW_EMAIL=alex@email.com OPENLAW_PASSWORD=password npm start
 ```
 
-*NOTE:* If you do not provide credentials, the app will still run, but you will not be able to select an address lookup from the drop-down, nor be able to see the values in the rendered preview HTML.
+*NOTE:* If you do not provide credentials the app will still run, but you will not be able to:
+
+* Select an Address lookup from the drop-down
+* Use the Identity lookup
+* See those values in the rendered preview HTML
 
 ### About the app
 

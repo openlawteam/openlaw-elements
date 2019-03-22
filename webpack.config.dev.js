@@ -2,9 +2,11 @@
  * THIS CONFIG FOR OUR EXAMPLE, CONSUMING APP
  */
 
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const path = require('path')
-const webpack = require('webpack')
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const path = require('path');
+const webpack = require('webpack');
+
+const WARN_APICLIENT = 'OpenLaw APIClient: Please authenticate to the APIClient if you wish to use the Address or Identity inputs.';
 
 module.exports = {
   devtool: 'eval',
@@ -24,7 +26,8 @@ module.exports = {
     new HtmlWebpackPlugin({
       filename: 'index.html',
       inject: true,
-      template: './example/index.html'
+      template: './example/index.html',
+      warningApiClient: !process.env.OPENLAW_EMAIL || !process.env.OPENLAW_PASSWORD ? WARN_APICLIENT : '',
     })
   ],
   module: {

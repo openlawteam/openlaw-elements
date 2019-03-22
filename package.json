@@ -72,7 +72,7 @@
     "html-webpack-plugin": "^3.2.0",
     "node-sass": "^4.11.0",
     "np": "^4.0.2",
-    "openlaw": "^0.1.19",
+    "openlaw": "^0.1.22",
     "raw-loader": "^1.0.0",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",

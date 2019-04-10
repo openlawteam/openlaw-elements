@@ -21,6 +21,7 @@ type State = {
 export class DatePicker extends React.PureComponent<Props, State> {
   id: string;
   flatpickr: flatpickr;
+  flatpickrRef: {current: null | HTMLInputElement} = React.createRef(); 
 
   state = {
     enableTime: this.props.enableTime,
@@ -31,7 +32,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
 
     const { cleanName } = this.props;
     const timestamp = new Date().getTime().toString();
-    this.id = this.id || `date_${cleanName}_${timestamp}`;
+    this.id = `date_${cleanName}_${timestamp}`;
 
     const self: any = this;
     self.onChange = this.onChange.bind(this);
@@ -57,11 +58,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
       options.defaultDate = new Date(parseInt(this.props.savedValue));
     }
 
-    this.flatpickr = flatpickr(document.getElementById(this.id), options);
-  }
-
-  componentWillUnmount() {
-    this.flatpickr.destroy();
+    this.flatpickr = flatpickr(this.flatpickrRef.current, options);
   }
 
   get isIOS() {
@@ -92,6 +89,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
           <input
             id={this.id}
             placeholder={description}
+            ref={this.flatpickrRef}
           />
         </label>
 

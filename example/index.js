@@ -173,6 +173,7 @@ const styles = {
     padding: '12px 24px',
     position: 'fixed',
     right: 0,
+    top: 0,
   },
   pre: {
     wordBreak: 'break-all',

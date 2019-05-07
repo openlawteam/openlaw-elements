@@ -114,7 +114,6 @@ OPENLAW_EMAIL=alex@email.com OPENLAW_PASSWORD=password npm start
 *NOTE:* If you do not provide credentials the app will still run, but you will not be able to:
 
 * Select an Address lookup from the drop-down
-* Use the Identity lookup
 * See those values in the rendered preview HTML
 
 ### About the app

@@ -59,29 +59,6 @@ export class Identity extends React.PureComponent<Props, State> {
     }
   }
 
-  componentDidUpdate(prevProps: Props) {
-    const { getValidity, name, openLaw, savedValue } = this.props;
-
-    if (
-      !this.state.validationError
-      && (savedValue !== prevProps.savedValue)
-    ) {
-      try {
-        const identity = getValidity(name, savedValue);
-
-        this.setState({
-          email: openLaw.getIdentityEmail(identity) || '',
-        });
-      }
-      catch (error) {
-        this.setState({
-          email: '',
-          validationError: true,
-        });
-      }
-    }
-  }
-
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
     const { apiClient, name, openLaw } = this.props;

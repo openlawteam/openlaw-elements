@@ -43,17 +43,6 @@ export class Address extends React.PureComponent<Props, State> {
     self.submitAddress = this.submitAddress.bind(this);
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (
-      this.props.savedValue &&
-      (prevProps.savedValue !== this.props.savedValue)
-    ) {
-      this.setState({
-        currentValue: this.props.savedValue || '',
-      });
-    }
-  }
-
   onChange(event: SyntheticEvent<HTMLInputElement>, autosuggestEvent: Object) {
     const eventValue = event.currentTarget.value;
     const { newValue, method } = autosuggestEvent;

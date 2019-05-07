@@ -31,14 +31,6 @@ export class NumberInput extends React.PureComponent<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.savedValue !== this.props.savedValue) {
-      this.setState({
-        currentValue: this.props.savedValue || '',
-      });
-    }
-  }
-
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
     const { getValidity, name } = this.props;

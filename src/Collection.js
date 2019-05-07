@@ -1,6 +1,7 @@
 // @flow
 
 import * as React from 'react';
+const uuidv4 = require('uuid/v4');
 
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
@@ -17,13 +18,14 @@ type Props = {
 
 type State = {
   currentValue: string,
-  validationError: boolean,
-  focusIndex: number | null,
   errorMsg: string,
+  focusIndex: number | null,
+  validationError: boolean,
 };
 
 export class Collection extends React.Component<Props, State> {
   openLaw = this.props.openLaw;
+  uniqueCollectionIds: Array<string> = [];
 
   state = {
     currentValue: this.props.savedValue,
@@ -66,18 +68,30 @@ export class Collection extends React.Component<Props, State> {
     });
   }
 
-  generateInput(subVariable: Object, index: number) {
+  addUniqueCollectionId(id: string): Array<string> {
+    this.uniqueCollectionIds = this.uniqueCollectionIds.concat([id]);
+    return this.uniqueCollectionIds;
+  }
+
+  generateInput(index: number) {
+    const subVariable = this.openLaw.createVariableFromCollection(
+      this.props.variable,
+      index,
+      this.props.executionResult,
+    );
     const savedValue: string = this.openLaw.getCollectionElementValue(
       this.props.variable,
       this.props.executionResult,
       this.props.savedValue,
       index,
     );
-    const variableName = this.openLaw.getName(subVariable);
     const { executionResult } = this.props;
+    
+    // append new client-side unique React key, if none exists
+    if (!this.uniqueCollectionIds[index]) this.addUniqueCollectionId(uuidv4());
 
     return (
-      <div className="collection-variable-row" key={variableName}>
+      <div className="collection-variable-row" key={this.uniqueCollectionIds[index]}>
         {this.openLaw.isStructuredType(subVariable, executionResult)
           ? (
             <Structure
@@ -190,11 +204,22 @@ export class Collection extends React.Component<Props, State> {
       this.props.savedValue,
     );
 
+    // delete client-side unique React key
+    this.removeUniqueCollectionId(index);
+
     this.props.onChange(variableName, newValue);
   }
 
+  removeUniqueCollectionId(removedIndex: number): Array<string> {
+    this.uniqueCollectionIds = this.uniqueCollectionIds.filter((item, index) => {
+      if (index !== removedIndex) return item;
+    });
+
+    return this.uniqueCollectionIds;
+  }
+
   render() {
-    const variable = this.props.variable;
+    const { variable } = this.props;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
     const collectionSize = this.openLaw.getCollectionSize(
@@ -205,17 +230,8 @@ export class Collection extends React.Component<Props, State> {
 
     const variables = [];
 
-    for (let index = 0; index < collectionSize; index++) {
-      variables.push(
-        this.generateInput(
-          this.openLaw.createVariableFromCollection(
-            variable,
-            index,
-            this.props.executionResult,
-          ),
-          index,
-        ),
-      );
+    for (let index = 0; index < collectionSize; index++) {      
+      variables.push(this.generateInput(index));
     }
 
     return (

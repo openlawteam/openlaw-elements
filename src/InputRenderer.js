@@ -137,7 +137,6 @@ export const InputRenderer = (props: RendererProps) => {
     case 'Identity':
       return (
         <Identity
-          apiClient={apiClient}
           cleanName={cleanName}
           description={description}
           getValidity={attemptCheckValidity}

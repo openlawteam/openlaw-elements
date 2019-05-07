@@ -3,7 +3,6 @@
 import * as React from 'react';
 
 type Props = {
-  apiClient: Object, // opt-out of type checker until Flow types are exported for APIClient
   cleanName: string,
   description: string,
   getValidity: (string, string) => any | false,
@@ -61,7 +60,7 @@ export class Identity extends React.PureComponent<Props, State> {
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
-    const { apiClient, name, openLaw } = this.props;
+    const { name, openLaw } = this.props;
 
     try {
       if (!eventValue) {
@@ -85,20 +84,6 @@ export class Identity extends React.PureComponent<Props, State> {
         );
 
         this.isDataValid = true;
-
-        apiClient.getUserDetails(eventValue).then(result => {
-          if (result.email) {
-            this.props.onChange(
-              name,
-              openLaw.createIdentityInternalValue(result.id, result.email),
-            );
-
-            this.setState({
-              email: result.email,
-              validationError: false,
-            });
-          }
-        });
       }
     } catch (error) {
       this.isDataValid = false;

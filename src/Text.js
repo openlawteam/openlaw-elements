@@ -31,17 +31,6 @@ export class Text extends React.PureComponent<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (
-      !this.state.validationError &&
-      (this.props.savedValue !== prevProps.savedValue)
-    ) {
-      this.setState({
-        currentValue: this.props.savedValue || '',
-      });
-    }
-  }
-
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
     const { getValidity, name } = this.props;

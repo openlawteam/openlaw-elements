@@ -61,19 +61,16 @@ export class DatePicker extends React.PureComponent<Props, State> {
     this.flatpickr = flatpickr(this.flatpickrRef.current, options);
   }
 
-  get isIOS() {
-    return !!window.navigator.platform && /iPad|iPhone|iPod/.test(window.navigator.platform);
-  }
-
-  get shouldShowIOSLabel() {
-    return this.isIOS && !this.props.savedValue;
-  }
-
   onChange(selectedDates: Array<any>) {
     const { name } = this.props;
     const epochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : undefined);
 
     this.props.onChange(name, epochUTCString);
+  }
+  
+  shouldShowIOSLabel() {
+    const isIOS = !!window.navigator.platform && /iPad|iPhone|iPod/.test(window.navigator.platform);
+    return isIOS && !this.props.savedValue;
   }
 
   render() {
@@ -93,7 +90,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
           />
         </label>
 
-        {this.shouldShowIOSLabel &&
+        {this.shouldShowIOSLabel() &&
           <span className="ios-label">{description}</span>
         }
       </div>

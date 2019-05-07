@@ -13,13 +13,11 @@ type Props = {
 
 type State = {
   currentValue: string,
-  validationError: boolean,
 };
 
 export class LargeText extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue || '',
-    validationError: false,
   };
 
   constructor(props: Props) {
@@ -29,43 +27,19 @@ export class LargeText extends React.PureComponent<Props, State> {
     self.onChange = this.onChange.bind(this);
   }
 
-  componentDidUpdate(prevProps: Props) {
-    if (
-      !this.state.validationError &&
-      prevProps.savedValue !== this.props.savedValue
-    ) {
-      this.setState({
-        currentValue: this.props.savedValue || '',
-      });
-    }
-  }
-
   onChange(event: SyntheticEvent<*>) {
     const eventValue = event.currentTarget.value;
     const { name } = this.props;
 
-    if (eventValue) {
-      this.setState({
-        currentValue: eventValue,
-        validationError: false,
-      }, () => {
-        this.props.onChange(name, eventValue);
-      });
-    } else {
-      if (this.state.currentValue) {
-        this.setState({
-          currentValue: '',
-          validationError: false,
-        }, () => {
-          this.props.onChange(name);
-        });
-      }
-    }
+    this.setState({
+      currentValue: eventValue,
+    }, () => {
+      this.props.onChange(name, eventValue || undefined);
+    });
   }
 
   render() {
     const { cleanName, description } = this.props;
-    const additionalClassName = this.state.validationError ? ' is-error' : '';
 
     return (
       <div className="contract-variable">
@@ -73,7 +47,7 @@ export class LargeText extends React.PureComponent<Props, State> {
           <span>{description}</span>
 
           <textarea
-            className={`${this.props.textLikeInputClass}${cleanName}${additionalClassName}`}
+            className={`${this.props.textLikeInputClass}${cleanName}`}
             onChange={this.onChange}
             placeholder={description}
             title={description}

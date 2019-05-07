@@ -6,7 +6,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 
-const WARN_APICLIENT = 'OpenLaw APIClient: Please authenticate to the APIClient if you wish to use the Address or Identity inputs.';
+const WARN_APICLIENT = 'OpenLaw APIClient: Please authenticate to the APIClient if you wish to use the Address input.';
 
 module.exports = {
   devtool: 'eval',

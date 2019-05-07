@@ -29,7 +29,7 @@ apiClient
   .login(loginDetails.email, loginDetails.password) //eslint-disable-line  no-undef
   .catch((error) => {
     if (/500/.test(error)) {
-      console.warn('OpenLaw APIClient: Please authenticate to the APIClient if you wish to use the Address or Identity inputs.');
+      console.warn('OpenLaw APIClient: Please authenticate to the APIClient if you wish to use the Address input.');
       return;
     }
     console.error('OpenLaw APIClient:', error);

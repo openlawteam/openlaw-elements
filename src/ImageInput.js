@@ -212,7 +212,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
     this.setState({ showModal: !(this.state.showModal) });
   }
 
-  resizeImageSource(dataURL: string): Promise<any> {
+  resizeImageSource(dataURL: string): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!dataURL) {
         reject('');
@@ -256,10 +256,8 @@ export class ImageInput extends React.PureComponent<Props, State> {
       resizedImageDataURL = '';
     }
 
-    const validity = getValidity(name, resizedImageDataURL);
-
-    // if the valid string either has length, or is empty, it's valid
-    const isImageDataValid = (validity && validity.length > 0) || (validity === '' && validity.length === 0);
+    // if the valid string either has length, or is empty, it will be valid
+    const isImageDataValid = getValidity(name, resizedImageDataURL) && typeof resizedImageDataURL === 'string';
 
     if (isImageDataValid) {
       if (resizedImageDataURL) {

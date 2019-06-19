@@ -9,7 +9,7 @@ type Props = {
   description: string,
   getValidity: (string, string) => string | false,
   name: string,
-  onChange: (string, string) => mixed,
+  onChange: (string, ?string) => mixed,
   savedValue: string,
 };
 
@@ -269,7 +269,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
           this.props.onChange(name, resizedImageDataURL);
         });
       } else {
-        this.props.onChange(name, '');
+        this.props.onChange(name);
       }
     } else {
       this.setState({

@@ -26,7 +26,7 @@ const loginDetails = {
 };
 
 // for running against your OpenLaw instance: 'https://[YOUR.INSTANCE.URL]';
-const apiClient = new APIClient('https://app.openlaw.io');
+const apiClient = new APIClient('http://localhost:9000');
 apiClient
   .login(loginDetails.email, loginDetails.password) //eslint-disable-line  no-undef
   .catch((error) => {
@@ -66,6 +66,16 @@ class Form extends Component {
   componentDidMount() {
     this.update();
   }
+
+  handleErrors = (error) => {
+    // console.log(error);
+
+    this.setState({ errorMessage: error.message });
+  };
+
+  onBlur = (event) => {
+    // console.log(event.currentTarget);
+  };
 
   update = (key, value) => {
     const updatedDraftParameters = key
@@ -114,12 +124,17 @@ class Form extends Component {
     return (
       <Fragment>
         <style type="text/css">{inlineStyle}</style>
+
+        {this.state.errorMessage && <div>{this.state.errorMessage}</div>}
+
         {Object.keys(this.state.executionResult).length && (
           <OpenLawForm
             apiClient={apiClient}
             executionResult={this.state.executionResult}
             parameters={this.state.parameters}
+            onBlur={this.onBlur}
             onChangeFunction={this.update}
+            onError={this.handleErrors}
             openLaw={Openlaw}
             renderSections={sectionsRenderer}
             sectionTransform={(section, index) => {

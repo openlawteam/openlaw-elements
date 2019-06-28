@@ -9,7 +9,7 @@ const webpack = require('webpack');
 const WARN_APICLIENT = 'OpenLaw APIClient: Please authenticate to the APIClient if you wish to use the Address input.';
 
 module.exports = {
-  devtool: 'eval',
+  devtool: 'eval-source-map',
   entry: {
     example: './example/index'
   },

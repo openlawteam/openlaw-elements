@@ -6,13 +6,14 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
-import type { InputPropsType } from './types';
+import type { FieldErrorFuncType, InputPropsType } from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
   executionResult: {},
   inputProps?: InputPropsType,
   onChangeFunction: (any) => mixed,
+  onError?: FieldErrorFuncType,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
   renderSections?: ({
@@ -40,6 +41,7 @@ type RendererSectionProps = {
 };
 
 const renderInputs = (props: RendererInputProps) => {
+  const onError = (props.onError || undefined);
   const {
     apiClient, // for API call to Google for geo data (if generating an Address)
     executionResult = {},
@@ -96,7 +98,9 @@ const renderInputs = (props: RendererInputProps) => {
       executionResult={executionResult}
       inputProps={inputProps}
       key={`${cleanName}-input`}
+      onBlur={props.onBlur}
       onChangeFunction={onChangeFunction}
+      onError={onError}
       openLaw={openLaw}
       savedValue={savedValue}
       textLikeInputClass={textLikeInputClass}

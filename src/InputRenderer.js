@@ -14,7 +14,7 @@ import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { ExternalSignature } from './ExternalSignature';
 import { cacheValue } from './utils';
-import type { InputPropsType, ValidateOnKeyUpFuncType } from './types';
+import type { FieldErrorFuncType, InputPropsType, ValidateOnKeyUpFuncType } from './types';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
@@ -22,6 +22,7 @@ type RendererProps = {
   inputProps?: InputPropsType,
   onChangeFunction: (string, ?string, ?boolean) => mixed,
   onKeyUp?: ValidateOnKeyUpFuncType,
+  onError: FieldErrorFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -65,6 +66,7 @@ export const InputRenderer = (props: RendererProps) => {
     executionResult,
     inputProps,
     onChangeFunction,
+    onError,
     onKeyUp,
     openLaw,
     savedValue,
@@ -107,6 +109,7 @@ export const InputRenderer = (props: RendererProps) => {
         inputProps={inputPropsCached && inputPropsCached.Choice}
         name={name}
         onChange={onChangeFunction}
+        onError={onError}
         savedValue={savedValue}
         textLikeInputClass={textLikeInputClass}
       />
@@ -123,6 +126,7 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Address}
           name={name}
           onChange={onChangeFunction}
+          onError={onError}
           onKeyUp={onKeyUp}
           openLaw={openLaw}
           savedValue={
@@ -171,6 +175,7 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Identity}
           name={name}
           onChange={onChangeFunction}
+          onError={onError}
           onKeyUp={onKeyUp}
           openLaw={openLaw}
           savedValue={savedValue}
@@ -203,6 +208,7 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Image}
           name={name}
           onChange={onChangeFunction}
+          onError={onError}
           savedValue={savedValue}
         />
       );
@@ -256,6 +262,7 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Text}
           name={name}
           onChange={onChangeFunction}
+          onError={onError}
           onKeyUp={onKeyUp}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}

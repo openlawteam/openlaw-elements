@@ -63,15 +63,6 @@ class Form extends Component {
     variables: [],
   };
 
-  inputProps = {
-    '*': {
-      disabled: true,
-    },
-    Address: {
-      placeholder: 'Is this thing on?',
-    },
-  }
-
   componentDidMount() {
     this.update();
   }
@@ -127,7 +118,6 @@ class Form extends Component {
           <OpenLawForm
             apiClient={apiClient}
             executionResult={this.state.executionResult}
-            inputProps={this.inputProps}
             parameters={this.state.parameters}
             onChangeFunction={this.update}
             openLaw={Openlaw}

@@ -9,6 +9,7 @@
     "beforeEach": true,
     "document": true,
     "expect": true,
+    "module": true,
     "Promise": true,
     "require": true,
     "setTimeout": true,

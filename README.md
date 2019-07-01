@@ -139,7 +139,7 @@ npm start
 - [ ] Style classNames can be namespaced to your provided namespace key (e.g. `my-app`)
 - [ ] Style configuration prop to override certain element classes (e.g. `{ error: 'my-error-class' }`)
 - [ ] Address input type will be able to be used without the `APIClient`
-- [ ] Ability to choose input labels and/or placeholders. A current workaround is to hide them with your own CSS.
+- [ ] Ability to choose text and toggle visibility of input labels. A current workaround is to hide them with your own CSS.
 
 ## Contributing 
 

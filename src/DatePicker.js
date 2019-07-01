@@ -4,10 +4,13 @@ import * as React from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 
+import type { InputPropsValueType } from './types';
+
 type Props = {
   cleanName: string,
   description: string,
   enableTime: boolean,
+  inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
   savedValue: string,
@@ -61,7 +64,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
     this.flatpickr = flatpickr(this.flatpickrRef.current, options);
   }
 
-  onChange(selectedDates: Array<any>) {
+  onChange(selectedDates: Array<Date>) {
     const { name } = this.props;
     const epochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : undefined);
 
@@ -74,7 +77,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { description } = this.props;
+    const { description, inputProps } = this.props;
 
     return (
       <div className="contract-variable">
@@ -84,8 +87,11 @@ export class DatePicker extends React.PureComponent<Props, State> {
           {/* flatpickr-enabled input; */}
           {/* options are handled in the constructor */}
           <input
-            id={this.id}
             placeholder={description}
+            
+            {...inputProps}
+
+            id={this.id}
             ref={this.flatpickrRef}
           />
         </label>

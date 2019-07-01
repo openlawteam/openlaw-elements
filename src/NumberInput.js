@@ -2,10 +2,13 @@
 
 import * as React from 'react';
 
+import type { InputPropsValueType } from './types';
+
 type Props = {
   cleanName: string,
   description: string,
   getValidity: (string, string) => any | false,
+  inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
@@ -29,6 +32,7 @@ export class NumberInput extends React.PureComponent<Props, State> {
 
     const self: any = this;
     self.onChange = this.onChange.bind(this);
+    self.onKeyUp = this.onKeyUp.bind(this);
   }
 
   onChange(event: SyntheticEvent<HTMLInputElement>) {
@@ -62,8 +66,17 @@ export class NumberInput extends React.PureComponent<Props, State> {
     }
   }
 
+  onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
+    if (this.props.onKeyUp) this.props.onKeyUp(event);
+
+    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
+      this.props.inputProps.onKeyUp(event);
+    }
+  }
+
   render() {
-    const { cleanName, description } = this.props;
+    const { cleanName, description, inputProps } = this.props;
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
       <div className="contract-variable">
@@ -71,10 +84,13 @@ export class NumberInput extends React.PureComponent<Props, State> {
           <span>{description}</span>
 
           <input
-            className={`${this.props.textLikeInputClass}${cleanName}`}
-            onChange={this.onChange}
-            onKeyUp={this.props.onKeyUp}
             placeholder={description}
+
+            {...inputProps}
+
+            className={`${this.props.textLikeInputClass}${cleanName}${inputPropsClassName}`}
+            onChange={this.onChange}
+            onKeyUp={this.onKeyUp}
             type="number"
             value={this.state.currentValue}
           />

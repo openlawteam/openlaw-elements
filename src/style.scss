@@ -244,3 +244,18 @@ $button-text: #363636;
     }
   }
 }
+
+// TODO dev only - make better
+.openlaw-form .contract-variable input:disabled,
+.openlaw-form .contract-variable select:disabled,
+.openlaw-form .contract-variable textarea:disabled,
+.openlaw-form .contract-variable label span.ole-image__span--disabled {
+  background: #e8e8e8;
+  color: #6d6d6d;
+
+  &:hover {
+    background: #e8e8e8;
+    cursor: not-allowed;
+  }
+}
+

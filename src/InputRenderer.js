@@ -13,10 +13,12 @@ import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { cacheValue } from './utils';
+import type { InputPropsType } from './types';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
+  inputProps?: InputPropsType,
   onChangeFunction: (string, ?string, ?boolean) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
   openLaw: Object, // opt-out of type checker
@@ -25,15 +27,29 @@ type RendererProps = {
   variable: {},
 };
 
+const ELEMENT_TYPES = [
+  'Address',
+  'Choice',
+  'Date',
+  'Identity',
+  'Image',
+  'LargeText',
+  'Number',
+  'Text',
+  'YesNo',
+];
+
 // keep React rendering happy with the same Array reference, if not changed.
 const getChoiceValuesCached = cacheValue(deepEqual);
+// keep React rendering happy with the same Object reference, if not changed.
+const getInputPropsCached = cacheValue(deepEqual);
 const variableCache = {};
-let executionResultCached;
+let executionResultCurrent;
 let openLawCached;
 
 const attemptCheckValidity = (name: string, value: string) => {
   try {
-    return openLawCached.checkValidity(variableCache[name], value, executionResultCached);
+    return openLawCached.checkValidity(variableCache[name], value, executionResultCurrent);
   } catch (error) {
     return false;
   }
@@ -49,6 +65,7 @@ export const InputRenderer = (props: RendererProps) => {
   const {
     apiClient,
     executionResult,
+    inputProps,
     onChangeFunction,
     onKeyUp,
     openLaw,
@@ -64,11 +81,20 @@ export const InputRenderer = (props: RendererProps) => {
   } = getVariableData(variable, openLaw);
 
   // store latest executionResult for access outside React
-  executionResultCached = executionResult;
+  executionResultCurrent = executionResult;
   // store openLaw for access outside React
   if (!openLawCached) openLawCached = openLaw;
   // store { [name]: variable } for access outside React
   variableCache[name] = variable;
+
+  // merge all `inputProps` ("*") with a specific type's props (e.g. "Address")
+  const inputPropsMerged = inputProps && (
+    ELEMENT_TYPES.reduce((result, key) => {
+      return { ...result, [key]: { ...inputProps['*'], ...inputProps[key] } };
+    }, {})
+  );
+  // cache the inputProps
+  const inputPropsCached = getInputPropsCached(inputPropsMerged);
 
   // Choice type detection is different
   if (openLaw.isChoiceType(variable, executionResult)) {
@@ -80,6 +106,7 @@ export const InputRenderer = (props: RendererProps) => {
         cleanName={cleanName}
         description={description}
         getValidity={attemptCheckValidity}
+        inputProps={inputPropsCached && inputPropsCached.Choice}
         name={name}
         onChange={onChangeFunction}
         savedValue={savedValue}
@@ -95,6 +122,7 @@ export const InputRenderer = (props: RendererProps) => {
           apiClient={apiClient} // for API call to Google for geo data
           cleanName={cleanName}
           description={description}
+          inputProps={inputPropsCached && inputPropsCached.Address}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
@@ -114,6 +142,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           enableTime={false}
+          inputProps={inputPropsCached && inputPropsCached.Date}
           name={name}
           onChange={onChangeFunction}
           savedValue={savedValue}
@@ -127,6 +156,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           enableTime
+          inputProps={inputPropsCached && inputPropsCached.Date}
           name={name}
           onChange={onChangeFunction}
           savedValue={savedValue}
@@ -140,6 +170,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={attemptCheckValidity}
+          inputProps={inputPropsCached && inputPropsCached.Identity}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
@@ -155,6 +186,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={attemptCheckValidity}
+          inputProps={inputPropsCached && inputPropsCached.Image}
           name={name}
           onChange={onChangeFunction}
           savedValue={savedValue}
@@ -166,6 +198,7 @@ export const InputRenderer = (props: RendererProps) => {
         <LargeText
           cleanName={cleanName}
           description={description}
+          inputProps={inputPropsCached && inputPropsCached.LargeText}
           name={name}
           onChange={onChangeFunction}
           savedValue={savedValue}
@@ -179,6 +212,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={attemptCheckValidity}
+          inputProps={inputPropsCached && inputPropsCached.Number}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
@@ -192,6 +226,7 @@ export const InputRenderer = (props: RendererProps) => {
         <YesNo
           cleanName={cleanName}
           description={description}
+          inputProps={inputPropsCached && inputPropsCached.YesNo}
           name={name}
           onChange={onChangeFunction}
           savedValue={savedValue}
@@ -204,6 +239,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={attemptCheckValidity}
+          inputProps={inputPropsCached && inputPropsCached.Text}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}

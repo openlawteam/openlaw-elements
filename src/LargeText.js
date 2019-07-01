@@ -2,9 +2,12 @@
 
 import * as React from 'react';
 
+import type { InputPropsValueType } from './types';
+
 type Props = {
   cleanName: string,
   description: string,
+  inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
   savedValue: string,
@@ -39,7 +42,8 @@ export class LargeText extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description } = this.props;
+    const { cleanName, description, inputProps } = this.props;
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
       <div className="contract-variable">
@@ -47,10 +51,13 @@ export class LargeText extends React.PureComponent<Props, State> {
           <span>{description}</span>
 
           <textarea
-            className={`${this.props.textLikeInputClass}${cleanName}`}
-            onChange={this.onChange}
             placeholder={description}
             title={description}
+
+            {...inputProps}
+
+            className={`${this.props.textLikeInputClass}${cleanName}${inputPropsClassName}`}
+            onChange={this.onChange}
             value={this.state.currentValue}
           />
         </label>

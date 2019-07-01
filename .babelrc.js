@@ -1,7 +1,7 @@
 const env = process.env.NODE_ENV;
 
 const pluginsCommon = [
-  ["@babel/transform-runtime", {
+  ['@babel/transform-runtime', {
     "regenerator": true
   }],
   '@babel/plugin-proposal-class-properties',
@@ -9,7 +9,7 @@ const pluginsCommon = [
 ];
 
 const presetsCommon = [
-  "@babel/preset-react",
+  '@babel/preset-react',
   '@babel/preset-flow',
   ['@babel/preset-env', { modules: false }],
 ];
@@ -18,8 +18,8 @@ if (env === 'cjs' || env === 'esm') {
   module.exports = {
     plugins: [
       // keep the order as-is
-      ["@babel/transform-runtime", {
-        "regenerator": true
+      ['@babel/transform-runtime', {
+        'regenerator': true
       }],
       ['flow-react-proptypes', {deadCode: true, useESModules: true}],
       '@babel/plugin-proposal-class-properties',
@@ -41,5 +41,16 @@ if (env === 'development') {
   module.exports = {
     plugins: pluginsCommon,
     presets: presetsCommon,
+  };
+}
+
+if (env === 'test') {
+  module.exports = {
+    plugins: pluginsCommon,
+    presets: [
+      '@babel/preset-react',
+      '@babel/preset-flow',
+      ['@babel/preset-env'],
+    ],
   };
 }

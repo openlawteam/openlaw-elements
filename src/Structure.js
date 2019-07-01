@@ -3,10 +3,12 @@
 import * as React from 'react';
 
 import { InputRenderer } from './InputRenderer';
+import type { InputPropsType } from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
+  inputProps?: InputPropsType,
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
@@ -38,6 +40,7 @@ export class Structure extends React.Component<Props, State> {
   }
 
   generateInput(subVariable: Object) {
+    const { apiClient, executionResult, inputProps, textLikeInputClass } = this.props;
     const savedValueProp = this.props.savedValue === '' ? undefined : this.props.savedValue;
     const structureFieldValue = this.openLaw.getStructureFieldValue(
       this.props.variable,
@@ -49,12 +52,13 @@ export class Structure extends React.Component<Props, State> {
     return (
       <div className="structure-variable-row" key={this.openLaw.getName(subVariable)}>
         <InputRenderer
-          apiClient={this.props.apiClient}
-          executionResult={this.props.executionResult}
+          apiClient={apiClient}
+          executionResult={executionResult}
+          inputProps={inputProps}
           onChangeFunction={this.onChange}
           openLaw={this.openLaw}
           savedValue={structureFieldValue || ''}
-          textLikeInputClass={this.props.textLikeInputClass}
+          textLikeInputClass={textLikeInputClass}
           variable={subVariable}
         />
       </div>

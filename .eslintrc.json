@@ -5,9 +5,14 @@
     "plugin:react/recommended"
   ],
   "globals": {
+    "afterEach": true,
+    "beforeEach": true,
     "document": true,
+    "expect": true,
+    "Promise": true,
     "require": true,
     "setTimeout": true,
+    "test": true,
     "window": true
   },
   "parserOptions": {

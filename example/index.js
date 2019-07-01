@@ -1,3 +1,5 @@
+/* global process */
+
 import React, { Component, Fragment, useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { APIClient, Openlaw } from 'openlaw';
@@ -11,7 +13,7 @@ import OpenLawForm from '../src';
 import '../src/style.scss';
 
 import Collapsible from './Collapsible';
-import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
+import SampleTemplateText from './SAMPLE_TEMPLATE';
 
 /**
  * Example app showing how you can render `OpenLawForm`
@@ -60,6 +62,15 @@ class Form extends Component {
     parameters: {},
     variables: [],
   };
+
+  inputProps = {
+    '*': {
+      disabled: true,
+    },
+    Address: {
+      placeholder: 'Is this thing on?',
+    },
+  }
 
   componentDidMount() {
     this.update();
@@ -116,6 +127,7 @@ class Form extends Component {
           <OpenLawForm
             apiClient={apiClient}
             executionResult={this.state.executionResult}
+            inputProps={this.inputProps}
             parameters={this.state.parameters}
             onChangeFunction={this.update}
             openLaw={Openlaw}

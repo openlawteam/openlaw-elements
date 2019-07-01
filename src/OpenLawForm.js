@@ -6,10 +6,12 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
+import type { InputPropsType } from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
   executionResult: {},
+  inputProps?: InputPropsType,
   onChangeFunction: (any) => mixed,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
@@ -41,6 +43,7 @@ const renderInputs = (props: RendererInputProps) => {
   const {
     apiClient, // for API call to Google for geo data (if generating an Address)
     executionResult = {},
+    inputProps,
     onChangeFunction = () => {},
     openLaw = {},
     parameters = {},
@@ -57,6 +60,7 @@ const renderInputs = (props: RendererInputProps) => {
       <Structure
         apiClient={apiClient}
         executionResult={executionResult}
+        inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
         openLaw={openLaw}
@@ -73,6 +77,7 @@ const renderInputs = (props: RendererInputProps) => {
       <Collection
         apiClient={apiClient}
         executionResult={executionResult}
+        inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
         openLaw={openLaw}
@@ -89,6 +94,7 @@ const renderInputs = (props: RendererInputProps) => {
     <InputRenderer
       apiClient={apiClient}
       executionResult={executionResult}
+      inputProps={inputProps}
       key={`${cleanName}-input`}
       onChangeFunction={onChangeFunction}
       openLaw={openLaw}

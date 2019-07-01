@@ -3,10 +3,13 @@
 import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 
+import type { InputPropsValueType } from './types';
+
 type Props = {
   apiClient: Object, // opt-out of type checker until we export APIClient flow types
   cleanName: string,
   description: string,
+  inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
@@ -40,6 +43,7 @@ export class Address extends React.PureComponent<Props, State> {
 
     const self: any = this;
     self.onChange = this.onChange.bind(this);
+    self.onKeyUp = this.onKeyUp.bind(this);
     self.submitAddress = this.submitAddress.bind(this);
   }
 
@@ -70,6 +74,16 @@ export class Address extends React.PureComponent<Props, State> {
           this.props.onChange(name);
         }
       });
+    }
+  }
+
+  onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
+    if (this.props.onKeyUp) {
+      this.props.onKeyUp(event, this.isDataValid);
+    }
+
+    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
+      this.props.inputProps.onKeyUp(event);
     }
   }
 
@@ -123,16 +137,19 @@ export class Address extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { description, cleanName } = this.props;
+    const { description, cleanName, inputProps } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
-    const inputProps = {
-      autoComplete: 'new-password',
-      className: `${this.props.textLikeInputClass}${cleanName}${additionalClassName}`,
-      onChange: this.onChange,
-      onKeyUp: (event) => this.props.onKeyUp ? this.props.onKeyUp(event, this.isDataValid) : undefined,
+    const autoSuggestInputProps = {
       placeholder: description,
       title: description,
+
+      ...inputProps,
+
+      className: `${this.props.textLikeInputClass}${cleanName}${additionalClassName}${inputPropsClassName}`,
+      onChange: this.onChange,
+      onKeyUp: this.onKeyUp,
       type: 'text',
       value: this.state.currentValue,
     };
@@ -143,7 +160,7 @@ export class Address extends React.PureComponent<Props, State> {
           <span>{description}</span>
 
           <Autosuggest
-            inputProps={inputProps}
+            inputProps={autoSuggestInputProps}
             getSuggestionValue={getSuggestionValue}
             onSuggestionsClearRequested={this.onSuggestionsClearRequested}
             onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}

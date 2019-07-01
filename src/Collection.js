@@ -5,10 +5,12 @@ const uuidv4 = require('uuid/v4');
 
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
+import type { InputPropsType } from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
+  inputProps?: InputPropsType,
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
@@ -85,7 +87,7 @@ export class Collection extends React.Component<Props, State> {
       this.props.savedValue,
       index,
     );
-    const { executionResult } = this.props;
+    const { executionResult, inputProps } = this.props;
     
     // append new client-side unique React key, if none exists
     if (!this.uniqueCollectionIds[index]) this.addUniqueCollectionId(uuidv4());
@@ -97,6 +99,7 @@ export class Collection extends React.Component<Props, State> {
             <Structure
               apiClient={this.props.apiClient} // for API call to Google for geo data (if generating an Address)
               executionResult={executionResult}
+              inputProps={inputProps}
               key={`${this.openLaw.getCleanName(subVariable)}-collection`}
               onChange={this.onChange}
               openLaw={this.openLaw}
@@ -108,6 +111,7 @@ export class Collection extends React.Component<Props, State> {
             <InputRenderer
               apiClient={this.props.apiClient}
               executionResult={this.props.executionResult}
+              inputProps={inputProps}
               onChangeFunction={this.onChange}
               onKeyUp={this.onEnter}
               openLaw={this.openLaw}

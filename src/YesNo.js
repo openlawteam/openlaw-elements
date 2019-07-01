@@ -2,9 +2,12 @@
 
 import * as React from 'react';
 
+import type { InputPropsValueType } from './types';
+
 type Props = {
   cleanName: string,
   description: string,
+  inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, string, boolean) => mixed,
   savedValue: string,
@@ -71,8 +74,9 @@ export class YesNo extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description } = this.props;
+    const { cleanName, description, inputProps } = this.props;
     const additionalClass = this.state.currentValue ? ' conditional-set' : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
       <div
@@ -83,9 +87,11 @@ export class YesNo extends React.PureComponent<Props, State> {
         <div>
           <label>
             <input
-              className={cleanName}
-              onChange={this.onChange}
+              {...inputProps}
+
+              className={`${cleanName}${inputPropsClassName}`}
               name={cleanName}
+              onChange={this.onChange}
               ref={this.yesRef}
               type="radio"
               value="true"
@@ -95,7 +101,9 @@ export class YesNo extends React.PureComponent<Props, State> {
 
           <label>
             <input
-              className={cleanName}
+              {...inputProps}
+              
+              className={`${cleanName}${inputPropsClassName}`}
               name={cleanName}
               onChange={this.onChange}
               ref={this.noRef}

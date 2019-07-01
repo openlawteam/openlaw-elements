@@ -6,6 +6,10 @@ type Props = {
   cleanName: string,
   description: string,
   getValidity: (string, string) => any | false,
+  inputProps: ?{
+    className?: string,
+    onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed
+  },
   name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
@@ -34,6 +38,7 @@ export class Identity extends React.PureComponent<Props, State> {
 
     const self: any = this;
     self.onChange = this.onChange.bind(this);
+    self.onKeyUp = this.onKeyUp.bind(this);
   }
 
   componentDidMount() {
@@ -95,9 +100,20 @@ export class Identity extends React.PureComponent<Props, State> {
     }
   }
 
+  onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
+    if (this.props.onKeyUp) {
+      this.props.onKeyUp(event, this.isDataValid);
+    }
+
+    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
+      this.props.inputProps.onKeyUp(event);
+    }
+  }
+
   render() {
-    const { cleanName, description } = this.props;
+    const { cleanName, description, inputProps } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
       <div className="contract-variable identity">
@@ -105,11 +121,14 @@ export class Identity extends React.PureComponent<Props, State> {
           <span>{description}</span>
 
           <input
-            className={`${this.props.textLikeInputClass}${cleanName} ${cleanName}-email${additionalClassName}`}
-            onChange={this.onChange}
-            onKeyUp={(event) => this.props.onKeyUp ? this.props.onKeyUp(event, this.isDataValid) : undefined}
             placeholder={description}
             title={description}
+
+            {...inputProps}
+
+            className={`${this.props.textLikeInputClass}${cleanName} ${cleanName}-email${additionalClassName}${inputPropsClassName}`}
+            onChange={this.onChange}
+            onKeyUp={this.onKeyUp}
             type="email"
             value={this.state.email}
           />

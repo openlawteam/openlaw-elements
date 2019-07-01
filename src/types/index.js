@@ -16,4 +16,4 @@ export type InputPropsType = {
 	[InputTypeEnums]: { [key: string]: any },
 };
 
-export type InputPropsValueType = { [key: string]: any };
+export type InputPropsValueType = { [string]: any };

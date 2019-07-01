@@ -165,6 +165,19 @@ $button-text: #363636;
         }
       }
     }
+
+    input:disabled,
+    select:disabled,
+    textarea:disabled,
+    label span.ole-image__span--disabled {
+      background: #e8e8e8;
+      color: #6d6d6d;
+
+      &:hover {
+        background: #e8e8e8;
+        cursor: not-allowed;
+      }
+    }
   }
 
   [type="file"] {

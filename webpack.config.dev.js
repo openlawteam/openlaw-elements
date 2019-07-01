@@ -37,9 +37,6 @@ module.exports = {
         use: 'babel-loader',
         exclude: /node_modules/,
       }, {
-        test: /\.txt$/,
-        use: 'raw-loader'
-      }, {
         test: /\.css$/,
         // style-loader injects the styles into the <head>
         // css-loader handles the import

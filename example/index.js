@@ -1,3 +1,5 @@
+/* global process */
+
 import React, { Component, Fragment, useEffect, useState } from 'react';
 import { render } from 'react-dom';
 import { APIClient, Openlaw } from 'openlaw';
@@ -11,7 +13,7 @@ import OpenLawForm from '../src';
 import '../src/style.scss';
 
 import Collapsible from './Collapsible';
-import SampleTemplateText from './SAMPLE_TEMPLATE.txt';
+import SampleTemplateText from './SAMPLE_TEMPLATE';
 
 /**
  * Example app showing how you can render `OpenLawForm`

@@ -3,11 +3,13 @@
 import * as React from 'react';
 
 import ImageCrop from './ImageCrop';
+import type { InputPropsValueType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
   getValidity: (string, string) => string | false,
+  inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
   savedValue: string,
@@ -81,7 +83,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
   }
 
   shouldDisableEditButton(image: string) {
-    const isFromRemote = /^http.+\.(gif|png|tiff|bmp|jpg)/.test(image);
+    const isFromRemote = /^http.+\.(gif|png|tiff|bmp|jpg|svg)/.test(image);
 
     // if image is from remote,
     //  or `Image` argument string is malformed,
@@ -279,10 +281,11 @@ export class ImageInput extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description } = this.props;
+    const { cleanName, description, inputProps } = this.props;
     const { disableEditRemoteImage } = this.state;
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
+    const isInputDisabled = (inputProps && inputProps.disabled);
 
-    /* eslint-disable complexity */
     return (
       <div className="contract-variable file">
         {this.props.savedValue
@@ -299,12 +302,15 @@ export class ImageInput extends React.PureComponent<Props, State> {
               <label
                 htmlFor={`image-${cleanName}`}
               >
-                <span>{`Select ${description}`}</span>
+                <span className={isInputDisabled ? 'ole-image__span--disabled' : ''}>{`Select ${description}`}</span>
 
                 <input
-                  accept="image/png, image/jpeg, image/tiff, image/bmp, image/gif"
+                  accept="image/png, image/jpeg, image/svg+xml, image/tiff, image/bmp, image/gif"
+
+                  {...inputProps}
+
+                  className={`image${inputPropsClassName}`}
                   id={`image-${cleanName}`}
-                  className="image"
                   onChange={this.handleFileChange}
                   ref={this.fileRef}
                   type="file"
@@ -334,7 +340,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
                   <div className="ol-modalconfirm-buttons">
                     <button
                       className="ol-modalconfirm-primary button is-info-new"
-                      onClick={() => this.updateImage()}
+                      onClick={this.updateImage}
                     >
                       Save
                     </button>
@@ -361,7 +367,6 @@ export class ImageInput extends React.PureComponent<Props, State> {
               </div>
             </div>
           )
-          /* eslint-enable complexity */
         }
       </div>
     );

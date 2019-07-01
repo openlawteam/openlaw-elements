@@ -2,10 +2,13 @@
 
 import * as React from 'react';
 
+import type { InputPropsValueType } from './types';
+
 type Props = {
   choiceValues: Array<string>,
   cleanName: string,
   description: string,
+  inputProps: ?InputPropsValueType,
   getValidity: (string, string) => any | false,
   name: string,
   onChange: (string, ?string) => mixed,
@@ -71,8 +74,9 @@ export class Choice extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { choiceValues, cleanName, description } = this.props;
+    const { choiceValues, cleanName, description, inputProps } = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
       <div className="contract-variable choice">
@@ -80,11 +84,13 @@ export class Choice extends React.PureComponent<Props, State> {
           <span>{description}</span>
 
           <select
-            value={this.state.currentValue}
+            {...inputProps}
+
+            className={`${this.props.textLikeInputClass}${cleanName}${additionalClassName}${inputPropsClassName}`}
             onChange={this.onChange}
-            className={`${this.props.textLikeInputClass}${cleanName}${additionalClassName}`}
+            value={this.state.currentValue}
           >
-            <option value="">-- Please choose from the list --</option>
+            <option value="">&mdash; Please choose from the list &mdash;</option>
             {choiceValues.map(this.choiceValuesOption)}
           </select>
         </label>

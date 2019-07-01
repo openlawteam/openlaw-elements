@@ -1,4 +1,6 @@
-<%
+/* eslint-disable no-useless-escape */
+
+export default `<%
 ==Personal Info==
 [[Contestant Name]]
 [[Contestant Address]]
@@ -103,4 +105,4 @@ Phone: [[MedicalContact.Emergency Contact Phone]]
   **Certifcation:**
   - Certification Title: [[Cert.Title]]
   - Certification Date: [[Cert.Date]]
-}}
+}}`;

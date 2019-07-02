@@ -89,7 +89,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
           <span>{description}</span>
 
           {/* flatpickr-enabled input */}
-          {/* options are handled in componentDidMount */}
+          {/* options are handled in this.getFlatpickrOptions */}
           <input
             placeholder={description}
             

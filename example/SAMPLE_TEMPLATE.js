@@ -26,7 +26,7 @@ export default `<%
 [[MedicalContact: Contestant Emergency Contact]]
 %>
 
-\centered **International BBQ Cookoff Registration**
+\\centered **International BBQ Cookoff Registration**
 
 [[Contestant Name "Your Name"]]
 [[Contestant Address: Address "Mailing Address"]]

@@ -1,13 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  render,
   cleanup,
+  fireEvent,
+  render,
+  waitForDomChange,
 } from '@testing-library/react';
 import 'jest-dom/extend-expect';
 import { apiClient, Openlaw } from 'openlaw';
 
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+
+const { Fragment } = React;
+
+const isEveryInputDisabled = () => Array.from(
+  document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
+).every(el => {
+  return el.disabled;
+});
+
+const isEveryInputEnabled = () => Array.from(
+  document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
+).every(el => {
+  return (!el.disabled || el.disabled === false);
+});
 
 let parameters;
 let compiledTemplate;
@@ -122,13 +138,7 @@ test('Can render with passed inputProps (separate types, e.g. "Address")', () =>
     />
   );
 
-  const isEveryElementDisabled = Array.from(
-    document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
-  ).every(el => {
-    return el.disabled;
-  });
-
-  expect(isEveryElementDisabled).toBe(true);
+  expect(isEveryInputDisabled()).toBe(true);
 });
 
 test('Can render with passed inputProps (all types, e.g. "*")', () => {
@@ -150,13 +160,7 @@ test('Can render with passed inputProps (all types, e.g. "*")', () => {
     />
   );
 
-  const isEveryElementDisabled = Array.from(
-    document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
-  ).every(el => {
-    return el.disabled;
-  });
-
-  expect(isEveryElementDisabled).toBe(true);
+  expect(isEveryInputDisabled()).toBe(true);
 });
 
 test('Can render with passed inputProps (merged: all + specific types)', () => {
@@ -181,15 +185,68 @@ test('Can render with passed inputProps (merged: all + specific types)', () => {
     />
   );
 
-  const isEveryElementDisabled = Array.from(
-    document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
-  ).every(el => {
-    return el.disabled;
-  });
   const addressElement = document
     .querySelector('.openlaw-form')
     .querySelector('input[placeholder="Is this thing on?"]');
 
-  expect(isEveryElementDisabled).toBe(true);
+  expect(isEveryInputDisabled()).toBe(true);
   expect(addressElement).toBeTruthy();
+});
+
+test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite state when "off"', async () => {
+  /**
+  * In this test we want to make sure all `disabled={true}`
+  * HTML input, select, textarea can be toggled to `disabled={false}`.
+  */
+
+  function FakeComponent() {
+    const initialInputProps = {
+      '*': {
+        disabled: true,
+      },
+    };
+    const [inputProps, setInputProps] = useState(initialInputProps);
+
+    return (
+      <Fragment>
+        <button
+          id="start"
+          onClick={() => {
+            // toggle
+            setInputProps({
+              '*': {
+                disabled: !inputProps['*'].disabled,
+              },
+            });
+          }}
+        >
+          Start
+        </button>
+        <OpenLawForm
+          apiClient={apiClient}
+          executionResult={executionResult}
+          inputProps={inputProps}
+          parameters={parameters}
+          onChangeFunction={onChange}
+          openLaw={Openlaw}
+          variables={executedVariables}
+        />
+      </Fragment>
+    );
+  }
+
+  // render with initial props
+  const { container, getByText } = render(<FakeComponent />);
+
+  // every element should be disabled
+  expect(isEveryInputDisabled()).toBe(true);
+
+  // fire a click event on the "Start" button
+  // to trigger a props change
+  fireEvent.click(getByText(/start/i));
+
+  await waitForDomChange({ container });
+
+  // every element should be enabled
+  expect(isEveryInputEnabled()).toBe(true);
 });

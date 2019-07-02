@@ -23,7 +23,6 @@ type State = {
 
 export class DatePicker extends React.PureComponent<Props, State> {
   id: string;
-  flatpickr: flatpickr;
   flatpickrRef: {current: null | HTMLInputElement} = React.createRef(); 
 
   state = {
@@ -38,39 +37,44 @@ export class DatePicker extends React.PureComponent<Props, State> {
     this.id = `date_${cleanName}_${timestamp}`;
 
     const self: any = this;
-    self.onChange = this.onChange.bind(this);
+    self.onFlatpickrClose = this.onFlatpickrClose.bind(this);
+    self.getFlatpickrOptions = this.getFlatpickrOptions.bind(this);
   }
 
   componentDidMount() {
-    const { cleanName } = this.props;
-    let options = {};
-
-    // display in a friendly format (e.g. January, 1, 1971)
-    options.altInput = true;
-    options.dateFormat = 'Z';
-    // allow time selection 00:00, AM/PM
-    options.enableTime = this.state.enableTime;
-    options.onChange = this.onChange;
-
-    if (this.props.textLikeInputClass) {
-      // Flatpickr inherits our classnames from the original input element
-      options.altInputClass = `${this.props.textLikeInputClass} ${cleanName}`;
-    }
-
-    if (this.props.savedValue) {
-      options.defaultDate = new Date(parseInt(this.props.savedValue));
-    }
-
-    this.flatpickr = flatpickr(this.flatpickrRef.current, options);
+    // start new Flatpickr instance
+    flatpickr(this.flatpickrRef.current, this.getFlatpickrOptions());
   }
 
-  onChange(selectedDates: Array<Date>) {
+  componentDidUpdate() {
+    // Pick up new props by re-instantiating Flatpickr after ref has updated.
+    // The visible flatpickr `input` (via React <input />) will not
+    // update its props after instantiation. Using `react-flatpickr doesn't really help, either.
+    setTimeout(() => flatpickr(this.flatpickrRef.current, this.getFlatpickrOptions()), 0);
+  }
+
+  getFlatpickrOptions() {
+    const { cleanName, textLikeInputClass, savedValue } = this.props;
+
+    return {
+      // display in a friendly format (e.g. January, 1, 1971)
+      altInput: true,
+      altInputClass: `${textLikeInputClass || ''} ${cleanName}`,
+      dateFormat: 'Z',
+      defaultDate: savedValue ? new Date(parseInt(savedValue)) : '',
+      // allow time selection 00:00, AM/PM
+      enableTime: this.state.enableTime,
+      onClose: this.onFlatpickrClose,
+    };
+  }
+  
+  onFlatpickrClose(selectedDates: Array<Date>) {
     const { name } = this.props;
     const epochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : undefined);
 
     this.props.onChange(name, epochUTCString);
   }
-  
+
   shouldShowIOSLabel() {
     const isIOS = !!window.navigator.platform && /iPad|iPhone|iPod/.test(window.navigator.platform);
     return isIOS && !this.props.savedValue;
@@ -84,8 +88,8 @@ export class DatePicker extends React.PureComponent<Props, State> {
         <label>
           <span>{description}</span>
 
-          {/* flatpickr-enabled input; */}
-          {/* options are handled in the constructor */}
+          {/* flatpickr-enabled input */}
+          {/* options are handled in componentDidMount */}
           <input
             placeholder={description}
             

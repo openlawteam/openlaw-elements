@@ -14,15 +14,24 @@ import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { ExternalSignature } from './ExternalSignature';
 import { cacheValue } from './utils';
+<<<<<<< HEAD
 import type { FieldErrorFuncType, InputPropsType, ValidateOnKeyUpFuncType } from './types';
+=======
+import type { FieldErrorFuncType, FieldPropsType, ValidityErrorObjectType, VariableTypesEnumType } from './types';
+>>>>>>> Address, and Text validation in progress
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
-  inputProps?: InputPropsType,
+  inputProps?: FieldPropsType,
   onChangeFunction: (string, ?string, ?boolean) => mixed,
+<<<<<<< HEAD
   onKeyUp?: ValidateOnKeyUpFuncType,
   onError: FieldErrorFuncType,
+=======
+  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onValidate: ?FieldErrorFuncType,
+>>>>>>> Address, and Text validation in progress
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -50,7 +59,11 @@ const variableCache = {};
 let executionResultCurrent;
 let openLawCached;
 
+<<<<<<< HEAD
 const getValidity = (name: string, value: string) => {
+=======
+const attemptCheckValidity = (name: string, value: string): ValidityErrorObjectType => {
+>>>>>>> Address, and Text validation in progress
   return openLawCached.checkValidity(variableCache[name], value, executionResultCurrent);
 };
 
@@ -66,7 +79,7 @@ export const InputRenderer = (props: RendererProps) => {
     executionResult,
     inputProps,
     onChangeFunction,
-    onError,
+    onValidate,
     onKeyUp,
     openLaw,
     savedValue,
@@ -79,6 +92,8 @@ export const InputRenderer = (props: RendererProps) => {
     description,
     name,
   } = getVariableData(variable, openLaw);
+
+  const variableType: VariableTypesEnumType = openLaw.getType(variable);
 
   // store latest executionResult for access outside React
   executionResultCurrent = executionResult;
@@ -109,14 +124,14 @@ export const InputRenderer = (props: RendererProps) => {
         inputProps={inputPropsCached && inputPropsCached.Choice}
         name={name}
         onChange={onChangeFunction}
-        onError={onError}
+        onValidate={onValidate}
         savedValue={savedValue}
         textLikeInputClass={textLikeInputClass}
       />
     );
   }
 
-  switch (openLaw.getType(variable)) {
+  switch (variableType) {
     case 'Address':
       return (
         <Address
@@ -126,8 +141,8 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Address}
           name={name}
           onChange={onChangeFunction}
-          onError={onError}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           openLaw={openLaw}
           savedValue={
             savedValue
@@ -175,8 +190,8 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Identity}
           name={name}
           onChange={onChangeFunction}
-          onError={onError}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
@@ -208,7 +223,7 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Image}
           name={name}
           onChange={onChangeFunction}
-          onError={onError}
+          onValidate={onValidate}
           savedValue={savedValue}
         />
       );
@@ -262,10 +277,11 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Text}
           name={name}
           onChange={onChangeFunction}
-          onError={onError}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
   }

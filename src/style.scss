@@ -1,16 +1,22 @@
+// Constants
+$NAMESPACE: 'openlaw-el';
+
 // Fonts
 $sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 // Colors
 $black: #000;
-$blue: #d7f9fd;
+$blue--aqua-lite: #d7f9fd;
 $dark-grey: #333;
 $grey: #7e7e7e;
-$light-blue: #37c3dc;
+$blue--aqua: #37c3dc;
 $mid-grey: #aaa;
 $off-white: #f2f2f2;
 $purple-grey: #828092;
 $red: #ec4c64;
+$red-error--light: #fef6f7;
+$red-error--dark: #ad4040;
+$red-error__border: #ec9f9f;
 $very-light-grey: #eee;
 $white-smoke: #f5f5f5;
 $white: #fff;
@@ -81,8 +87,8 @@ $button-text: #363636;
       height: 2.25rem;
 
       &:focus {
-        border-bottom-color: $light-blue;
-        background: $blue;
+        border-bottom-color: $blue--aqua;
+        background: $blue--aqua-lite;
       }
 
       &::placeholder {
@@ -261,5 +267,70 @@ $button-text: #363636;
     &:hover {
       background-color: $very-light-grey;
     }
+  }
+}
+  
+/* FIELDS */
+
+.#{$NAMESPACE}-field {
+}
+
+/* ERRORS */
+  
+.#{$NAMESPACE}-field--error {
+  border-bottom-color: $red-error__border !important;
+}
+
+.#{$NAMESPACE}-field__error-message {
+  background-color: $red-error--light;
+  color: $red-error--dark;
+  display: inline-block;
+  font-size: .875em;
+  line-height: 1.5;
+  padding: .1875em .625em;
+}
+
+/* REACT AUTOSUGGEST */
+
+.react-autosuggest__section-title {
+    font-weight: 500;
+    padding: .625rem;
+}
+
+.react-autosuggest__suggestion {
+  &:hover,
+  &[aria-selected="true"] {
+    background-color: $blue--aqua;
+    color: white;
+  }
+
+  &-default {
+    cursor: initial;
+    pointer-events: none;
+
+    &:hover,
+    &[aria-selected="true"] {
+      background-color: currentColor;
+      color: currentColor;
+    }
+  }
+}
+
+.react-autosuggest__suggestions-container--open {
+  background-color: #ebfdff;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: .625rem;
+  }
+
+  li {
+    cursor: pointer;
+    margin: 0 -.625rem;
+    padding: .625rem;
   }
 }

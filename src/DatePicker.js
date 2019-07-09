@@ -4,13 +4,13 @@ import * as React from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 
-import type { InputPropsValueType } from './types';
+import type { FieldPropsValueType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
   enableTime: boolean,
-  inputProps: ?InputPropsValueType,
+  inputProps: ?FieldPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
   savedValue: string,

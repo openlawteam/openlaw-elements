@@ -7,8 +7,10 @@
   "globals": {
     "afterEach": true,
     "beforeEach": true,
+    "describe": true,
     "document": true,
     "expect": true,
+    "jest": true,
     "module": true,
     "Promise": true,
     "require": true,

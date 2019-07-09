@@ -2,13 +2,13 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType, ValidityFuncType } from './types';
+import type { FieldPropsValueType, ValidityFuncType } from './types';
 
 type Props = {
   choiceValues: Array<string>,
   cleanName: string,
   description: string,
-  inputProps: ?InputPropsValueType,
+  inputProps: ?FieldPropsValueType,
   getValidity: ValidityFuncType,
   name: string,
   onChange: (string, ?string) => mixed,

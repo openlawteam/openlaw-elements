@@ -2,13 +2,13 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
+import type { FieldPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
   getValidity: ValidityFuncType,
-  inputProps: ?InputPropsValueType,
+  inputProps: ?FieldPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
   onKeyUp?: ValidateOnKeyUpFuncType,

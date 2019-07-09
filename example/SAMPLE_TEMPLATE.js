@@ -1,5 +1,11 @@
 /* eslint-disable no-useless-escape */
 
+/**
+* SAMPLE TEMPLATE
+* - for example app
+* - for __tests__
+*/
+
 export default `<%
 ==Personal Info==
 [[Contestant Name]]
@@ -40,7 +46,7 @@ export default `<%
 [[Contestant BBQ Experience Years: Number "How many years of BBQ experience do you have?"]]
 
 # Period
-[[Contestant Longest BBQ: Period "What is the longest BBQ you ever conducted?"]]
+[[Contestant Longest BBQ: Period "What is the longest BBQ you ever conducted? (e.g. 1 week, 1 day 2 hours)"]]
 
 # Choice type
 [[Contestant Regional Style: Choice("Carolinas", "Hawaii", "Kansas City", "Memphis", "Texas")]]

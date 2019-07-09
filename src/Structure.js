@@ -3,12 +3,12 @@
 import * as React from 'react';
 
 import { InputRenderer } from './InputRenderer';
-import type { InputPropsType } from './types';
+import type { FieldPropsType } from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
-  inputProps?: InputPropsType,
+  inputProps?: FieldPropsType,
   onChange: (string, ?string) => mixed,
   openLaw: Object, // opt-out of type checker
   savedValue: string,

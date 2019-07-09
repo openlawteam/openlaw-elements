@@ -1,8 +1,10 @@
+const path = require('path');
+
 const env = process.env.NODE_ENV;
 
 const pluginsCommon = [
   ['@babel/transform-runtime', {
-    "regenerator": true
+    'regenerator': true
   }],
   '@babel/plugin-proposal-class-properties',
   '@babel/plugin-proposal-object-rest-spread',

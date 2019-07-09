@@ -26,7 +26,8 @@ const loginDetails = {
 };
 
 // for running against your OpenLaw instance: 'https://[YOUR.INSTANCE.URL]';
-const apiClient = new APIClient('http://localhost:9000');
+// const apiClient = new APIClient('http://localhost:9000');
+const apiClient = new APIClient('https://develop.dev.openlaw.io');
 apiClient
   .login(loginDetails.email, loginDetails.password) //eslint-disable-line  no-undef
   .catch((error) => {
@@ -67,14 +68,8 @@ class Form extends Component {
     this.update();
   }
 
-  handleErrors = (error) => {
-    // console.log(error);
-
-    this.setState({ errorMessage: error.message });
-  };
-
-  onBlur = (event) => {
-    // console.log(event.currentTarget);
+  onValidate = (errorData) => {
+    this.setState({ errorMessage: errorData.errorMessage });
   };
 
   update = (key, value) => {
@@ -114,40 +109,34 @@ class Form extends Component {
   };
 
   render() {
-    const inlineStyle = `
-      .openlaw-form {
-        margin-right: 24px;
-        width: 50%;
-      }
-    `;
-
     return (
       <Fragment>
-        <style type="text/css">{inlineStyle}</style>
+        <div style={{ ...styles.wrap, ...styles.wrapForm }}>
+          {this.state.errorMessage && (
+            <div style={styles.notificationError}>Please correct the form errors.</div>
+          )}
 
-        {this.state.errorMessage && <div>{this.state.errorMessage}</div>}
-
-        {Object.keys(this.state.executionResult).length && (
-          <OpenLawForm
-            apiClient={apiClient}
-            executionResult={this.state.executionResult}
-            parameters={this.state.parameters}
-            onBlur={this.onBlur}
-            onChangeFunction={this.update}
-            onError={this.handleErrors}
-            openLaw={Openlaw}
-            renderSections={sectionsRenderer}
-            sectionTransform={(section, index) => {
-              // Transform & shape your sections here!
-              // Must return an Object.
-              // See the sectionsRenderer below for usage.
-              return { section, mySuperCustomKey: `${index + 1}. `, index };
-            }}
-            textLikeInputClass="input"
-            unsectionedTitle=""
-            variables={this.state.variables}
-          />
-        )}
+          {Object.keys(this.state.executionResult).length && (
+            <OpenLawForm
+              apiClient={apiClient}
+              executionResult={this.state.executionResult}
+              parameters={this.state.parameters}
+              onChangeFunction={this.update}
+              onValidate={this.onValidate}
+              openLaw={Openlaw}
+              renderSections={sectionsRenderer}
+              sectionTransform={(section, index) => {
+                // Transform & shape your sections here!
+                // Must return an Object.
+                // See the sectionsRenderer below for usage.
+                return { section, mySuperCustomKey: `${index + 1}. `, index };
+              }}
+              textLikeInputClass="input"
+              unsectionedTitle=""
+              variables={this.state.variables}
+            />
+          )}
+        </div>
       </Fragment>
     );
   }
@@ -180,6 +169,13 @@ const sectionsRenderer = ({ children, ...sectionData }) => {
 };
 
 const styles = {
+  notificationError: {
+    textAlign: 'center',
+    color: '#ad4040',
+    background: '#ffdfe4',
+    padding: 6,
+    fontFamily: 'sans-serif',
+  },
   previewButton: {
     background: '#6c6cff',
     border: 'none',
@@ -196,9 +192,15 @@ const styles = {
     wordBreak: 'break-all',
     whiteSpace: 'pre-wrap',
   },
+  wrap: {
+    width: '100%',
+  },
   wrapApp: {
     display: 'flex',
     justifyContent: 'space-between',
+  },
+  wrapForm: {
+    marginRight: 24,
   },
 };
 
@@ -241,7 +243,7 @@ const App = () => {
 
       <div style={styles.wrapApp}>
         <Form stateLifter={liftFormState} />
-        <div>
+        <div style={styles.wrap}>
           <pre style={styles.pre}>{SampleTemplateText}</pre>
         </div>
       </div>

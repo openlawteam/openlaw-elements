@@ -35,7 +35,11 @@ module.exports = {
       {
         test: /\.js$/,
         use: 'babel-loader',
-        exclude: /node_modules/,
+        // ignore node_modules and local openlaw (when using `npm/yarn link`)
+        exclude: [
+          /node_modules/,
+          new RegExp(path.resolve(__dirname, '../openlaw-client/dist/esm/lib/openlaw.js')),
+        ],
       }, {
         test: /\.css$/,
         // style-loader injects the styles into the <head>

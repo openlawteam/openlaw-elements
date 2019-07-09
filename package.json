@@ -33,6 +33,10 @@
     },
     "setupFilesAfterEnv": [
       "@testing-library/react/cleanup-after-each"
+    ],
+    "transformIgnorePatterns": [
+      "/node_modules/",
+      "/openlaw-client/"
     ]
   },
   "scripts": {

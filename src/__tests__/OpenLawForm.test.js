@@ -6,7 +6,7 @@ import {
   waitForDomChange,
 } from '@testing-library/react';
 import 'jest-dom/extend-expect';
-import { apiClient, Openlaw } from 'openlaw';
+import { APIClient, Openlaw } from 'openlaw';
 
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
@@ -25,6 +25,7 @@ const isEveryInputEnabled = () => Array.from(
   return (!el.disabled || el.disabled === false);
 });
 
+let apiClient;
 let parameters;
 let compiledTemplate;
 let executionResult;
@@ -32,6 +33,7 @@ let executedVariables;
 let onChange;
 
 beforeEach(() => {
+  apiClient = new APIClient('');
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
   executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
@@ -61,7 +63,7 @@ test('Can render (simple test)', () => {
   getByText(/miscellaneous/i);
 });
 
-test('Can render all types of inputs', () => {
+test('Can render all _types_ of inputs', () => {
   const { getByText } = render(
     <OpenLawForm
       apiClient={apiClient}
@@ -202,12 +204,13 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
   * HTML input, select, textarea can be toggled to `disabled={false}`.
   */
 
+  const initialInputProps = {
+    '*': {
+      disabled: true,
+    },
+  };
+
   function FakeComponent() {
-    const initialInputProps = {
-      '*': {
-        disabled: true,
-      },
-    };
     const [inputProps, setInputProps] = useState(initialInputProps);
 
     return (
@@ -252,4 +255,50 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
 
   // every element should be enabled
   expect(isEveryInputEnabled()).toBe(true);
+});
+
+test('Can surface error through onValidate', () => {
+  /**
+  * In this test we want to make sure onValidate can be called
+  * with an error object when an input data validation
+  * error (or other input-level `Error`) occurs.
+  */
+
+  function FakeComponent() {
+    const [notification, setNotification] = useState('');
+    
+    const onValidate = ({ errorMessage }) => {
+      if (errorMessage) {
+        setNotification('Please correct the form errors.');
+      }
+    };
+
+    return (
+      <Fragment>
+        <div data-testid="notification">{notification}</div>
+
+        <OpenLawForm
+          apiClient={apiClient}
+          executionResult={executionResult}
+          onValidate={onValidate}
+          parameters={parameters}
+          onChangeFunction={onChange}
+          openLaw={Openlaw}
+          variables={executedVariables}
+        />
+      </Fragment>
+    );
+  }
+
+  // render with initial props
+  const { getByText, getByPlaceholderText, getByTestId } = render(<FakeComponent />);
+
+  expect(getByTestId('notification').textContent).toBe('');
+
+  fireEvent.blur(getByPlaceholderText(/mailing address/i));
+
+  // general form error should be shown
+  getByText(/please correct the form errors\./i);
+  // specific, internal form error should be shown
+  getByText(/please choose a valid address from the options\./i);
 });

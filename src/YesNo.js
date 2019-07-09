@@ -2,12 +2,12 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType } from './types';
+import type { FieldPropsValueType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
-  inputProps: ?InputPropsValueType,
+  inputProps: ?FieldPropsValueType,
   name: string,
   onChange: (string, string, boolean) => mixed,
   savedValue: string,

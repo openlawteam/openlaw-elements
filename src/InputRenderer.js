@@ -14,24 +14,22 @@ import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { ExternalSignature } from './ExternalSignature';
 import { cacheValue } from './utils';
-<<<<<<< HEAD
-import type { FieldErrorFuncType, InputPropsType, ValidateOnKeyUpFuncType } from './types';
-=======
-import type { FieldErrorFuncType, FieldPropsType, ValidityErrorObjectType, VariableTypesEnumType } from './types';
->>>>>>> Address, and Text validation in progress
+import type {
+  FieldErrorFuncType,
+  FieldPropsType,
+  OnChangeFuncType,
+  ValidateOnKeyUpFuncType,
+  ValidityErrorObjectType,
+  VariableTypesEnumType,
+} from './types';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
   inputProps?: FieldPropsType,
-  onChangeFunction: (string, ?string, ?boolean) => mixed,
-<<<<<<< HEAD
   onKeyUp?: ValidateOnKeyUpFuncType,
-  onError: FieldErrorFuncType,
-=======
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onChangeFunction: OnChangeFuncType,
   onValidate: ?FieldErrorFuncType,
->>>>>>> Address, and Text validation in progress
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -59,11 +57,7 @@ const variableCache = {};
 let executionResultCurrent;
 let openLawCached;
 
-<<<<<<< HEAD
-const getValidity = (name: string, value: string) => {
-=======
-const attemptCheckValidity = (name: string, value: string): ValidityErrorObjectType => {
->>>>>>> Address, and Text validation in progress
+const getValidity = (name: string, value: string): ValidityErrorObjectType => {
   return openLawCached.checkValidity(variableCache[name], value, executionResultCurrent);
 };
 
@@ -150,6 +144,7 @@ export const InputRenderer = (props: RendererProps) => {
               : ''
           }
           textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 

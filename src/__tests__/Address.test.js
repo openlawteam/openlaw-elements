@@ -14,7 +14,7 @@ import { Address } from '../Address';
 
 const { Fragment } = React;
 
-const FakeComponent = (props) => {
+const FakeAddressComponent = (props) => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const onValidate = ({ errorMessage }) => {
@@ -37,6 +37,7 @@ const FakeComponent = (props) => {
         openLaw={Openlaw}
         savedValue=""
         textLikeInputClass=""
+        variableType="Address"
 
         {...props}
       />
@@ -67,6 +68,7 @@ test('Can render', () => {
       openLaw={Openlaw}
       savedValue=""
       textLikeInputClass=""
+      variableType="Address"
     />
   );
 
@@ -103,7 +105,7 @@ test('Can select an address', async () => {
     );
 
   const { getByDisplayValue, getByTestId, getByText, getByPlaceholderText } = render(
-    <FakeComponent />
+    <FakeAddressComponent />
   );
 
   fireEvent.focus(getByPlaceholderText(/mailing address/i));
@@ -130,15 +132,117 @@ test('Can select an address', async () => {
   expect(() => getByTestId('error-message')).toThrow();
 });
 
-test('Can show error onBlur (no content)', () => {
+test('Can show error onBlur (no value)', () => {
   const { getByPlaceholderText, getByTestId, getByText } = render(
-    <FakeComponent />
+    <FakeAddressComponent />
   );
 
   fireEvent.blur(getByPlaceholderText(/mailing address/i));
 
-  getByText(/please choose a valid address from the options\./i);
-  getByTestId('error-message');
+  expect(() => getByText(/please choose a valid address from the options\./i)).toThrow();
+  expect(() => getByTestId('error-message')).toThrow();
+});
+
+test('Can show error onBlur using inputProps', () => {
+  const { getByPlaceholderText, getByText } = render(
+    <FakeAddressComponent
+      inputProps={{
+        onBlur(event, validationResult) {
+          !validationResult.value && (
+            validationResult.setFieldError('Please provide a valid address')
+          );
+        },
+      }}
+    />
+  );
+
+  fireEvent.blur(getByPlaceholderText(/mailing address/i));
+
+  getByText(/please provide a valid address/i);
+});
+
+test('Can call onValidate after errorMessage from onBlur using inputProps', () => {
+  const spy = jest.fn();
+
+  const { getByPlaceholderText, getByText } = render(
+    <FakeAddressComponent
+      inputProps={{
+        onBlur(event, validationResult) {
+          !validationResult.value && (
+            validationResult.setFieldError('Please provide a valid address')
+          );
+        },
+      }}
+      onValidate={spy}
+    />
+  );
+
+  fireEvent.blur(getByPlaceholderText(/mailing address/i));
+
+  getByText(/please provide a valid address/i);
+  expect(spy.mock.calls[1][0].errorMessage).toMatch(/please provide a valid address/i);
+});
+
+test('Can show error onChange using inputProps', async () => {
+  const { getByPlaceholderText, getByText } = render(
+    <FakeAddressComponent
+      inputProps={{
+        onChange(event, validationResult) {
+          !validationResult.value && (
+            validationResult.setFieldError('Please provide a valid address')
+          );
+        },
+      }}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '123 Anystreet' } });
+
+  // searching...
+  await wait(() => {
+    expect(mockAxios.get)
+      .toHaveBeenCalledWith(
+        '/address/search?term=123%20Anystreet',
+        { 'auth': undefined, 'headers': {} },
+      );
+  });
+
+  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '' } });
+
+  getByText(/please provide a valid address/i);
+});
+
+test('Can call onValidate after errorMessage from onChange using inputProps', async () => {
+  const spy = jest.fn();
+
+  const { getByPlaceholderText, getByText } = render(
+    <FakeAddressComponent
+      inputProps={{
+        onChange(event, validationResult) {
+          !validationResult.value && (
+            validationResult.setFieldError('Please provide a valid address')
+          );
+        },
+      }}
+      onValidate={spy}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '123 Anystreet' } });
+
+  // searching...
+  await wait(() => {
+    expect(mockAxios.get)
+      .toHaveBeenCalledWith(
+        '/address/search?term=123%20Anystreet',
+        { 'auth': undefined, 'headers': {} },
+      );
+  });
+
+  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '' } });
+
+  getByText(/please provide a valid address/i);
+  expect(spy.mock.calls[0][0].errorMessage).toMatch(/please provide a valid address/i);
 });
 
 test('Can show error onBlur (content, but no selection)', async () => {
@@ -154,7 +258,7 @@ test('Can show error onBlur (content, but no selection)', async () => {
     );
 
   const { getByText, getByPlaceholderText } = render(
-    <FakeComponent />
+    <FakeAddressComponent />
   );
 
   fireEvent.focus(getByPlaceholderText(/mailing address/i));
@@ -206,7 +310,7 @@ test('Can show async progress message when searching', async () => {
     );
 
   const { getByTestId, getByText, getByPlaceholderText } = render(
-    <FakeComponent />
+    <FakeAddressComponent />
   );
 
   fireEvent.focus(getByPlaceholderText(/mailing address/i));

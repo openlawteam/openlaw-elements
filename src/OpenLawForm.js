@@ -6,13 +6,13 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
-import type { FieldErrorFuncType, FieldPropsType } from './types';
+import type { FieldErrorFuncType, FieldPropsType, OnChangeFuncType } from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
   executionResult: {},
   inputProps?: FieldPropsType,
-  onChangeFunction: (any) => mixed,
+  onChangeFunction: OnChangeFuncType,
   onValidate?: FieldErrorFuncType,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
@@ -45,7 +45,7 @@ const renderInputs = (props: RendererInputProps) => {
     apiClient, // for API call to Google for geo data (if generating an Address)
     executionResult = {},
     inputProps,
-    onChangeFunction = () => {},
+    onChangeFunction,
     openLaw = {},
     parameters = {},
     variable = {},

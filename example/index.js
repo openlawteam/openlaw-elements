@@ -57,6 +57,24 @@ class Form extends Component {
     stateLifter: () => {},
   };
 
+  getInputProps = () => ({
+    'Address': {
+      onBlur(event, validationResult) {
+        console.log(event.target, validationResult);
+        !validationResult.value && validationResult.setFieldError('No way Jose');
+      },
+      onChange(event, validationResult) {
+        console.log(event.target, validationResult);
+        !validationResult.value && validationResult.setFieldError('No way Jose');
+      }
+    },
+    'Text': {
+      onChange(event, validationResult) {
+        !validationResult.value && validationResult.setFieldError('No way Jose');
+      }
+    },
+  });
+
   state = {
     definedValues: {},
     executionResult: {},
@@ -68,11 +86,13 @@ class Form extends Component {
     this.update();
   }
 
-  onValidate = (errorData) => {
-    this.setState({ errorMessage: errorData.errorMessage });
+  onValidate = ({ errorMessage, eventType }) => {
+    if (eventType === 'blur') this.setState({ errorMessage });
   };
 
-  update = (key, value) => {
+  update = (key, value, validationResult) => {
+    if (validationResult && validationResult.isError) return;
+
     const updatedDraftParameters = key
       ? ({
         ...this.state.parameters,
@@ -120,6 +140,7 @@ class Form extends Component {
             <OpenLawForm
               apiClient={apiClient}
               executionResult={this.state.executionResult}
+              inputProps={this.getInputProps()}
               parameters={this.state.parameters}
               onChangeFunction={this.update}
               onValidate={this.onValidate}

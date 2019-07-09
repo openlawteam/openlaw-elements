@@ -7,6 +7,7 @@ import type {
   FieldErrorFuncType,
   FieldPropsValueType,
   ValidateOnKeyUpFuncType,
+  OnChangeFuncType,
   ValidityFuncType,
   VariableTypesEnumType,
 } from './types';
@@ -17,7 +18,7 @@ type Props = {
   getValidity: ValidityFuncType,
   inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
   onValidate: ?FieldErrorFuncType,
   savedValue: string,
@@ -57,6 +58,7 @@ export class Text extends React.PureComponent<Props, State> {
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
+    self.userSetFieldError = this.userSetFieldError.bind(this);
   }
 
   componentDidMount() {
@@ -73,7 +75,7 @@ export class Text extends React.PureComponent<Props, State> {
 
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
     const { getValidity, inputProps, name, onValidate } = this.props;
-    const { currentValue, errorMessage } = this.state;
+    const { currentValue } = this.state;
     const hasValue = currentValue.length > 0;
     let validityIsError;
     
@@ -83,118 +85,97 @@ export class Text extends React.PureComponent<Props, State> {
       validityIsError = isError;
     }
     
-    const updatedErrorMessage = errorMessage || (
-      (validityIsError)
-        ? `${(this.readableVariableType + ': ' || '')}Something looks incorrect.`
-        : ''
-    );
+    const updatedErrorMessage = (hasValue && validityIsError)
+      ? `${(this.readableVariableType + ': ' || '')}Something looks incorrect.`
+      : '';
+
+    // persist event outside of this handler to a parent component
+    if (event) event.persist();
 
     this.setState({
-      errorMessage: hasValue ? updatedErrorMessage : '',
-      shouldShowError: validityIsError,
+      errorMessage: updatedErrorMessage,
+      shouldShowError: updatedErrorMessage.length > 0,
     }, () => {
-      onValidate && onValidate({
+      const validationData = {
         ...this.baseErrorData,
 
         errorMessage: this.state.errorMessage,
         eventType: 'blur',
         isError: this.state.errorMessage.length > 0,
         value: currentValue,
-      });
+      };
+
+      onValidate && onValidate(validationData);
+      
+      if (event && inputProps && inputProps.onBlur) {
+        inputProps.onBlur(
+          event,
+          {
+            ...validationData,
+            setFieldError: this.userSetFieldError,
+          }
+        );
+      }
     });
+  }
+
+  onChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const eventValue = event.currentTarget.value;
+    const { getValidity, inputProps, name, onChange, onValidate } = this.props;
+    const hasValue = eventValue.length > 0;
+    let validityIsError;
     
+    if (hasValue) {
+      const { isError } = getValidity(name, eventValue);
+
+      validityIsError = isError;
+    }
+
+    const updatedErrorMessage = (hasValue && validityIsError)
+      ? `${(this.readableVariableType + ': ' || '')}Something looks incorrect.`
+      : '';
+
     // persist event outside of this handler to a parent component
     if (event) event.persist();
     
-    if (event && inputProps && inputProps.onBlur) {
-      inputProps.onBlur(event);
-    }
-  }
+    const shouldShowError = validityIsError === false || !hasValue ? { shouldShowError: false } : null;
 
-  onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const eventValue = event.currentTarget.value;
-    const { getValidity, inputProps, name, onChange, onValidate } = this.props;
-    const { errorMessage } = this.state;
-    const { isError:validityIsError } = getValidity(name, eventValue);
-    const validate = data => onValidate && onValidate({
-      ...this.baseErrorData,
+    this.setState({
+      currentValue: eventValue,
+      errorMessage: updatedErrorMessage,
 
-      errorMessage: errorMessage,
-      eventType: 'change',
-      isError: errorMessage.length > 0,
-      value: '',
+      ...shouldShowError,
+    }, () => {
+      this.isDataValid = validityIsError ? false : true;
 
-      ...data,
-    });
+      const validationData = {
+        ...this.baseErrorData,
 
-    if (!eventValue) {
-      if (this.state.currentValue) {
-        this.setState({
-          currentValue: '',
-          shouldShowError: false,
-        }, () => {
-          this.isDataValid = true;
+        errorMessage: this.state.errorMessage,
+        eventType: 'change',
+        isError: this.state.errorMessage.length > 0,
+        value: this.state.currentValue,
+      };
 
-          this.props.onChange(name);
+      onValidate && onValidate(validationData);
 
-          validate({
-            ...this.baseErrorData,
-
-            value: '',
-          });
-
-          onChange(name);
-
-          if (event && inputProps && inputProps.onChange) {
-            inputProps.onChange(event);
-          }
-        });
-      }
-
-      // exit
-      return;
-    }
-
-    if (!validityIsError) {
-      this.setState({
-        currentValue: eventValue,
-        shouldShowError: false,
-      }, () => {
-        this.isDataValid = true;
-
-        validate({
-          ...this.baseErrorData,
-
-          value: this.state.currentValue,
-        });
-
-        onChange(name, eventValue);
-
-        if (event && inputProps && inputProps.onChange) {
-          inputProps.onChange(event);
-        }
-      });
-    } else {
-      const updatedErrorMessage = errorMessage || (
-        (validityIsError)
-          ? `${(this.readableVariableType + ': ' || '')}Something looks incorrect.`
-          : ''
+      onChange(
+        name,
+        this.state.currentValue || undefined,
+        validationData,
       );
 
-      this.setState({
-        currentValue: eventValue,
-      }, () => {
-        this.isDataValid = false;
+      if (event && inputProps && inputProps.onChange) {
+        inputProps.onChange(
+          event,
+          {
+            ...validationData,
 
-        validate({
-          ...this.baseErrorData,
-
-          errorMessage: updatedErrorMessage,
-          isError: updatedErrorMessage.length > 0,
-          value: this.state.currentValue,
-        });
-      });
-    }
+            setFieldError: this.userSetFieldError,
+          }
+        );
+      }
+    });
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
@@ -203,6 +184,13 @@ export class Text extends React.PureComponent<Props, State> {
     if (this.props.inputProps && this.props.inputProps.onKeyUp) {
       this.props.inputProps.onKeyUp(event);
     }
+  }
+
+  userSetFieldError(errorMessage: string = '') {
+    this.setState({
+      errorMessage,
+      shouldShowError: errorMessage.length > 0,
+    });
   }
 
   render() {

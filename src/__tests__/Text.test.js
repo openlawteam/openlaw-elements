@@ -276,6 +276,128 @@ describe('Text: Errors', () => {
   * Period
   */
 
+  test('Can validate Period type', () => {
+    const { getByDisplayValue, getByTestId, getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent />
+    );
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '22 weeks' } });
+    fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+
+    // value should be set
+    getByDisplayValue(/22 weeks/i);
+    // no error message field
+    expect(() => getByText(periodErrorTextRegex)).toThrow();
+    // no error message top
+    expect(() => getByTestId('error-message')).toThrow();
+  });
+
+  // Period onChange
+
+  test('Can show user error(s) onChange using inputProps (Period type)', () => {
+    const { getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent
+        inputProps={{
+          'Text': {
+            onChange(event, validationResult) {
+              !validationResult.value && (
+                validationResult.setFieldError('Please provide a period of time')
+              );
+            },
+          },
+        }}
+      />
+    );
+
+    fireEvent.change(
+      getByPlaceholderText(ethPlaceholderTextRegex),
+      { target: { value: '22 weeks' } },
+    );
+    fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '' } });
+
+    // error message field
+    getByText(/please provide a period of time/i);
+  });
+
+  test('Can clear previous error onChange after valid entry (Period type)', () => {
+    const { getByTestId, getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent />
+    );
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 wee' } });
+    fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+
+    getByText(periodErrorTextRegex);
+    // error message top
+    expect(getByTestId('error-message').textContent)
+      .toMatch(topErrorMessageRegex);
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 week' } });
+
+    // don't show error message on the field
+    expect(() => getByText(periodErrorTextRegex)).toThrow();
+    // don't show top error message
+    expect(() => getByTestId('error-message')).toThrow();
+  });
+
+
+  test('Field error is reset when no value and doesn\'t show onChange (Period type)', () => {
+    const { getByTestId, getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent />
+    );
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '12 wee' } });
+    fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+
+    getByText(periodErrorTextRegex);
+    // error message top
+    expect(getByTestId('error-message').textContent)
+      .toMatch(topErrorMessageRegex);
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '' } });
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '22 w' } });
+
+    // don't show error message on the field
+    expect(() => getByText(periodErrorTextRegex)).toThrow();
+  });
+
+  test('Can show error onChange (Period type)', () => {
+    const { getByTestId, getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent />
+    );
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 wee' } });
+
+    // don't show error message on the field
+    expect(() => getByText(periodErrorTextRegex)).toThrow();
+    // error message top
+    expect(getByTestId('error-message').textContent)
+      .toMatch(/please correct the form errors\. \(test event: change\)/i);
+  });
+
+  test('Can clear previous error onChange (Period type)', () => {
+    const { getByTestId, getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent />
+    );
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 wee' } });
+    fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+
+    getByText(periodErrorTextRegex);
+    // error message top
+    expect(getByTestId('error-message').textContent)
+      .toMatch(topErrorMessageRegex);
+
+    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 week' } });
+
+    // don't show error message on the field
+    expect(() => getByText(periodErrorTextRegex)).toThrow();
+    // don't show top error message
+    expect(() => getByTestId('error-message')).toThrow();
+  });
+
+  // Period onBlur
+
   test('Can show error(s) onBlur (Period type)', () => {
     const { getByTestId, getByText, getByPlaceholderText } = render(
       <FakeOpenlawComponent />
@@ -326,11 +448,52 @@ describe('Text: Errors', () => {
     expect(() => getByTestId('error-message').textContent).toThrow();
   });
 
+  test('Can show user error(s) onBlur using inputProps (Period type)', () => {
+    const { getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent
+        inputProps={{
+          'Text': {
+            onBlur(event, validationResult) {
+              !validationResult.value && (
+                validationResult.setFieldError('Please provide a period of time')
+              );
+            },
+          },
+        }}
+      />
+    );
+
+    fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+
+    // error message field
+    getByText(/please provide a period of time/i);
+  });
+
   /**
   * EthAddress
   */
 
-  // onBlur errors
+  test('Can validate EthAddress type', () => {
+    const { getByDisplayValue, getByTestId, getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent />
+    );
+
+    fireEvent.change(
+      getByPlaceholderText(ethPlaceholderTextRegex),
+      { target: { value: '0xc0ffee254729296a45a3885639AC7E10F9d54979' } },
+    );
+    fireEvent.blur(getByPlaceholderText(ethPlaceholderTextRegex));
+
+    // value should be set
+    getByDisplayValue(/0xc0ffee254729296a45a3885639AC7E10F9d54979/i);
+    // no error message field
+    expect(() => getByText(ethErrorTextRegex)).toThrow();
+    // no error message top
+    expect(() => getByTestId('error-message')).toThrow();
+  });
+  
+  // EthAddress onBlur
+
   test('Can show error(s) onBlur (EthAddress type)', () => {
     const { getByTestId, getByText, getByPlaceholderText } = render(
       <FakeOpenlawComponent />
@@ -381,41 +544,96 @@ describe('Text: Errors', () => {
     expect(() => getByTestId('error-message').textContent).toThrow();
   });
 
-  // onChange errors
-
-  test('Can show error onChange (Period type)', () => {
-    const { getByTestId, getByText, getByPlaceholderText } = render(
-      <FakeOpenlawComponent />
+  test('Can show user error(s) onBlur using inputProps (EthAddress type)', () => {
+    const { getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent
+        inputProps={{
+          'Text': {
+            onBlur(event, validationResult) {
+              !validationResult.value && (
+                validationResult.setFieldError('Please provide an Ethereum Address')
+              );
+            },
+          },
+        }}
+      />
     );
 
-    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 wee' } });
+    fireEvent.blur(getByPlaceholderText(ethPlaceholderTextRegex));
 
-    // don't show error message on the field
-    expect(() => getByText(periodErrorTextRegex)).toThrow();
-    // error message top
-    expect(getByTestId('error-message').textContent)
-      .toMatch(/please correct the form errors\. \(test event: change\)/i);
+    // error message field
+    getByText(/please provide an ethereum address/i);
   });
 
-  test('Can clear previous error onChange (Period type)', () => {
+  // EthAddress onChange
+
+  test('Can show user error(s) onChange using inputProps (EthAddress type)', () => {
+    const { getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent
+        inputProps={{
+          'Text': {
+            onChange(event, validationResult) {
+              !validationResult.value && (
+                validationResult.setFieldError('Please provide an Ethereum Address')
+              );
+            },
+          },
+        }}
+      />
+    );
+
+    fireEvent.change(
+      getByPlaceholderText(ethPlaceholderTextRegex),
+      { target: { value: '0xc0ffee254729296a45a3885639AC7E10F9d54979' } },
+    );
+    fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '' } });
+
+    // error message field
+    getByText(/please provide an ethereum address/i);
+  });
+
+  test('Can clear previous error onChange with valid entry (EthAddress type)', () => {
     const { getByTestId, getByText, getByPlaceholderText } = render(
       <FakeOpenlawComponent />
     );
 
-    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 wee' } });
-    fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+    fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '0x123' } });
+    fireEvent.blur(getByPlaceholderText(ethPlaceholderTextRegex));
 
-    getByText(periodErrorTextRegex);
+    getByText(ethErrorTextRegex);
     // error message top
     expect(getByTestId('error-message').textContent)
       .toMatch(topErrorMessageRegex);
 
-    fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 week' } });
+    fireEvent.change(
+      getByPlaceholderText(ethPlaceholderTextRegex),
+      { target: { value: '0xc0ffee254729296a45a3885639AC7E10F9d54979' } },
+    );
 
     // don't show error message on the field
-    expect(() => getByText(periodErrorTextRegex)).toThrow();
+    expect(() => getByText(ethErrorTextRegex)).toThrow();
     // don't show top error message
     expect(() => getByTestId('error-message')).toThrow();
+  });
+
+  test('Field error is reset when no value and doesn\'t show onChange (EthAddress type)', () => {
+    const { getByTestId, getByText, getByPlaceholderText } = render(
+      <FakeOpenlawComponent />
+    );
+
+    fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '0x123' } });
+    fireEvent.blur(getByPlaceholderText(ethPlaceholderTextRegex));
+
+    getByText(ethErrorTextRegex);
+    // error message top
+    expect(getByTestId('error-message').textContent)
+      .toMatch(topErrorMessageRegex);
+
+    fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '' } });
+    fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '0x' } });
+
+    // don't show error message on the field
+    expect(() => getByText(ethErrorTextRegex)).toThrow();
   });
 
   test('Can show error onChange (EthAddress type)', () => {

@@ -3,7 +3,15 @@
 import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 
-import type { FieldErrorFuncType, FieldPropsValueType, ObjectAnyType, ValidateOnKeyUpFuncType } from './types';
+import type {
+  FieldErrorType,
+  FieldErrorFuncType,
+  FieldPropsValueType,
+  ObjectAnyType,
+  OnChangeFuncType,
+  ValidateOnKeyUpFuncType,
+  VariableTypesEnumType,
+} from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export APIClient flow types
@@ -11,13 +19,13 @@ type Props = {
   description: string,
   inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
-  onError: FieldErrorFuncType,
   onValidate: ?FieldErrorFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
+  variableType: VariableTypesEnumType,
 };
 
 type State = {
@@ -27,7 +35,6 @@ type State = {
   suggestions: Array<Object>,
 };
 
-const ELEMENT_TYPE = 'Address';
 const PROGRESS_ITEM_TEXT = '\u2026';
 
 const getSectionSuggestions = (section) => section.suggestions;
@@ -45,7 +52,7 @@ const renderSuggestionsContainer = (data) => {
       const { items } = fakeAddressProps;
       
       // Don't render the default "address" item (hacky) that comes with the progress indicator,
-      // I want a cleaner way to have a basic in-drop-down progress indicator, but it's not so easy.
+      // We need a cleaner way to have a basic in-drop-down progress indicator, but it's not so easy.
       if (items && items[0].address === PROGRESS_ITEM_TEXT) {
         return React.cloneElement(child.props.children[0], {
           style: {
@@ -70,7 +77,7 @@ const renderSuggestionsContainer = (data) => {
 export class Address extends React.PureComponent<Props, State> {
   baseErrorData = {
     elementName: this.props.cleanName,
-    elementType: ELEMENT_TYPE,
+    elementType: this.props.variableType,
     errorMessage: '',
     isError: false,
     value: (this.props.savedValue || ''),
@@ -93,10 +100,11 @@ export class Address extends React.PureComponent<Props, State> {
 
     const self: any = this;
     self.blurInput = this.blurInput.bind(this);
+    self.createOpenLawAddress = this.createOpenLawAddress.bind(this);
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
-    self.createOpenLawAddress = this.createOpenLawAddress.bind(this);
+    self.userSetFieldError = this.userSetFieldError.bind(this);
   }
 
   blurInput() {
@@ -106,9 +114,7 @@ export class Address extends React.PureComponent<Props, State> {
     if (inputElement) inputElement.blur();
   }
 
-  // this method will be called via AutoSuggest's focusInputOnSuggestionClick={false}
-  // and again when the user focuses away
-  async onBlur(event: SyntheticFocusEvent<HTMLInputElement>, selectedItem: ObjectAnyType) {
+  onBlur(event: SyntheticFocusEvent<HTMLInputElement>, selectedItem: ObjectAnyType) {
     const { highlightedSuggestion } = selectedItem;
 
     // handle validation when user focuses away
@@ -122,7 +128,7 @@ export class Address extends React.PureComponent<Props, State> {
       this.setState(() => {
         const errorMessageUpdated = 
           (errorMessage
-            || (this.isDataValid === false
+            || (currentValue && this.isDataValid === false
               ? 'Please choose a valid address from the options.'
               : ''
             )
@@ -133,18 +139,22 @@ export class Address extends React.PureComponent<Props, State> {
           shouldShowError: errorMessageUpdated.length > 0,
         };
       }, () => {
+        const validationData = {
+          ...this.baseErrorData,
+
+          errorMessage: this.state.errorMessage,
+          eventType: 'blur',
+          isError: this.state.errorMessage.length > 0,
+          value: currentValue,
+        };
+
+        onValidate && onValidate(validationData);
+
         if (event && inputProps && inputProps.onBlur) {
-          inputProps.onBlur(event);
-        }
+          inputProps.onBlur(event, {
+            ...validationData,
 
-        if (onValidate) {
-          onValidate({
-            ...this.baseErrorData,
-
-            errorMessage: this.state.errorMessage,
-            eventType: 'blur',
-            isError: this.state.errorMessage.length > 0,
-            value: currentValue,
+            setFieldError: this.userSetFieldError && this.userSetFieldError(validationData),
           });
         }
       });
@@ -154,12 +164,34 @@ export class Address extends React.PureComponent<Props, State> {
   // Set current value of autosuggest box (onChange method required)
   onChange(event: SyntheticInputEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) {
     const { newValue } = autosuggestEvent;
+    const { inputProps } = this.props;
+
+    // persist event outside of this handler to a parent component
+    if (event) event.persist();
 
     this.setState({
       currentValue: newValue,
     }, () => {
       // flag dirty input, as we haven't fetched anything and validated with OpenLaw
       this.isDataValid = false;
+
+      if (event && inputProps && inputProps.onChange) {
+        const { errorMessage } = this.state;
+        const validationData = {
+          ...this.baseErrorData,
+
+          errorMessage,
+          eventType: 'change',
+          isError: errorMessage.length > 0,
+          value: this.state.currentValue,
+        };
+
+        inputProps.onChange(event, {
+          ...validationData,
+
+          setFieldError: this.userSetFieldError && this.userSetFieldError(validationData),
+        });
+      }
     });
   }
 
@@ -174,7 +206,7 @@ export class Address extends React.PureComponent<Props, State> {
   }
 
   // Will be called every time suggestion is selected via mouse or keyboard.
-  onSuggestionSelected = async (event: SyntheticEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) => {
+  onSuggestionSelected = async (event: SyntheticInputEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) => {
     const { method } = autosuggestEvent;
 
     // cause the element to lose focus on 'enter'
@@ -183,15 +215,17 @@ export class Address extends React.PureComponent<Props, State> {
       setTimeout(() => this.blurInput());
 
       const { suggestion } = autosuggestEvent;
-      const { apiClient, name, onChange, onValidate } = this.props;
+      const { apiClient, inputProps, name, onChange, onValidate } = this.props;
       const { currentValue } = this.state;
       
       if (suggestion) {
         try {
           this.isCreatingAddress = true;
 
-          const addressDetails = await apiClient.getAddressDetails(suggestion.placeId);
+          // persist event outside of this handler to a parent component
+          if (event) event.persist();
 
+          const addressDetails = await apiClient.getAddressDetails(suggestion.placeId);
           const { addressData, openlawAddress } = await this.createOpenLawAddress(addressDetails);
 
           this.setState({
@@ -201,18 +235,25 @@ export class Address extends React.PureComponent<Props, State> {
             this.isDataValid = true;
             this.isCreatingAddress = false;
 
-            onChange(name, openlawAddress);
+            const { errorMessage } = this.state;
+            const validationData = {
+              ...this.baseErrorData,
+
+              errorMessage,
+              eventType: 'blur',
+              isError: errorMessage.length > 0,
+              value: currentValue,
+            };
+
+            onChange(name, openlawAddress, validationData);
             
-            if (onValidate) {
-              const { errorMessage } = this.state;
+            onValidate && onValidate(validationData);
 
-              onValidate({
-                ...this.baseErrorData,
+            if (event && inputProps && inputProps.onChange) {
+              inputProps.onChange(event, {
+                ...validationData,
 
-                errorMessage,
-                eventType: 'blur',
-                isError: errorMessage.length > 0,
-                value: currentValue,
+                setFieldError: this.userSetFieldError && this.userSetFieldError(validationData),
               });
             }
           });
@@ -304,6 +345,27 @@ export class Address extends React.PureComponent<Props, State> {
         reject();
       }
     });
+  }
+
+  userSetFieldError(validationData: FieldErrorType) {
+    return (errorMessage: string = '') => {
+      this.setState({
+        errorMessage,
+        shouldShowError: errorMessage.length > 0,
+      }, () => {
+        const { onValidate } = this.props;
+        const { currentValue, errorMessage:updatedErrorMessage } = this.state;
+
+        onValidate && onValidate({
+          ...this.baseErrorData,
+
+          errorMessage: updatedErrorMessage,
+          eventType: validationData.eventType,
+          isError: updatedErrorMessage.length > 0,
+          value: currentValue,
+        });
+      });
+    };
   }
 
   render() {

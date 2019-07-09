@@ -45,6 +45,11 @@ export type FieldErrorType = {|
 	value: string,
 |};
 
+export type FieldErrorWithUserFuncsType = {
+	...FieldErrorType,
+	setFieldError: (string) => mixed,
+};
+
 export type FieldErrorFuncType = ?(FieldErrorType) => mixed;
 
 export type FieldPropsType = {
@@ -55,7 +60,11 @@ export type FieldPropsType = {
 
 export type FieldPropsValueType = {
 	[string]: any,
+	onBlur?: (SyntheticFocusEvent<any>, ?FieldErrorWithUserFuncsType) => mixed,
+	onChange?: (SyntheticInputEvent<any>, ?FieldErrorWithUserFuncsType) => mixed,
 };
+
+export type OnChangeFuncType = (string, (string | void), FieldErrorType) => mixed;
 
 export type ValidityErrorObjectType = {
   errorMessage?: string,

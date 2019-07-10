@@ -50,7 +50,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
     // Pick up new props by re-instantiating Flatpickr after ref has updated.
     // The visible flatpickr `input` (via React <input />) will not
     // update its props after instantiation. Using `react-flatpickr doesn't really help, either.
-    setTimeout(() => flatpickr(this.flatpickrRef.current, this.getFlatpickrOptions()), 0);
+    setTimeout(() => flatpickr([this.flatpickrRef.current], this.getFlatpickrOptions()), 0);
   }
 
   getFlatpickrOptions() {

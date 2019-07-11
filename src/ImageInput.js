@@ -3,12 +3,12 @@
 import * as React from 'react';
 
 import ImageCrop from './ImageCrop';
-import type { InputPropsValueType } from './types';
+import type { InputPropsValueType, ValidityFuncType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
-  getValidity: (string, string) => string | false,
+  getValidity: ValidityFuncType,
   inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
@@ -259,7 +259,8 @@ export class ImageInput extends React.PureComponent<Props, State> {
     }
 
     // if the valid string either has length, or is empty, it will be valid
-    const isImageDataValid = getValidity(name, resizedImageDataURL) && typeof resizedImageDataURL === 'string';
+    const { isError } = getValidity(name, resizedImageDataURL);
+    const isImageDataValid = !isError && typeof resizedImageDataURL === 'string';
 
     if (isImageDataValid) {
       if (resizedImageDataURL) {

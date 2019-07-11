@@ -2,14 +2,14 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType } from './types';
+import type { InputPropsValueType, ValidityFuncType } from './types';
 
 type Props = {
   choiceValues: Array<string>,
   cleanName: string,
   description: string,
   inputProps: ?InputPropsValueType,
-  getValidity: (string, string) => any | false,
+  getValidity: ValidityFuncType,
   name: string,
   onChange: (string, ?string) => mixed,
   savedValue: string,
@@ -58,19 +58,14 @@ export class Choice extends React.PureComponent<Props, State> {
       return;
     }
 
-    if (getValidity(name, eventValue)) {
-      this.setState({
-        currentValue: eventValue,
-        validationError: false,
-      }, () => {
-        this.props.onChange(name, eventValue);
-      });
-    } else {
-      this.setState({
-        currentValue: eventValue,
-        validationError: true,
-      });
-    }
+    const { isError } = getValidity(name, eventValue);
+
+    this.setState({
+      currentValue: eventValue,
+      validationError: isError,
+    }, () => {
+      if (!isError) this.props.onChange(name, eventValue);
+    });
   }
 
   render() {

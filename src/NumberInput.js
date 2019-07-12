@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType, ValidityFuncType } from './types';
+import type { InputPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
 
 type Props = {
   cleanName: string,
@@ -11,7 +11,7 @@ type Props = {
   inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   savedValue: string,
   textLikeInputClass: string,
 };

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 
-import type { InputPropsValueType } from './types';
+import type { InputPropsValueType, ValidateOnKeyUpFuncType } from './types';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export APIClient flow types
@@ -12,7 +12,7 @@ type Props = {
   inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,

@@ -66,8 +66,10 @@ export class ImageInput extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    if (this.state.currentValue) {
-      this.shouldDisableEditButton(this.state.currentValue);
+    const { currentValue } = this.state;
+
+    if (currentValue) {
+      this.maybeDisableEditButton(currentValue);
     }
   }
 
@@ -82,14 +84,11 @@ export class ImageInput extends React.PureComponent<Props, State> {
     }
   }
 
-  shouldDisableEditButton(image: string) {
+  maybeDisableEditButton(image: string) {
     const isFromRemote = /^http.+\.(gif|png|tiff|bmp|jpg|svg)/.test(image);
 
-    // if image is from remote,
-    //  or `Image` argument string is malformed,
-    //  or `Image` argument string is empty,
-    // disable edit button
-    if (isFromRemote || (!isFromRemote && image.trim()) || !image.trim()) {
+    // if image is from remote then disable edit button
+    if (isFromRemote) {
       this.setState({
         disableEditRemoteImage: true,
       });

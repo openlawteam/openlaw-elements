@@ -55,7 +55,8 @@
     "release": "np",
     "sass": "npx node-sass src/style.scss csstmp/openlaw-elements.min.css --output-style compressed",
     "start": "cross-env NODE_ENV=esm webpack-dev-server --hot --config webpack.config.dev.js",
-    "test": "jest"
+    "test": "jest",
+    "test:coverage": "npm test -- --coverage --collectCoverageFrom=\"src/**/*.{js,jsx}\" && ./bin/make-coverage-badge.js --output-path \"./src/__tests__/coverge-badge.svg\" && rimraf ./coverage"
   },
   "browserslist": [
     "last 1 version",

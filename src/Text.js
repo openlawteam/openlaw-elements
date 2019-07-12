@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType, ValidityFuncType } from './types';
+import type { InputPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
 
 type Props = {
   cleanName: string,
@@ -11,7 +11,7 @@ type Props = {
   inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   savedValue: string,
   textLikeInputClass: string,
 };
@@ -22,6 +22,8 @@ type State = {
 };
 
 export class Text extends React.PureComponent<Props, State> {
+  isDataValid = true;
+
   state = {
     currentValue: this.props.savedValue || '',
     validationError: false,
@@ -57,6 +59,8 @@ export class Text extends React.PureComponent<Props, State> {
           currentValue: '',
           validationError: false,
         }, () => {
+          this.isDataValid = true;
+
           this.props.onChange(name);
         });
       }
@@ -71,12 +75,20 @@ export class Text extends React.PureComponent<Props, State> {
       currentValue: eventValue,
       validationError: isError,
     }, () => {
-      if (!isError) this.props.onChange(name, eventValue);
+      if (isError) {
+        this.isDataValid = false;
+      }
+      
+      if (!isError) {
+        this.isDataValid = true;
+
+        this.props.onChange(name, eventValue);
+      }
     });
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    if (this.props.onKeyUp) this.props.onKeyUp(event);
+    if (this.props.onKeyUp) this.props.onKeyUp(event, this.isDataValid);
 
     if (this.props.inputProps && this.props.inputProps.onKeyUp) {
       this.props.inputProps.onKeyUp(event);

@@ -13,14 +13,14 @@ import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { cacheValue } from './utils';
-import type { InputPropsType } from './types';
+import type { InputPropsType, ValidateOnKeyUpFuncType } from './types';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
   inputProps?: InputPropsType,
   onChangeFunction: (string, ?string, ?boolean) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,

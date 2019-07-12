@@ -24,3 +24,5 @@ export type ValidityErrorObjectType = {
 };
 
 export type ValidityFuncType = (string, string) => ValidityErrorObjectType;
+
+export type ValidateOnKeyUpFuncType = (SyntheticKeyboardEvent<HTMLInputElement>, ?boolean) => mixed;

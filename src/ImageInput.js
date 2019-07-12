@@ -3,12 +3,12 @@
 import * as React from 'react';
 
 import ImageCrop from './ImageCrop';
-import type { InputPropsValueType } from './types';
+import type { InputPropsValueType, ValidityFuncType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
-  getValidity: (string, string) => string | false,
+  getValidity: ValidityFuncType,
   inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
@@ -66,8 +66,10 @@ export class ImageInput extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    if (this.state.currentValue) {
-      this.shouldDisableEditButton(this.state.currentValue);
+    const { currentValue } = this.state;
+
+    if (currentValue) {
+      this.maybeDisableEditButton(currentValue);
     }
   }
 
@@ -82,14 +84,11 @@ export class ImageInput extends React.PureComponent<Props, State> {
     }
   }
 
-  shouldDisableEditButton(image: string) {
+  maybeDisableEditButton(image: string) {
     const isFromRemote = /^http.+\.(gif|png|tiff|bmp|jpg|svg)/.test(image);
 
-    // if image is from remote,
-    //  or `Image` argument string is malformed,
-    //  or `Image` argument string is empty,
-    // disable edit button
-    if (isFromRemote || (!isFromRemote && image.trim()) || !image.trim()) {
+    // if image is from remote then disable edit button
+    if (isFromRemote) {
       this.setState({
         disableEditRemoteImage: true,
       });
@@ -259,7 +258,8 @@ export class ImageInput extends React.PureComponent<Props, State> {
     }
 
     // if the valid string either has length, or is empty, it will be valid
-    const isImageDataValid = getValidity(name, resizedImageDataURL) && typeof resizedImageDataURL === 'string';
+    const { isError } = getValidity(name, resizedImageDataURL);
+    const isImageDataValid = !isError && typeof resizedImageDataURL === 'string';
 
     if (isImageDataValid) {
       if (resizedImageDataURL) {

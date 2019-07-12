@@ -1,5 +1,7 @@
 # OpenLaw Elements
 
+![Jest Coverage Badge](./src/__tests__/coverge-badge.svg)
+
 Dynamically render React form components from an OpenLaw template.
 
 ## ⚠️ Production-ready status

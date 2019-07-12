@@ -2,16 +2,16 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType } from './types';
+import type { InputPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
-  getValidity: (string, string) => any | false,
+  getValidity: ValidityFuncType,
   inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   savedValue: string,
   textLikeInputClass: string,
 };
@@ -22,6 +22,8 @@ type State = {
 };
 
 export class Text extends React.PureComponent<Props, State> {
+  isDataValid = true;
+
   state = {
     currentValue: this.props.savedValue || '',
     validationError: false,
@@ -35,6 +37,18 @@ export class Text extends React.PureComponent<Props, State> {
     self.onKeyUp = this.onKeyUp.bind(this);
   }
 
+  componentDidMount() {
+    const { getValidity, name, savedValue } = this.props;
+
+    if (savedValue) {
+      const { isError } = getValidity(name, savedValue);
+
+      this.setState({
+        currentValue: !isError ? savedValue : '',
+      });
+    }
+  }
+
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
     const { getValidity, name } = this.props;
@@ -45,6 +59,8 @@ export class Text extends React.PureComponent<Props, State> {
           currentValue: '',
           validationError: false,
         }, () => {
+          this.isDataValid = true;
+
           this.props.onChange(name);
         });
       }
@@ -53,23 +69,26 @@ export class Text extends React.PureComponent<Props, State> {
       return;
     }
 
-    if (getValidity(name, eventValue)) {
-      this.setState({
-        currentValue: eventValue,
-        validationError: false,
-      }, () => {
+    const { isError } = getValidity(name, eventValue);
+
+    this.setState({
+      currentValue: eventValue,
+      validationError: isError,
+    }, () => {
+      if (isError) {
+        this.isDataValid = false;
+      }
+      
+      if (!isError) {
+        this.isDataValid = true;
+
         this.props.onChange(name, eventValue);
-      });
-    } else {
-      this.setState({
-        currentValue: eventValue,
-        validationError: true,
-      });
-    }
+      }
+    });
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    if (this.props.onKeyUp) this.props.onKeyUp(event);
+    if (this.props.onKeyUp) this.props.onKeyUp(event, this.isDataValid);
 
     if (this.props.inputProps && this.props.inputProps.onKeyUp) {
       this.props.inputProps.onKeyUp(event);

@@ -2,16 +2,16 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType } from './types';
+import type { InputPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
 
 type Props = {
   cleanName: string,
   description: string,
-  getValidity: (string, string) => any | false,
+  getValidity: ValidityFuncType,
   inputProps: ?InputPropsValueType,
   name: string,
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   savedValue: string,
   textLikeInputClass: string,
 };
@@ -51,19 +51,14 @@ export class NumberInput extends React.PureComponent<Props, State> {
       return;
     }
 
-    if (getValidity(name, eventValue)) {
-      this.setState({
-        currentValue: eventValue,
-        validationError: false,
-      }, () => {
-        this.props.onChange(name, eventValue);
-      });
-    } else {
-      this.setState({
-        currentValue: eventValue,
-        validationError: true,
-      });
-    }
+    const { isError } = getValidity(name, eventValue);
+
+    this.setState({
+      currentValue: eventValue,
+      validationError: isError,
+    }, () => {
+      if (!isError) this.props.onChange(name, eventValue);
+    });
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {

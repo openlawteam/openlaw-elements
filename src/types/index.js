@@ -17,3 +17,12 @@ export type InputPropsType = {
 };
 
 export type InputPropsValueType = { [string]: any };
+
+export type ValidityErrorObjectType = {
+  errorMessage?: string,
+  isError: boolean,
+};
+
+export type ValidityFuncType = (string, string) => ValidityErrorObjectType;
+
+export type ValidateOnKeyUpFuncType = (SyntheticKeyboardEvent<HTMLInputElement>, ?boolean) => mixed;

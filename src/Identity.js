@@ -2,17 +2,19 @@
 
 import * as React from 'react';
 
+import type { ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
+
 type Props = {
   cleanName: string,
   description: string,
-  getValidity: (string, string) => any | false,
+  getValidity: ValidityFuncType,
   inputProps: ?{
     className?: string,
     onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed
   },
   name: string,
   onChange: (string, ?string) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>, boolean) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   openLaw: Object,
   savedValue: string,
   textLikeInputClass: string,
@@ -42,23 +44,13 @@ export class Identity extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    const { getValidity, name, openLaw, savedValue } = this.props;
+    const { getValidity, name, savedValue } = this.props;
 
-    try {
-      if (this.props.savedValue) {
-        const identity = getValidity(name, savedValue);
+    if (savedValue) {
+      const { isError } = getValidity(name, savedValue);
 
-        this.setState({
-          email: openLaw.getIdentityEmail(identity),
-        });
-      } else {
-        this.setState({
-          email: '',
-        });
-      }
-    } catch (error) {
       this.setState({
-        email: '',
+        email: !isError ? JSON.parse(savedValue).email : '',
       });
     }
   }

@@ -13,14 +13,14 @@ import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { cacheValue } from './utils';
-import type { InputPropsType } from './types';
+import type { InputPropsType, ValidateOnKeyUpFuncType } from './types';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
   inputProps?: InputPropsType,
   onChangeFunction: (string, ?string, ?boolean) => mixed,
-  onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed,
+  onKeyUp?: ValidateOnKeyUpFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
@@ -47,12 +47,8 @@ const variableCache = {};
 let executionResultCurrent;
 let openLawCached;
 
-const attemptCheckValidity = (name: string, value: string) => {
-  try {
-    return openLawCached.checkValidity(variableCache[name], value, executionResultCurrent);
-  } catch (error) {
-    return false;
-  }
+const getValidity = (name: string, value: string) => {
+  return openLawCached.checkValidity(variableCache[name], value, executionResultCurrent);
 };
 
 const getVariableData = (variable: {}, openLaw: Object) => ({
@@ -105,7 +101,7 @@ export const InputRenderer = (props: RendererProps) => {
         choiceValues={choiceValues}
         cleanName={cleanName}
         description={description}
-        getValidity={attemptCheckValidity}
+        getValidity={getValidity}
         inputProps={inputPropsCached && inputPropsCached.Choice}
         name={name}
         onChange={onChangeFunction}
@@ -169,7 +165,7 @@ export const InputRenderer = (props: RendererProps) => {
         <Identity
           cleanName={cleanName}
           description={description}
-          getValidity={attemptCheckValidity}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Identity}
           name={name}
           onChange={onChangeFunction}
@@ -185,7 +181,7 @@ export const InputRenderer = (props: RendererProps) => {
         <ImageInput
           cleanName={cleanName}
           description={description}
-          getValidity={attemptCheckValidity}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Image}
           name={name}
           onChange={onChangeFunction}
@@ -211,7 +207,7 @@ export const InputRenderer = (props: RendererProps) => {
         <NumberInput
           cleanName={cleanName}
           description={description}
-          getValidity={attemptCheckValidity}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Number}
           name={name}
           onChange={onChangeFunction}
@@ -238,7 +234,7 @@ export const InputRenderer = (props: RendererProps) => {
         <Text
           cleanName={cleanName}
           description={description}
-          getValidity={attemptCheckValidity}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Text}
           name={name}
           onChange={onChangeFunction}

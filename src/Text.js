@@ -35,6 +35,18 @@ export class Text extends React.PureComponent<Props, State> {
     self.onKeyUp = this.onKeyUp.bind(this);
   }
 
+  componentDidMount() {
+    const { getValidity, name, savedValue } = this.props;
+
+    if (savedValue) {
+      const { isError } = getValidity(name, savedValue);
+
+      this.setState({
+        currentValue: !isError ? savedValue : '',
+      });
+    }
+  }
+
   onChange(event: SyntheticEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
     const { getValidity, name } = this.props;

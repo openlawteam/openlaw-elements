@@ -24,7 +24,7 @@ beforeEach(() => {
 
 afterEach(cleanup);
 
-test('Can render', () => {
+test('Can render Identity', () => {
   const { getByPlaceholderText } = render(
     <Identity
       cleanName="Contestant-Email"

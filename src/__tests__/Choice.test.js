@@ -24,7 +24,7 @@ beforeEach(() => {
 
 afterEach(cleanup);
 
-test('Can render', () => {
+test('Can render Choice', () => {
   const { getByLabelText } = render(
     <Choice
       choiceValues={Openlaw.getChoiceValues(

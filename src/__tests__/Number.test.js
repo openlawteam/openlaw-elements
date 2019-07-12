@@ -24,7 +24,7 @@ beforeEach(() => {
 
 afterEach(cleanup);
 
-test('Can render', () => {
+test('Can render Number', () => {
   const { getByPlaceholderText } = render(
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"

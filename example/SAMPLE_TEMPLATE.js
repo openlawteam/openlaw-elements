@@ -70,6 +70,9 @@ export default `<%
 # Identity
 [[Contestant Email: Identity | Signature]]
 
+# External Signature
+[[Signatory: ExternalSignature(serviceName: "DocuSign")]]
+
 # Structure definition
 [[Contestant Emergency Contact: Structure(
   Emergency Contact Name: Text;

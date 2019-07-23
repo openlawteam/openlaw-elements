@@ -10,7 +10,8 @@ export type InputTypeEnums =
 	| "LargeText"
 	| "Number"
 	| "Text"
-	| "YesNo";
+	| "YesNo"
+	| "ExternalSignature";
 
 export type InputPropsType = {
 	[InputTypeEnums]: { [key: string]: any },

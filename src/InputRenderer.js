@@ -12,6 +12,7 @@ import { LargeText } from './LargeText';
 import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
+import { ExternalSignature } from './ExternalSignature';
 import { cacheValue } from './utils';
 import type { InputPropsType, ValidateOnKeyUpFuncType } from './types';
 
@@ -37,6 +38,7 @@ const ELEMENT_TYPES = [
   'Number',
   'Text',
   'YesNo',
+  'ExternalSignature',
 ];
 
 // keep React rendering happy with the same Array reference, if not changed.
@@ -167,6 +169,22 @@ export const InputRenderer = (props: RendererProps) => {
           description={description}
           getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Identity}
+          name={name}
+          onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
+          openLaw={openLaw}
+          savedValue={savedValue}
+          textLikeInputClass={textLikeInputClass}
+        />
+      );
+
+    case 'ExternalSignature':
+      return (
+        <ExternalSignature
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity}
+          inputProps={inputPropsCached && inputPropsCached.ExternalSignature}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}

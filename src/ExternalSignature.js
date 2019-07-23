@@ -6,7 +6,6 @@ import type { ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
 
 type Props = {
   cleanName: string,
-  serviceName: string,
   description: string,
   getValidity: ValidityFuncType,
   inputProps: ?{
@@ -34,6 +33,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
 
   state = {
     email: '',
+    serviceName: '',
     validationError: false,
   };
 
@@ -46,14 +46,14 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
   }
 
   componentDidMount() {
-    const { getValidity, name, savedValue, serviceName } = this.props;
+    const { getValidity, name, savedValue} = this.props;
 
     if (savedValue) {
       const { isError } = getValidity(name, savedValue);
-
+      const json = JSON.parse(savedValue);
       this.setState({
-        email: !isError ? JSON.parse(savedValue).identity.email : '',
-        serviceName: serviceName,
+        email: !isError ? (json.identity ? json.identity.email: '') : '',
+        serviceName: json.serviceName ? json.serviceName : '',
       });
     }
   }
@@ -106,10 +106,10 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description, inputProps } = this.props;
+    const { cleanName, description, inputProps} = this.props;
     const additionalClassName = this.state.validationError ? ' is-error' : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
-    const signatureServiceDescription = 'Sign with ' + this.state.serviceName;
+    const signatureServiceDesc = this.state.serviceName ? 'Sign with ' + this.state.serviceName : '';
 
     return (
       <div className="contract-variable external-signature">
@@ -128,7 +128,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
             type="email"
             value={this.state.email}
           />
-          : {signatureServiceDescription}
+          <small>{signatureServiceDesc}</small>
         </label>
       </div>
     );

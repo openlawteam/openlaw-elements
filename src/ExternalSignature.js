@@ -80,7 +80,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
 
         this.props.onChange(
           name,
-          openLaw.createIdentityInternalValue('', eventValue),
+          openLaw.createExternalSignatureValue('', eventValue, this.state.serviceName),
         );
 
         this.isDataValid = true;

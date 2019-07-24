@@ -1,6 +1,6 @@
 {
   "name": "openlaw-elements",
-  "version": "1.0.0-beta.27-SNAPSHOT-2",
+  "version": "1.0.0-beta.27-SNAPSHOT-3",
   "description": "Dynamically render React form components from an OpenLaw template.",
   "author": "OpenLaw Team <opensource@openlaw.io>",
   "contributors": [
@@ -90,7 +90,7 @@
     "jest-dom": "^3.5.0",
     "node-sass": "^4.12.0",
     "np": "^4.0.2",
-    "openlaw": "file:../openlaw-client/openlaw-0.2.13-SNAPSHOT-1.tgz",
+    "openlaw": "file:../openlaw-client/openlaw-0.2.13-SNAPSHOT-2.tgz",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "rimraf": "^2.6.3",

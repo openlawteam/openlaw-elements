@@ -257,7 +257,7 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
   expect(isEveryInputEnabled()).toBe(true);
 });
 
-test('Can surface error through onValidate', () => {
+test('Can surface error through onValidate (Period)', () => {
   /**
   * In this test we want to make sure onValidate can be called
   * with an error object when an input data validation
@@ -291,14 +291,15 @@ test('Can surface error through onValidate', () => {
   }
 
   // render with initial props
-  const { getByText, getByPlaceholderText, getByTestId } = render(<FakeComponent />);
+  const { getByText, getByLabelText, getByTestId } = render(<FakeComponent />);
 
   expect(getByTestId('notification').textContent).toBe('');
 
-  fireEvent.blur(getByPlaceholderText(/mailing address/i));
+  fireEvent.change(getByLabelText(/what is the longest bbq you ever conducted/i), { target: { value: '1 wee' } });
+  fireEvent.blur(getByLabelText(/what is the longest bbq you ever conducted/i));
 
   // general form error should be shown
   getByText(/please correct the form errors\./i);
   // specific, internal form error should be shown
-  getByText(/please choose a valid address from the options\./i);
+  getByText(/period of time: something looks incorrect\./i);
 });

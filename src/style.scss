@@ -166,6 +166,12 @@ $button-text: #363636;
       }
     }
 
+    &.external-signature small {
+      margin: 6px 10px 0;
+      display: inline-block;
+      color: #7e7e7e;
+    }
+
     input:disabled,
     select:disabled,
     textarea:disabled,

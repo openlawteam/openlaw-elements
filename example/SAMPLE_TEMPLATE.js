@@ -107,5 +107,6 @@ Phone: [[MedicalContact.Emergency Contact Phone]]
   - Certification Date: [[Cert.Date]]
 }}
 
-# External Signature
-[[Signatory: ExternalSignature(serviceName: "DocuSign")]]`;
+# External Signature: "DocuSign"
+[[DocuSign Signatory: ExternalSignature(serviceName: "DocuSign")]]
+`;

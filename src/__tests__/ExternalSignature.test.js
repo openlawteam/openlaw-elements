@@ -27,11 +27,10 @@ afterEach(cleanup);
 test('Can render ExternalSignature', () => {
   const { getByPlaceholderText } = render(
     <ExternalSignature
-      serviceName="DocuSign"
-      cleanName="Signatory"
-      description="Signatory Email"
+      cleanName="DocuSign Signatory"
+      description="DocuSign Signatory"
       getValidity={(name, value) => Openlaw.checkValidity(executedVariables[name], value, executionResult)}
-      name="Signatory"
+      name="DocuSign Signatory"
       onChange={() => {}}
       onKeyUp={() => {}}
       openLaw={Openlaw}
@@ -39,20 +38,19 @@ test('Can render ExternalSignature', () => {
     />
   );
 
-  getByPlaceholderText(/signatory/i);
+  getByPlaceholderText(/docusign signatory/i);
 });
 
 test('Can render with savedValue', () => {
   const { getByDisplayValue, getByPlaceholderText } = render(
     <ExternalSignature
-      serviceName="DocuSign"
-      cleanName="Signatory"
-      description="Signatory Email"
+      cleanName="DocuSign Signatory"
+      description="DocuSign Signatory"
       getValidity={(name, value) => {
         const v = executedVariables.filter(v => Openlaw.getName(v) === name);
         return Openlaw.checkValidity(v[0], value, executionResult);
       }}
-      name="Signatory"
+      name="DocuSign Signatory"
       onChange={() => {}}
       onKeyUp={() => {}}
       openLaw={Openlaw}
@@ -60,21 +58,20 @@ test('Can render with savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/signatory/i);
+  getByPlaceholderText(/docusign signatory/i);
   getByDisplayValue(/test@openlaw\.io/i);
 });
 
 test('Can render with savedValue and type another value', () => {
   const { getByDisplayValue, getByPlaceholderText } = render(
     <ExternalSignature
-      serviceName="DocuSign"
-      cleanName="Signatory"
-      description="Signatory Email"
+      cleanName="DocuSign Signatory"
+      description="DocuSign Signatory"
       getValidity={(name, value) => {
         const v = executedVariables.filter(v => Openlaw.getName(v) === name);
         return Openlaw.checkValidity(v[0], value, executionResult);
       }}
-      name="Signatory"
+      name="DocuSign Signatory"
       onChange={() => {}}
       onKeyUp={() => {}}
       openLaw={Openlaw}
@@ -82,7 +79,7 @@ test('Can render with savedValue and type another value', () => {
     />
   );
 
-  getByPlaceholderText(/signatory/i);
+  getByPlaceholderText(/docusign signatory/i);
   getByDisplayValue(/test@openlaw\.io/i);
 
   fireEvent.change(getByDisplayValue(/test@openlaw\.io/i), { target: { value: 'testB@openlaw.io' } });
@@ -93,14 +90,13 @@ test('Can render with savedValue and type another value', () => {
 test('Can render without bad savedValue', () => {
   const { getByDisplayValue, getByPlaceholderText } = render(
     <ExternalSignature
-      serviceName="DocuSign"
-      cleanName="Signatory"
-      description="Signatory Email"
+      cleanName="DocuSign Signatory"
+      description="DocuSign Signatory"
       getValidity={(name, value) => {
         const v = executedVariables.filter(v => Openlaw.getName(v) === name);
         return Openlaw.checkValidity(v[0], value, executionResult);
       }}
-      name="Signatory"
+      name="DocuSign Signatory"
       onChange={() => {}}
       onKeyUp={() => {}}
       openLaw={Openlaw}
@@ -108,6 +104,6 @@ test('Can render without bad savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/signatory/i);
+  getByPlaceholderText(/docusign signatory/i);
   expect(() => getByDisplayValue(/test\.bad@/i)).toThrow();
 });

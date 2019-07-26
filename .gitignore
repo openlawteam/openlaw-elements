@@ -1,2 +1,4 @@
-node_modules
+# NPM
+/node_modules/
+*.tgz
 dist

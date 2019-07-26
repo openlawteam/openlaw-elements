@@ -124,6 +124,9 @@ test('Can render with passed inputProps (separate types, e.g. "Address")', () =>
     YesNo: {
       disabled: true,
     },
+    ExternalSignature: {
+      disabled: true,
+    },
   };
 
   render(

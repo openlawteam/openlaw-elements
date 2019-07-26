@@ -90,7 +90,7 @@
     "jest-dom": "^3.5.0",
     "node-sass": "^4.12.0",
     "np": "^4.0.2",
-    "openlaw": "file:../openlaw-client/openlaw-0.2.14",
+    "openlaw": "^0.2.15",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "rimraf": "^2.6.3",

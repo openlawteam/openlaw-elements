@@ -51,9 +51,10 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
     if (savedValue) {
       const { isError } = getValidity(name, savedValue);
       const { identity, serviceName } = JSON.parse(savedValue);
+
       this.setState({
-        email: (!isError && identity && identity.email ? identity.email: ''),
-        serviceName: serviceName ? serviceName : '',
+        email: (!isError && identity && identity.email ? identity.email : ''),
+        serviceName: (!isError && serviceName) ? serviceName : '',
       });
     }
   }

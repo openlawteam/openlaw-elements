@@ -35,7 +35,7 @@ type State = {
   suggestions: Array<Object>,
 };
 
-const PROGRESS_ITEM_TEXT = '\u2026';
+const PROGRESS_ITEM_TEXT = '\u2026'; /* ... */
 
 const getSectionSuggestions = (section) => section.suggestions;
 const getSuggestionValue = ({ address }: { address: string }) => address;

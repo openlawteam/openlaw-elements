@@ -5,7 +5,7 @@ const uuidv4 = require('uuid/v4');
 
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
-import type { FieldPropsType } from './types';
+import type { FieldPropsType } from './flowTypes';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types

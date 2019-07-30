@@ -6,14 +6,14 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
-import type { FieldErrorFuncType, FieldPropsType, OnChangeFuncType } from './types';
+import type { OnValidateFuncType, FieldPropsType, OnChangeFuncType } from './flowTypes';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
   executionResult: {},
   inputProps?: FieldPropsType,
   onChangeFunction: OnChangeFuncType,
-  onValidate?: FieldErrorFuncType,
+  onValidate?: OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
   renderSections?: ({
@@ -46,6 +46,7 @@ const renderInputs = (props: RendererInputProps) => {
     executionResult = {},
     inputProps,
     onChangeFunction,
+    onValidate,
     openLaw = {},
     parameters = {},
     variable = {},
@@ -98,7 +99,7 @@ const renderInputs = (props: RendererInputProps) => {
       inputProps={inputProps}
       key={`${cleanName}-input`}
       onChangeFunction={onChangeFunction}
-      onValidate={props.onValidate}
+      onValidate={onValidate}
       openLaw={openLaw}
       savedValue={savedValue}
       textLikeInputClass={textLikeInputClass}

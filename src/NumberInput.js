@@ -2,7 +2,12 @@
 
 import * as React from 'react';
 
-import type { FieldPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
+import type {
+  FieldPropsValueType,
+  OnChangeFuncType,
+  ValidityFuncType,
+  ValidateOnKeyUpFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
@@ -10,7 +15,7 @@ type Props = {
   getValidity: ValidityFuncType,
   inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
   savedValue: string,
   textLikeInputClass: string,

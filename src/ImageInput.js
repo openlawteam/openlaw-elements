@@ -3,7 +3,11 @@
 import * as React from 'react';
 
 import ImageCrop from './ImageCrop';
-import type { FieldPropsValueType, ValidityFuncType } from './types';
+import type {
+  FieldPropsValueType,
+  OnChangeFuncType,
+  ValidityFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
@@ -11,7 +15,7 @@ type Props = {
   getValidity: ValidityFuncType,
   inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   savedValue: string,
 };
 

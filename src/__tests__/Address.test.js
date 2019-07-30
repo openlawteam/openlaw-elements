@@ -143,106 +143,22 @@ test('Can show error onBlur (no value)', () => {
   expect(() => getByTestId('error-message')).toThrow();
 });
 
-test('Can show error onBlur using inputProps', () => {
+test('Can show user-provided error onBlur using onValidate', () => {
   const { getByPlaceholderText, getByText } = render(
     <FakeAddressComponent
-      inputProps={{
-        onBlur(event, validationResult) {
-          !validationResult.value && (
-            validationResult.setFieldError('Please provide a valid address')
-          );
-        },
+      onValidate={({ eventType }) => {
+        if (eventType === 'blur') {
+          return {
+            errorMessage: 'This is a custom Address error.',
+          };
+        }
       }}
     />
   );
 
   fireEvent.blur(getByPlaceholderText(/mailing address/i));
 
-  getByText(/please provide a valid address/i);
-});
-
-test('Can call onValidate after errorMessage from onBlur using inputProps', () => {
-  const spy = jest.fn();
-
-  const { getByPlaceholderText, getByText } = render(
-    <FakeAddressComponent
-      inputProps={{
-        onBlur(event, validationResult) {
-          !validationResult.value && (
-            validationResult.setFieldError('Please provide a valid address')
-          );
-        },
-      }}
-      onValidate={spy}
-    />
-  );
-
-  fireEvent.blur(getByPlaceholderText(/mailing address/i));
-
-  getByText(/please provide a valid address/i);
-  expect(spy.mock.calls[1][0].errorMessage).toMatch(/please provide a valid address/i);
-});
-
-test('Can show error onChange using inputProps', async () => {
-  const { getByPlaceholderText, getByText } = render(
-    <FakeAddressComponent
-      inputProps={{
-        onChange(event, validationResult) {
-          !validationResult.value && (
-            validationResult.setFieldError('Please provide a valid address')
-          );
-        },
-      }}
-    />
-  );
-
-  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '123 Anystreet' } });
-
-  // searching...
-  await wait(() => {
-    expect(mockAxios.get)
-      .toHaveBeenCalledWith(
-        '/address/search?term=123%20Anystreet',
-        { 'auth': undefined, 'headers': {} },
-      );
-  });
-
-  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '' } });
-
-  getByText(/please provide a valid address/i);
-});
-
-test('Can call onValidate after errorMessage from onChange using inputProps', async () => {
-  const spy = jest.fn();
-
-  const { getByPlaceholderText, getByText } = render(
-    <FakeAddressComponent
-      inputProps={{
-        onChange(event, validationResult) {
-          !validationResult.value && (
-            validationResult.setFieldError('Please provide a valid address')
-          );
-        },
-      }}
-      onValidate={spy}
-    />
-  );
-
-  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '123 Anystreet' } });
-
-  // searching...
-  await wait(() => {
-    expect(mockAxios.get)
-      .toHaveBeenCalledWith(
-        '/address/search?term=123%20Anystreet',
-        { 'auth': undefined, 'headers': {} },
-      );
-  });
-
-  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '' } });
-
-  getByText(/please provide a valid address/i);
-  expect(spy.mock.calls[0][0].errorMessage).toMatch(/please provide a valid address/i);
+  getByText(/this is a custom address error/i);
 });
 
 test('Can show error onBlur (content, but no selection)', async () => {

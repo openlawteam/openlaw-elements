@@ -1,17 +1,49 @@
 // @flow
 
-import type { VariableTypesEnumType } from './types';
-/**
-* Constants
-*
-* "Immutable" values we use again, and again.
-*/
+import type { FieldEnumType } from './flowTypes';
 
-type TypeToReadableType = {
-  [VariableTypesEnumType]: string,
+/**
+ * Constants
+ *
+ * "Immutable" values we use again, and again.
+ */
+
+type CSSClassNamesEnumType =
+  'field'
+  | 'fieldError'
+  | 'fieldErrorMessage';
+
+type TYPE_TO_READABLEType = {
+  [FieldEnumType]: string,
 };
 
-export const typeToReadable: TypeToReadableType = {
+const CSS_CLASS_NAMESPACE = 'openlaw-el';
+
+export const ELEMENT_TYPES: Array<FieldEnumType> = [
+  'Address',
+  'Choice',
+  'Date',
+  'DateTime',
+  'EthAddress',
+  'ExternalSignature',
+  'Identity',
+  'Image',
+  'LargeText',
+  'Number',
+  'Period',
+  'Text',
+  'YesNo',
+];
+
+export const FIELD_DEFAULT_ERROR_MESSAGE = 'Something looks incorrect.';
+
+export const CSS_CLASS_NAMES: {[CSSClassNamesEnumType]: string} = {
+  field: `${CSS_CLASS_NAMESPACE}-field`,
+  fieldError: `${CSS_CLASS_NAMESPACE}-field--error`,
+  fieldErrorMessage: `${CSS_CLASS_NAMESPACE}-field__error-message`,
+};
+
+export const TYPE_TO_READABLE: TYPE_TO_READABLEType = {
   Address: 'Address',
   Choice: 'Choice',
   Date: 'Date',

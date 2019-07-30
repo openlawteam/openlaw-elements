@@ -3,7 +3,7 @@
 import * as React from 'react';
 
 import { InputRenderer } from './InputRenderer';
-import type { FieldPropsType } from './types';
+import type { FieldPropsType } from './flowTypes';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types

@@ -108,6 +108,15 @@ test('Can render with passed inputProps (separate types, e.g. "Address")', () =>
     Date: {
       disabled: true,
     },
+    DateTime: {
+      disabled: true,
+    },
+    EthAddress: {
+      disabled: true,
+    },
+    ExternalSignature: {
+      disabled: true,
+    },
     Identity: {
       disabled: true,
     },
@@ -120,13 +129,13 @@ test('Can render with passed inputProps (separate types, e.g. "Address")', () =>
     Number: {
       disabled: true,
     },
+    Period: {
+      disabled: true,
+    },
     Text: {
       disabled: true,
     },
     YesNo: {
-      disabled: true,
-    },
-    ExternalSignature: {
       disabled: true,
     },
   };

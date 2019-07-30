@@ -3,15 +3,16 @@
 import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 
+import { FieldError } from './FieldError';
+import { CSS_CLASS_NAMES } from './constants';
 import type {
-  FieldErrorType,
-  FieldErrorFuncType,
+  FieldEnumType,
   FieldPropsValueType,
   ObjectAnyType,
   OnChangeFuncType,
+  OnValidateFuncType,
   ValidateOnKeyUpFuncType,
-  VariableTypesEnumType,
-} from './types';
+} from './flowTypes';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export APIClient flow types
@@ -21,11 +22,11 @@ type Props = {
   name: string,
   onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
-  onValidate: ?FieldErrorFuncType,
+  onValidate: ?OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
-  variableType: VariableTypesEnumType,
+  variableType: FieldEnumType,
 };
 
 type State = {
@@ -104,7 +105,6 @@ export class Address extends React.PureComponent<Props, State> {
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
-    self.userSetFieldError = this.userSetFieldError.bind(this);
   }
 
   blurInput() {
@@ -121,41 +121,36 @@ export class Address extends React.PureComponent<Props, State> {
     if (!highlightedSuggestion) {
       const { inputProps, onValidate } = this.props;
       const { currentValue, errorMessage } = this.state;
+      const updatedErrorMessage = errorMessage
+        ? errorMessage
+        : (currentValue && this.isDataValid === false)
+        ? 'Please choose a valid address from the options.'
+        : '';
+
+      const validationData = {
+        ...this.baseErrorData,
+
+        errorMessage: updatedErrorMessage,
+        eventType: 'blur',
+        isError: updatedErrorMessage.length > 0,
+        value: currentValue,
+      };
+
+      const userReturnedValidationData = onValidate && onValidate(validationData);
+      const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
+      const errorMessageToSet = userErrorMessage || updatedErrorMessage;
 
       // persist event outside of this handler to a parent component
       if (event) event.persist();
 
       this.setState(() => {
-        const errorMessageUpdated = 
-          (errorMessage
-            || (currentValue && this.isDataValid === false
-              ? 'Please choose a valid address from the options.'
-              : ''
-            )
-          );
-
         return {
-          errorMessage: errorMessageUpdated || '',
-          shouldShowError: errorMessageUpdated.length > 0,
+          errorMessage: errorMessageToSet,
+          shouldShowError: errorMessageToSet.length > 0,
         };
       }, () => {
-        const validationData = {
-          ...this.baseErrorData,
-
-          errorMessage: this.state.errorMessage,
-          eventType: 'blur',
-          isError: this.state.errorMessage.length > 0,
-          value: currentValue,
-        };
-
-        onValidate && onValidate(validationData);
-
         if (event && inputProps && inputProps.onBlur) {
-          inputProps.onBlur(event, {
-            ...validationData,
-
-            setFieldError: this.userSetFieldError && this.userSetFieldError(validationData),
-          });
+          inputProps.onBlur(event);
         }
       });
     }   
@@ -176,21 +171,7 @@ export class Address extends React.PureComponent<Props, State> {
       this.isDataValid = false;
 
       if (event && inputProps && inputProps.onChange) {
-        const { errorMessage } = this.state;
-        const validationData = {
-          ...this.baseErrorData,
-
-          errorMessage,
-          eventType: 'change',
-          isError: errorMessage.length > 0,
-          value: this.state.currentValue,
-        };
-
-        inputProps.onChange(event, {
-          ...validationData,
-
-          setFieldError: this.userSetFieldError && this.userSetFieldError(validationData),
-        });
+        inputProps.onChange(event);
       }
     });
   }
@@ -216,7 +197,6 @@ export class Address extends React.PureComponent<Props, State> {
 
       const { suggestion } = autosuggestEvent;
       const { apiClient, inputProps, name, onChange, onValidate } = this.props;
-      const { currentValue } = this.state;
       
       if (suggestion) {
         try {
@@ -228,40 +208,49 @@ export class Address extends React.PureComponent<Props, State> {
           const addressDetails = await apiClient.getAddressDetails(suggestion.placeId);
           const { addressData, openlawAddress } = await this.createOpenLawAddress(addressDetails);
 
+          const validationData = {
+            ...this.baseErrorData,
+
+            errorMessage: '',
+            eventType: 'blur',
+            isError: false,
+            value: addressData.address,
+          };
+
+          const userReturnedValidationData = onValidate && onValidate(validationData);
+          const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
+          const errorMessageToSet = userErrorMessage || '';
+
           this.setState({
             currentValue: addressData.address,
-            errorMessage: '',
+            errorMessage: errorMessageToSet,
           }, () => {
             this.isDataValid = true;
             this.isCreatingAddress = false;
 
-            const { errorMessage } = this.state;
-            const validationData = {
-              ...this.baseErrorData,
-
-              errorMessage,
-              eventType: 'blur',
-              isError: errorMessage.length > 0,
-              value: currentValue,
-            };
-
-            onChange(name, openlawAddress, validationData);
-            
-            onValidate && onValidate(validationData);
+            onChange(name, openlawAddress);
 
             if (event && inputProps && inputProps.onChange) {
-              inputProps.onChange(event, {
-                ...validationData,
-
-                setFieldError: this.userSetFieldError && this.userSetFieldError(validationData),
-              });
+              inputProps.onChange(event);
             }
           });
         } catch (error) {
-          // create a valid OpenLaw address
-          this.setState({
-            currentValue: '',
+          const validationData = {
+            ...this.baseErrorData,
+
             errorMessage: 'Something went wrong while creating an address.',
+            eventType: 'blur',
+            isError: true,
+            value: '',
+          };
+
+          const userReturnedValidationData = onValidate && onValidate(validationData);
+          const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
+          const errorMessageToSet = userErrorMessage || validationData.errorMessage;
+
+          this.setState({
+            currentValue: validationData.value,
+            errorMessage: errorMessageToSet,
           }, () => {
             this.isDataValid = false;
           });
@@ -347,31 +336,10 @@ export class Address extends React.PureComponent<Props, State> {
     });
   }
 
-  userSetFieldError(validationData: FieldErrorType) {
-    return (errorMessage: string = '') => {
-      this.setState({
-        errorMessage,
-        shouldShowError: errorMessage.length > 0,
-      }, () => {
-        const { onValidate } = this.props;
-        const { currentValue, errorMessage:updatedErrorMessage } = this.state;
-
-        onValidate && onValidate({
-          ...this.baseErrorData,
-
-          errorMessage: updatedErrorMessage,
-          eventType: validationData.eventType,
-          isError: updatedErrorMessage.length > 0,
-          value: currentValue,
-        });
-      });
-    };
-  }
-
   render() {
     const { description, cleanName, inputProps, textLikeInputClass } = this.props;
     const { currentValue, errorMessage, shouldShowError, suggestions } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? 'openlaw-el-field--error' : '';
+    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     const autoSuggestInputProps = {
@@ -381,7 +349,7 @@ export class Address extends React.PureComponent<Props, State> {
       ...inputProps,
 
       onBlur: this.onBlur,
-      className: `openlaw-el-field ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`,
+      className: `${CSS_CLASS_NAMES.field} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`,
       onChange: this.onChange,
       onKeyUp: this.onKeyUp,
       type: 'text',
@@ -407,13 +375,11 @@ export class Address extends React.PureComponent<Props, State> {
             suggestions={suggestions}
           />
 
-          {(shouldShowError && errorMessage) && (
-            <div
-              className="openlaw-el-field__error-message"
-              data-element-name={cleanName}>
-              {errorMessage}
-            </div>
-          )}
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
+          />
         </label>
       </div>
     );

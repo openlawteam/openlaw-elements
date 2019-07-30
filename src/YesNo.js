@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import type { FieldPropsValueType } from './types';
+import type { FieldPropsValueType } from './flowTypes';
 
 type Props = {
   cleanName: string,

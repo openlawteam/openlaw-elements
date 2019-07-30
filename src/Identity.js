@@ -2,7 +2,11 @@
 
 import * as React from 'react';
 
-import type { ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
+import type {
+  OnChangeFuncType,
+  ValidityFuncType,
+  ValidateOnKeyUpFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
@@ -13,7 +17,7 @@ type Props = {
     onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed
   },
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
   openLaw: Object,
   savedValue: string,

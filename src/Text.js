@@ -2,15 +2,16 @@
 
 import * as React from 'react';
 
-import { typeToReadable } from './constants';
+import { FieldError } from './FieldError';
+import { CSS_CLASS_NAMES, FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from './constants';
 import type {
-  FieldErrorFuncType,
+  FieldEnumType,
   FieldPropsValueType,
   ValidateOnKeyUpFuncType,
   OnChangeFuncType,
+  OnValidateFuncType,
   ValidityFuncType,
-  VariableTypesEnumType,
-} from './types';
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
@@ -20,10 +21,10 @@ type Props = {
   name: string,
   onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
-  onValidate: ?FieldErrorFuncType,
+  onValidate: ?OnValidateFuncType,
   savedValue: string,
   textLikeInputClass: string,
-  variableType: VariableTypesEnumType,
+  variableType: FieldEnumType,
 };
 
 type State = {
@@ -43,7 +44,7 @@ export class Text extends React.PureComponent<Props, State> {
 
   isDataValid = true;
 
-  readableVariableType: string = typeToReadable[this.props.variableType];
+  readableVariableType: string = TYPE_TO_READABLE[this.props.variableType];
 
   state = {
     currentValue: this.props.savedValue || '',
@@ -58,7 +59,6 @@ export class Text extends React.PureComponent<Props, State> {
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
-    self.userSetFieldError = this.userSetFieldError.bind(this);
   }
 
   componentDidMount() {
@@ -77,44 +77,33 @@ export class Text extends React.PureComponent<Props, State> {
     const { getValidity, inputProps, name, onValidate } = this.props;
     const { currentValue } = this.state;
     const hasValue = currentValue.length > 0;
-    let validityIsError;
-    
-    if (hasValue) {
-      const { isError } = getValidity(name, currentValue);
-
-      validityIsError = isError;
-    }
-    
-    const updatedErrorMessage = (hasValue && validityIsError)
-      ? `${(this.readableVariableType + ': ' || '')}Something looks incorrect.`
+    const { isError } = hasValue ? getValidity(name, currentValue) : {};
+    const updatedErrorMessage = (hasValue && isError)
+      ? `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`
       : '';
+
+    const validationData = {
+      ...this.baseErrorData,
+
+      errorMessage: updatedErrorMessage,
+      eventType: 'blur',
+      isError: updatedErrorMessage.length > 0,
+      value: currentValue,
+    };
+
+    const userReturnedValidationData = onValidate && onValidate(validationData);
+    const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
+    const errorMessageToSet = userErrorMessage || updatedErrorMessage;
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
 
     this.setState({
-      errorMessage: updatedErrorMessage,
-      shouldShowError: updatedErrorMessage.length > 0,
+      errorMessage: errorMessageToSet,
+      shouldShowError: errorMessageToSet.length > 0,
     }, () => {
-      const validationData = {
-        ...this.baseErrorData,
-
-        errorMessage: this.state.errorMessage,
-        eventType: 'blur',
-        isError: this.state.errorMessage.length > 0,
-        value: currentValue,
-      };
-
-      onValidate && onValidate(validationData);
-      
       if (event && inputProps && inputProps.onBlur) {
-        inputProps.onBlur(
-          event,
-          {
-            ...validationData,
-            setFieldError: this.userSetFieldError,
-          }
-        );
+        inputProps.onBlur(event);
       }
     });
   }
@@ -123,57 +112,47 @@ export class Text extends React.PureComponent<Props, State> {
     const eventValue = event.currentTarget.value;
     const { getValidity, inputProps, name, onChange, onValidate } = this.props;
     const hasValue = eventValue.length > 0;
-    let validityIsError;
-    
-    if (hasValue) {
-      const { isError } = getValidity(name, eventValue);
-
-      validityIsError = isError;
-    }
-
-    const updatedErrorMessage = (hasValue && validityIsError)
-      ? `${(this.readableVariableType + ': ' || '')}Something looks incorrect.`
+    const { isError } = hasValue ? getValidity(name, eventValue) : {};
+    const updatedErrorMessage = (hasValue && isError)
+      ? `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`
       : '';
+
+    const validationData = {
+      ...this.baseErrorData,
+
+      errorMessage: updatedErrorMessage,
+      eventType: 'change',
+      isError,
+      value: eventValue,
+    };
+
+    const userReturnedValidationData = onValidate && onValidate(validationData);
+    const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
+    const errorMessageToSet = userErrorMessage || updatedErrorMessage;
+    const shouldShowError = userErrorMessage
+      ? { shouldShowError: true } // show because user said so
+      : (isError === false || !hasValue)
+      ? { shouldShowError: false } // do not show by default onChange
+      : null; // set nothing
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
     
-    const shouldShowError = validityIsError === false || !hasValue ? { shouldShowError: false } : null;
-
     this.setState({
       currentValue: eventValue,
-      errorMessage: updatedErrorMessage,
+      errorMessage: errorMessageToSet,
 
       ...shouldShowError,
     }, () => {
-      this.isDataValid = validityIsError ? false : true;
-
-      const validationData = {
-        ...this.baseErrorData,
-
-        errorMessage: this.state.errorMessage,
-        eventType: 'change',
-        isError: this.state.errorMessage.length > 0,
-        value: this.state.currentValue,
-      };
-
-      onValidate && onValidate(validationData);
+      this.isDataValid = isError ? false : true;
 
       onChange(
         name,
-        this.state.currentValue || undefined,
-        validationData,
+        this.state.currentValue || undefined
       );
 
       if (event && inputProps && inputProps.onChange) {
-        inputProps.onChange(
-          event,
-          {
-            ...validationData,
-
-            setFieldError: this.userSetFieldError,
-          }
-        );
+        inputProps.onChange(event);
       }
     });
   }
@@ -186,17 +165,10 @@ export class Text extends React.PureComponent<Props, State> {
     }
   }
 
-  userSetFieldError(errorMessage: string = '') {
-    this.setState({
-      errorMessage,
-      shouldShowError: errorMessage.length > 0,
-    });
-  }
-
   render() {
     const { cleanName, description, inputProps, textLikeInputClass } = this.props;
     const { currentValue, errorMessage, shouldShowError } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? 'openlaw-el-field--error' : '';
+    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
@@ -210,7 +182,7 @@ export class Text extends React.PureComponent<Props, State> {
 
             {...inputProps}
 
-            className={`openlaw-el-field ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
+            className={`${CSS_CLASS_NAMES.field} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
             onBlur={this.onBlur}
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}
@@ -218,13 +190,11 @@ export class Text extends React.PureComponent<Props, State> {
             value={currentValue}
           />
 
-          {(shouldShowError && errorMessage) && (
-            <div
-              className="openlaw-el-field__error-message"
-              data-element-name={cleanName}>
-              {errorMessage}
-            </div>
-          )}
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
+          />
         </label>
       </div>
     );

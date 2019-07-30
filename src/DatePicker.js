@@ -4,7 +4,7 @@ import * as React from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 
-import type { FieldPropsValueType } from './types';
+import type { FieldPropsValueType, OnChangeFuncType } from './flowTypes';
 
 type Props = {
   cleanName: string,
@@ -12,7 +12,7 @@ type Props = {
   enableTime: boolean,
   inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   savedValue: string,
   textLikeInputClass: string,
 };

@@ -13,15 +13,16 @@ import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { ExternalSignature } from './ExternalSignature';
+import { ELEMENT_TYPES } from './constants';
 import { cacheValue } from './utils';
 import type {
-  FieldErrorFuncType,
+  FieldEnumType,
   FieldPropsType,
   OnChangeFuncType,
+  OnValidateFuncType,
   ValidateOnKeyUpFuncType,
   ValidityErrorObjectType,
-  VariableTypesEnumType,
-} from './types';
+} from './flowTypes';
 
 type RendererProps = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
@@ -29,25 +30,12 @@ type RendererProps = {
   inputProps?: FieldPropsType,
   onKeyUp?: ValidateOnKeyUpFuncType,
   onChangeFunction: OnChangeFuncType,
-  onValidate: ?FieldErrorFuncType,
+  onValidate: ?OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   textLikeInputClass: string,
   variable: {},
 };
-
-const ELEMENT_TYPES = [
-  'Address',
-  'Choice',
-  'Date',
-  'Identity',
-  'Image',
-  'LargeText',
-  'Number',
-  'Text',
-  'YesNo',
-  'ExternalSignature',
-];
 
 // keep React rendering happy with the same Array reference, if not changed.
 const getChoiceValuesCached = cacheValue(deepEqual);
@@ -87,7 +75,7 @@ export const InputRenderer = (props: RendererProps) => {
     name,
   } = getVariableData(variable, openLaw);
 
-  const variableType: VariableTypesEnumType = openLaw.getType(variable);
+  const variableType: FieldEnumType = openLaw.getType(variable);
 
   // store latest executionResult for access outside React
   executionResultCurrent = executionResult;
@@ -96,7 +84,7 @@ export const InputRenderer = (props: RendererProps) => {
   // store { [name]: variable } for access outside React
   variableCache[name] = variable;
 
-  // merge all `inputProps` ("*") with a specific type's props (e.g. "Address")
+  // merge "all" `inputProps` ("*") with a specific type's props (e.g. "Address")
   const inputPropsMerged = inputProps && (
     ELEMENT_TYPES.reduce((result, key) => {
       return { ...result, [key]: { ...inputProps['*'], ...inputProps[key] } };
@@ -121,6 +109,7 @@ export const InputRenderer = (props: RendererProps) => {
         onValidate={onValidate}
         savedValue={savedValue}
         textLikeInputClass={textLikeInputClass}
+        variableType="Choice"
       />
     );
   }
@@ -168,7 +157,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           enableTime
-          inputProps={inputPropsCached && inputPropsCached.Date}
+          inputProps={inputPropsCached && inputPropsCached.DateTime}
           name={name}
           onChange={onChangeFunction}
           savedValue={savedValue}
@@ -190,6 +179,23 @@ export const InputRenderer = (props: RendererProps) => {
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+        />
+      );
+
+    case 'EthAddress':
+      return (
+        <Text
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity}
+          inputProps={inputPropsCached && inputPropsCached.EthAddress}
+          name={name}
+          onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
+          onValidate={onValidate}
+          savedValue={savedValue}
+          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -248,6 +254,23 @@ export const InputRenderer = (props: RendererProps) => {
           onKeyUp={onKeyUp}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+        />
+      );
+
+    case 'Period':
+      return (
+        <Text
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity}
+          inputProps={inputPropsCached && inputPropsCached.Period}
+          name={name}
+          onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
+          onValidate={onValidate}
+          savedValue={savedValue}
+          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 

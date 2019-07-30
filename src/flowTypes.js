@@ -2,18 +2,21 @@
 
 export type ObjectAnyType = { [string]: any };
 
-// All OpenLaw Elements field/input types
+// All OpenLaw types which have representation in the Elements library
 export type FieldEnumType =
 	"Address"
 	| "Choice"
 	| "Date"
+	| "DateTime" // renders to <DatePicker />
+	| "EthAddress" // renders to <Text />
+	| "ExternalSignature"
 	| "Identity"
 	| "Image"
 	| "LargeText"
 	| "Number"
+	| "Period" // renders to <Text />
 	| "Text"
-	| "YesNo"
-	| "ExternalSignature";
+	| "YesNo";
 
 // Extends FieldEnumType to include a special "*" for selecting all input types.
 // Useful for `inputProps`.
@@ -21,36 +24,16 @@ export type FieldAndWildcardEnumType =
 	"*"
 	| FieldEnumType;
 
-// All OpenLaw variable types
-export type VariableTypesEnumType =
-	FieldEnumType
-	| "DateTime"
-	| "EthAddress"
-	| "Period";
-
-// OpenLaw variable types which render into a <Text /> component
-export type TextTypesEnumType =
-	"EthAddress"
-	| "Period"
-	| "Text";
-
 export type ValidateOnKeyUpFuncType = (SyntheticKeyboardEvent<HTMLInputElement>, ?boolean) => mixed;
 
 export type FieldErrorType = {|
 	elementName: string,
-	elementType: VariableTypesEnumType,
+	elementType: FieldEnumType,
 	errorMessage: string,
 	eventType: "blur" | "change",
 	isError: boolean,
 	value: string,
 |};
-
-export type FieldErrorWithUserFuncsType = {
-	...FieldErrorType,
-	setFieldError: (string) => mixed,
-};
-
-export type FieldErrorFuncType = ?(FieldErrorType) => mixed;
 
 export type FieldPropsType = {
 	[FieldAndWildcardEnumType]: {
@@ -60,11 +43,17 @@ export type FieldPropsType = {
 
 export type FieldPropsValueType = {
 	[string]: any,
-	onBlur?: (SyntheticFocusEvent<any>, ?FieldErrorWithUserFuncsType) => mixed,
-	onChange?: (SyntheticInputEvent<any>, ?FieldErrorWithUserFuncsType) => mixed,
+	onBlur?: (SyntheticFocusEvent<any>) => mixed,
+	onChange?: (SyntheticInputEvent<any>) => mixed,
 };
 
-export type OnChangeFuncType = (string, (string | void), FieldErrorType) => mixed;
+export type OnChangeFuncType = (string, (string | void)) => mixed;
+
+export type OnValidateObjectReturnType = {
+	errorMessage?: string,
+};
+
+export type OnValidateFuncType = (FieldErrorType) => ?OnValidateObjectReturnType;
 
 export type ValidityErrorObjectType = {
   errorMessage?: string,

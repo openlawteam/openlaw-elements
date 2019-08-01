@@ -7,6 +7,7 @@ import { FieldError } from './FieldError';
 import { CSS_CLASS_NAMES } from './constants';
 import type {
   FieldEnumType,
+  FieldErrorType,
   FieldPropsValueType,
   ObjectAnyType,
   OnChangeFuncType,
@@ -101,10 +102,14 @@ export class Address extends React.PureComponent<Props, State> {
 
     const self: any = this;
     self.blurInput = this.blurInput.bind(this);
+    self.callOnValidateAndGetErrorMessage = this.callOnValidateAndGetErrorMessage.bind(this);
     self.createOpenLawAddress = this.createOpenLawAddress.bind(this);
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
+    self.onSuggestionsClearRequested = this.onSuggestionsClearRequested.bind(this);
+    self.onSuggestionsFetchRequested = this.onSuggestionsFetchRequested.bind(this);
+    self.onSuggestionSelected = this.onSuggestionSelected.bind(this);
   }
 
   blurInput() {
@@ -114,12 +119,27 @@ export class Address extends React.PureComponent<Props, State> {
     if (inputElement) inputElement.blur();
   }
 
+  createOpenLawAddress(addressData: ObjectAnyType): Promise<any> {
+    return new Promise((resolve, reject) => {
+      try {
+        const openlawAddress = this.props.openLaw.createAddress(addressData);
+
+        resolve({
+          addressData,
+          openlawAddress,
+        });
+      } catch (error) {
+        reject();
+      }
+    });
+  }
+
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>, selectedItem: ObjectAnyType) {
     const { highlightedSuggestion } = selectedItem;
 
     // handle validation when user focuses away
     if (!highlightedSuggestion) {
-      const { inputProps, onValidate } = this.props;
+      const { inputProps } = this.props;
       const { currentValue, errorMessage } = this.state;
       const updatedErrorMessage = errorMessage
         ? errorMessage
@@ -127,18 +147,14 @@ export class Address extends React.PureComponent<Props, State> {
         ? 'Please choose a valid address from the options.'
         : '';
 
-      const validationData = {
+      const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
         ...this.baseErrorData,
 
         errorMessage: updatedErrorMessage,
         eventType: 'blur',
         isError: updatedErrorMessage.length > 0,
         value: currentValue,
-      };
-
-      const userReturnedValidationData = onValidate && onValidate(validationData);
-      const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
-      const errorMessageToSet = userErrorMessage || updatedErrorMessage;
+      });
 
       // persist event outside of this handler to a parent component
       if (event) event.persist();
@@ -160,12 +176,26 @@ export class Address extends React.PureComponent<Props, State> {
   onChange(event: SyntheticInputEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) {
     const { newValue } = autosuggestEvent;
     const { inputProps } = this.props;
+    const errorMessage = this.callOnValidateAndGetErrorMessage({
+      ...this.baseErrorData,
+
+      eventType: 'change',
+      value: newValue,
+    });
+
+    const errorMessageToSet = errorMessage
+      ? { errorMessage } : null;
+    const shouldShowError = errorMessage.length > 0
+      ? { shouldShowError: true } : null;
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
 
     this.setState({
       currentValue: newValue,
+
+      ...errorMessageToSet,
+      ...shouldShowError,
     }, () => {
       // flag dirty input, as we haven't fetched anything and validated with OpenLaw
       this.isDataValid = false;
@@ -186,88 +216,15 @@ export class Address extends React.PureComponent<Props, State> {
     }
   }
 
-  // Will be called every time suggestion is selected via mouse or keyboard.
-  onSuggestionSelected = async (event: SyntheticInputEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) => {
-    const { method } = autosuggestEvent;
-
-    // cause the element to lose focus on 'enter'
-    // this is already handled for click via `focusInputOnSuggestionClick={false}`
-    if (method === 'enter' || method === 'click') {
-      setTimeout(() => this.blurInput());
-
-      const { suggestion } = autosuggestEvent;
-      const { apiClient, inputProps, name, onChange, onValidate } = this.props;
-      
-      if (suggestion) {
-        try {
-          this.isCreatingAddress = true;
-
-          // persist event outside of this handler to a parent component
-          if (event) event.persist();
-
-          const addressDetails = await apiClient.getAddressDetails(suggestion.placeId);
-          const { addressData, openlawAddress } = await this.createOpenLawAddress(addressDetails);
-
-          const validationData = {
-            ...this.baseErrorData,
-
-            errorMessage: '',
-            eventType: 'blur',
-            isError: false,
-            value: addressData.address,
-          };
-
-          const userReturnedValidationData = onValidate && onValidate(validationData);
-          const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
-          const errorMessageToSet = userErrorMessage || '';
-
-          this.setState({
-            currentValue: addressData.address,
-            errorMessage: errorMessageToSet,
-          }, () => {
-            this.isDataValid = true;
-            this.isCreatingAddress = false;
-
-            onChange(name, openlawAddress);
-
-            if (event && inputProps && inputProps.onChange) {
-              inputProps.onChange(event);
-            }
-          });
-        } catch (error) {
-          const validationData = {
-            ...this.baseErrorData,
-
-            errorMessage: 'Something went wrong while creating an address.',
-            eventType: 'blur',
-            isError: true,
-            value: '',
-          };
-
-          const userReturnedValidationData = onValidate && onValidate(validationData);
-          const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
-          const errorMessageToSet = userErrorMessage || validationData.errorMessage;
-
-          this.setState({
-            currentValue: validationData.value,
-            errorMessage: errorMessageToSet,
-          }, () => {
-            this.isDataValid = false;
-          });
-        }
-      }
-    }
-  };
-
   // Autosuggest will call this function every time you need to clear suggestions.
-  onSuggestionsClearRequested = () => {
+  onSuggestionsClearRequested() {
     this.setState({
       suggestions: [],
     });
-  };
+  }
 
   // Autosuggest will call this function every time you need to update suggestions.
-  onSuggestionsFetchRequested = async ({ value }: { value: string }) => {
+  async onSuggestionsFetchRequested({ value }: { value: string }) {
     const valueTrimmed = value.trim();
     const isInputLongEnough = valueTrimmed && valueTrimmed.length > 2;
 
@@ -283,11 +240,9 @@ export class Address extends React.PureComponent<Props, State> {
         }],
       }],
     });
-
-    const { apiClient, onValidate } = this.props;
     
     try {
-      const suggestions = await apiClient.searchAddress(value);
+      const suggestions = await this.props.apiClient.searchAddress(value);
 
       // don't try to set & show more suggestions while creating an address
       if (this.isCreatingAddress) return;
@@ -298,42 +253,95 @@ export class Address extends React.PureComponent<Props, State> {
         }],
       });
     } catch (error) {
-      this.setState({
+      const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+        ...this.baseErrorData,
+
         errorMessage: 'Something went wrong while searching for an address.',
-        shouldShowError: true,
+        eventType: 'change',
+        isError: true,
+        value,
+      });
+
+      this.setState({
+        errorMessage: errorMessageToSet,
+        shouldShowError: errorMessageToSet.length > 0,
         suggestions: [{
           suggestions: [],
         }],
-      }, () => {
-        const { errorMessage } = this.state;
-
-        if (onValidate) {
-          onValidate({
-            ...this.baseErrorData,
-
-            errorMessage,
-            eventType: 'change',
-            isError: true,
-            value,
-          });
-        }
       });
     }
-  };
+  }
 
-  createOpenLawAddress(addressData: ObjectAnyType): Promise<any> {
-    return new Promise((resolve, reject) => {
-      try {
-        const openlawAddress = this.props.openLaw.createAddress(addressData);
+  // Will be called every time suggestion is selected via mouse or keyboard,
+  // and blur the input.
+  async onSuggestionSelected(event: SyntheticInputEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) {
+    const { method } = autosuggestEvent;
 
-        resolve({
-          addressData,
-          openlawAddress,
-        });
-      } catch (error) {
-        reject();
+    // cause the element to lose focus on 'enter'
+    // this is already handled for click via `focusInputOnSuggestionClick={false}`
+    if (method === 'enter' || method === 'click') {
+      setTimeout(() => this.blurInput());
+
+      const { suggestion } = autosuggestEvent;
+      const { apiClient, inputProps, name, onChange } = this.props;
+      
+      if (suggestion) {
+        try {
+          this.isCreatingAddress = true;
+
+          // persist event outside of this handler to a parent component
+          if (event) event.persist();
+
+          const addressDetails = await apiClient.getAddressDetails(suggestion.placeId);
+          const { addressData, openlawAddress } = await this.createOpenLawAddress(addressDetails);
+
+          const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+            ...this.baseErrorData,
+
+            eventType: 'blur',
+            value: addressData.address,
+          });
+
+          this.setState({
+            currentValue: addressData.address,
+            errorMessage: errorMessageToSet,
+          }, () => {
+            this.isDataValid = true;
+            this.isCreatingAddress = false;
+
+            onChange(name, openlawAddress);
+
+            if (event && inputProps && inputProps.onChange) {
+              inputProps.onChange(event);
+            }
+          });
+        } catch (error) {
+          const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+            ...this.baseErrorData,
+
+            errorMessage: 'Something went wrong while creating an address.',
+            eventType: 'blur',
+            isError: true,
+            value: '',
+          });
+
+          this.setState({
+            currentValue: '',
+            errorMessage: errorMessageToSet,
+          }, () => {
+            this.isDataValid = false;
+          });
+        }
       }
-    });
+    }
+  }
+
+  callOnValidateAndGetErrorMessage(validationData: FieldErrorType): string {
+    const { onValidate } = this.props;
+    const userReturnedValidationData = onValidate && onValidate(validationData);
+    const { errorMessage } = userReturnedValidationData || {};
+    
+    return errorMessage || validationData.errorMessage;
   }
 
   render() {

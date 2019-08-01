@@ -2,7 +2,15 @@
 $NAMESPACE: 'openlaw-el';
 
 // Fonts
-$sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$system-sans: -apple-system,
+  BlinkMacSystemFont,
+  Segoe UI,
+  Helvetica,
+  Arial,
+  sans-serif,
+  Apple Color Emoji,
+  Segoe UI Emoji,
+  Segoe UI Symbol;
 
 // Colors
 $black: #000;
@@ -44,12 +52,21 @@ $button-text: #363636;
   width: 100%;
 }
 
+%visually-hidden {
+  position: absolute !important;
+  height: 1px; 
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
+}
+
 .flatpickr-calendar {
-  font-family: $sans;
+  font-family: $system-sans;
 }
 
 .openlaw-form {
-  font-family: $sans;
+  font-family: $system-sans;
 
   .contract-section {
     padding-bottom: 1rem;
@@ -211,7 +228,7 @@ $button-text: #363636;
     color: $dark-grey;
     cursor: pointer;
     display: block;
-    font-family: $sans;
+    font-family: $system-sans;
     font-size: 1.375rem;
     margin: 1.5rem 0 1rem;
     word-break: break-word;
@@ -269,15 +286,54 @@ $button-text: #363636;
     }
   }
 }
-  
+
 /* FIELDS */
 
 .#{$NAMESPACE}-field {
+  display: flex;
+  flex-direction: column;
+  margin: 0 0 1.2rem;
+  position: relative;
+  width: 100%;
+}
+
+.#{$NAMESPACE}-field__input[type="email"],
+.#{$NAMESPACE}-field__input[type="number"],
+.#{$NAMESPACE}-field__input[type="text"],
+select.#{$NAMESPACE}-field__input {
+  @extend %text-input;
+
+  // Must precede border-bottom line
+  border: 0;
+  border-bottom: 1px solid $grey;
+
+  height: 2.25rem;
+
+  &:focus {
+    border-bottom-color: $blue--aqua;
+    background: $blue--aqua-lite;
+  }
+
+  &::placeholder {
+    color: $mid-grey;
+  }
+
+  .ios-label {
+    color: $mid-grey;
+    font-size: 1rem;
+    position: absolute;
+    top: .3125rem;
+    left: .5625rem;
+  }
+}
+
+.#{$NAMESPACE}-field__label-text {
+  @extend %visually-hidden;
 }
 
 /* ERRORS */
   
-.#{$NAMESPACE}-field--error {
+.#{$NAMESPACE}-field__input--error {
   border-bottom-color: $red-error__border !important;
 }
 
@@ -290,7 +346,7 @@ $button-text: #363636;
   padding: .1875em .625em;
 }
 
-/* REACT AUTOSUGGEST */
+/* REACT AUTOSUGGEST OVERRIDES */
 
 .react-autosuggest__section-title {
     font-weight: 500;

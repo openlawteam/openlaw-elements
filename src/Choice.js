@@ -148,20 +148,20 @@ export class Choice extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { choiceValues, cleanName, description, inputProps, textLikeInputClass } = this.props;
+    const { choiceValues, cleanName, description, inputProps, textLikeInputClass, variableType } = this.props;
     const { currentValue, errorMessage, shouldShowError } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldError : '';
+    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
-      <div className="contract-variable choice">
-        <label className="label">
-          <span>{description}</span>
+      <div className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
+        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
+          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
 
           <select
             {...inputProps}
 
-            className={`${CSS_CLASS_NAMES.field} ${(textLikeInputClass || '')} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
+            className={`${CSS_CLASS_NAMES.fieldInput} ${(textLikeInputClass || '')} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
             onBlur={this.onBlur}
             onChange={this.onChange}
             value={currentValue}

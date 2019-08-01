@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+/* eslint-disable react/prop-types, react/display-name */
 
 import React from 'react';
 import {
@@ -7,11 +7,13 @@ import {
   render,
 } from '@testing-library/react';
 import 'jest-dom/extend-expect';
-import { Openlaw } from 'openlaw';
+import { APIClient, Openlaw } from 'openlaw';
 
 import { Text } from '../Text';
+import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 
+const apiClient = new APIClient('');
 const getValidity = (name, value) => {
   const v = executedVariables.filter(v =>
     Openlaw.getName(v) === name
@@ -24,12 +26,25 @@ let parameters;
 let compiledTemplate;
 let executionResult;
 let executedVariables;
+let FakeOpenlawComponent;
 
 beforeEach(() => {
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
   executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
+  FakeOpenlawComponent = props => (
+    <OpenLawForm
+      apiClient={apiClient}
+      executionResult={executionResult}
+      parameters={parameters}
+      onChangeFunction={() => {}}
+      openLaw={Openlaw}
+      variables={executedVariables}
+
+      {...props}
+    />
+  );
 });
 
 afterEach(cleanup);
@@ -116,4 +131,49 @@ test('Can render with field-level, user-provided error onValidate', () => {
   fireEvent.blur(getByPlaceholderText(/contestant name/i));
   
   getByText(/sorry, morgan smith is incorrect/i);
+});
+
+test('Can call onChangeFunction', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(/contestant name/i),
+    { target: { value: 'Morgan Smith' } },
+  );
+  fireEvent.blur(getByPlaceholderText(/contestant name/i));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant name/i);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/morgan smith/i);
+});
+
+test('Can call inputProps: onChange, onBlur', () => {
+  const changeSpy = jest.fn();
+  const blurSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      inputProps={{
+        'Text': {
+          onChange: changeSpy,
+          onBlur: blurSpy,
+        },
+      }}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(/contestant name/i),
+    { target: { value: 'Morgan Smith' } },
+  );
+  fireEvent.blur(getByPlaceholderText(/contestant name/i));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(blurSpy.mock.calls.length).toBe(1);
 });

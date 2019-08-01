@@ -179,6 +179,7 @@ export const InputRenderer = (props: RendererProps) => {
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -209,9 +210,11 @@ export const InputRenderer = (props: RendererProps) => {
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           openLaw={openLaw}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -252,8 +255,10 @@ export const InputRenderer = (props: RendererProps) => {
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 

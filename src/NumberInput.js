@@ -2,9 +2,14 @@
 
 import * as React from 'react';
 
+import { FieldError } from './FieldError';
+import { CSS_CLASS_NAMES, FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from './constants';
 import type {
+  FieldEnumType,
+  FieldErrorType,
   FieldPropsValueType,
   OnChangeFuncType,
+  OnValidateFuncType,
   ValidityFuncType,
   ValidateOnKeyUpFuncType,
 } from './flowTypes';
@@ -17,52 +22,121 @@ type Props = {
   name: string,
   onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
+  onValidate: ?OnValidateFuncType,
   savedValue: string,
   textLikeInputClass: string,
+  variableType: FieldEnumType,
 };
 
 type State = {
   currentValue: string,
-  validationError: boolean,
+  errorMessage: string,
+  shouldShowError: boolean,
 };
 
 export class NumberInput extends React.PureComponent<Props, State> {
+  baseErrorData = {
+    elementName: this.props.cleanName,
+    elementType: this.props.variableType,
+    errorMessage: '',
+    isError: false,
+    value: (this.props.savedValue || ''),
+  };
+
+  readableVariableType: string = TYPE_TO_READABLE[this.props.variableType];
+
   state = {
     currentValue: this.props.savedValue || '',
-    validationError: false,
+    errorMessage: '',
+    shouldShowError: false,
   };
 
   constructor(props: Props) {
     super(props);
 
     const self: any = this;
+    self.callOnValidateAndGetErrorMessage = this.callOnValidateAndGetErrorMessage.bind(this);
+    self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
   }
 
-  onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const eventValue = event.currentTarget.value;
-    const { getValidity, name } = this.props;
+  callOnValidateAndGetErrorMessage(validationData: FieldErrorType): string {
+    const { onValidate } = this.props;
+    const userReturnedValidationData = onValidate && onValidate(validationData);
+    const { errorMessage } = userReturnedValidationData || {};
+    
+    return errorMessage || validationData.errorMessage;
+  }
 
-    if (!eventValue) {
-      this.setState({
-        currentValue: '',
-        validationError: false,
-      }, () => {
-        this.props.onChange(name);
-      });
-
-      // exit
-      return;
+  getGenericErrorMessage(includeVariableType: boolean = true) {
+    if (includeVariableType) {
+      return `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`;
     }
+    return `${FIELD_DEFAULT_ERROR_MESSAGE}`;
+  }
 
-    const { isError } = getValidity(name, eventValue);
+  onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
+    const { getValidity, inputProps, name } = this.props;
+    const { currentValue } = this.state;
+    const hasValue = currentValue.length > 0;
+    const { isError } = hasValue ? getValidity(name, currentValue) : {};
+    const updatedErrorMessage = (hasValue && isError)
+      ? this.getGenericErrorMessage()
+      : '';
+    const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+      ...this.baseErrorData,
+
+      errorMessage: updatedErrorMessage,
+      eventType: 'blur',
+      isError: isError || false,
+      value: currentValue,
+    });
+
+    // persist event outside of this handler to a parent component
+    if (event) event.persist();
+
+    this.setState({
+      errorMessage: errorMessageToSet,
+      shouldShowError: errorMessageToSet.length > 0,
+    }, () => {
+      if (event && inputProps && inputProps.onBlur) {
+        inputProps.onBlur(event);
+      }
+    });
+  }
+
+  onChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const eventValue = event.currentTarget.value;
+    const { getValidity, inputProps, name, onChange, onValidate } = this.props;
+    const hasValue = eventValue.length > 0;
+    const { isError } = hasValue ? getValidity(name, eventValue) : {};
+    const maybeUserReturnedValidationData = onValidate && onValidate({
+      ...this.baseErrorData,
+
+      errorMessage: isError ? this.getGenericErrorMessage() : '',
+      eventType: 'change',
+      isError,
+      value: eventValue,
+    });
+    const maybeUserProvidedErrorMessage =
+      maybeUserReturnedValidationData && maybeUserReturnedValidationData.errorMessage
+        ? maybeUserReturnedValidationData.errorMessage
+        : ''; 
 
     this.setState({
       currentValue: eventValue,
-      validationError: isError,
+      errorMessage: maybeUserProvidedErrorMessage,
+      shouldShowError: maybeUserProvidedErrorMessage.length > 0,
     }, () => {
-      if (!isError) this.props.onChange(name, eventValue);
+      onChange(
+        name,
+        eventValue || undefined,
+      );
+
+      if (event && inputProps && inputProps.onChange) {
+        inputProps.onChange(event);
+      }
     });
   }
 
@@ -75,24 +149,33 @@ export class NumberInput extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description, inputProps } = this.props;
+    const { cleanName, description, inputProps, textLikeInputClass, variableType } = this.props;
+    const { errorMessage, shouldShowError } = this.state;
+    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
-      <div className="contract-variable">
-        <label>
-          <span>{description}</span>
+      <div className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
+        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
+          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
 
           <input
             placeholder={description}
 
             {...inputProps}
 
-            className={`${this.props.textLikeInputClass}${cleanName}${inputPropsClassName}`}
+            className={`${CSS_CLASS_NAMES.fieldInput} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
+            onBlur={this.onBlur}
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}
             type="number"
             value={this.state.currentValue}
+          />
+
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
           />
         </label>
       </div>

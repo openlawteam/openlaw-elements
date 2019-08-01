@@ -111,6 +111,26 @@ test('Can render without bad savedValue', () => {
   expect(() => getByDisplayValue(/0xc0ffe/i)).toThrow();
 });
 
+test('Can call onChangeFunction', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(ethPlaceholderTextRegex),
+    { target: { value: '1 Week' } },
+  );
+  fireEvent.blur(getByPlaceholderText(ethPlaceholderTextRegex));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant eth address/i);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/1 week/i);
+});
+
 test('Can call inputProps: onChange, onBlur', () => {
   const changeSpy = jest.fn();
   const blurSpy = jest.fn();

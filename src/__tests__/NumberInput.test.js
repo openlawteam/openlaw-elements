@@ -5,11 +5,29 @@ import {
   render,
 } from '@testing-library/react';
 import 'jest-dom/extend-expect';
-import { Openlaw } from 'openlaw';
+import { APIClient, Openlaw } from 'openlaw';
 
 import { NumberInput } from '../NumberInput';
+import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 
+const numberPlaceholderTextRegex = /contestant bbq experience years/i;
+const numberTemplatePlaceholderTextRegex = /how many years of bbq experience do you have\?/i;
+const numberErrorTextRegex = `${TYPE_TO_READABLE.Number}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
+const apiClient = new APIClient('');
+const FakeOpenlawComponent = props => (
+  <OpenLawForm
+    apiClient={apiClient}
+    executionResult={executionResult}
+    parameters={parameters}
+    onChangeFunction={() => {}}
+    openLaw={Openlaw}
+    variables={executedVariables}
+
+    {...props}
+  />
+);
 let parameters;
 let compiledTemplate;
 let executionResult;
@@ -38,7 +56,7 @@ test('Can render Number', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
 });
 
 test('Can render with savedValue', () => {
@@ -61,7 +79,7 @@ test('Can render with savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1200000000/i);
 });
 
@@ -85,7 +103,7 @@ test('Can render with savedValue and type another value', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1200000000/i);
 
   fireEvent.change(getByDisplayValue(/1200000000/i), { target: { value: '12' } });
@@ -113,7 +131,7 @@ test('Can render without bad savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   expect(() => getByDisplayValue(/-1f/i)).toThrow();
 });
 
@@ -137,9 +155,9 @@ test('Can insert "1e19"', () => {
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant bbq experience years/i), { target: { value: '1e19' } });
+  fireEvent.change(getByPlaceholderText(numberPlaceholderTextRegex), { target: { value: '1e19' } });
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1e19/i);
 });
 
@@ -165,12 +183,12 @@ test('Can insert "1,000,000,000,000,000,000"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '1000000000000000000' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1000000000000000000/i);
 });
 
@@ -196,12 +214,12 @@ test('Can insert "-1,000,000,000,000,000,000"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '-1000000000000000000' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/-1000000000000000000/i);
 });
 
@@ -227,12 +245,12 @@ test('Can insert "-0.000000009"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '-0.000000009' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/-0\.000000009/i);
 });
 
@@ -258,12 +276,12 @@ test('Can insert "0.000000009"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '0.000000009' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/0\.000000009/i);
 });
 
@@ -289,12 +307,12 @@ test('Can insert "1.09"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '1.09' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1\.09/i);
 });
 
@@ -320,11 +338,159 @@ test('Cannot insert "1sdfsdf.09"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '1sdfsdf.09' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   expect(() => getByDisplayValue(/1sdfsdf\.09/i)).toThrow();
+});
+
+test('Can call onChangeFunction', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(numberTemplatePlaceholderTextRegex),
+    { target: { value: '1.09' } },
+  );
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(numberPlaceholderTextRegex);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/1\.09/i);
+});
+
+test('Can call inputProps: onChange, onBlur', () => {
+  const changeSpy = jest.fn();
+  const blurSpy = jest.fn();
+
+  const { getByDisplayValue, getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      inputProps={{
+        'Number': {
+          onChange: changeSpy,
+          onBlur: blurSpy,
+        },
+      }}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(numberTemplatePlaceholderTextRegex),
+    { target: { value: '1.09' } },
+  );
+  fireEvent.blur(getByDisplayValue(/1\.09/i));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(blurSpy.mock.calls.length).toBe(1);
+});
+
+/**
+ * onBlur
+ */
+
+test('Can show field-level, user-provided error onValidate (blur)', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      onValidate={({ eventType }) => {
+        if (eventType === 'blur') {
+          return {
+            errorMessage: 'This is a custom Number error',
+          };
+        }
+      }}
+    />
+  );
+
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  // error message field
+  getByText(/this is a custom number error/i);
+});
+
+test('Should not show error onBlur with no content', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent />
+  );
+
+  fireEvent.focus(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  // error message field should not show
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
+});
+
+test('Should not show error onBlur with valid value', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent />
+  );
+
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  // error message field should not show
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
+});
+
+/**
+ * onChange
+ */
+
+test('Can show field-level, user-provided error onValidate (change)', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      onValidate={({ eventType }) => {
+        if (eventType === 'change') {
+          return {
+            errorMessage: 'This is a custom number error',
+          };
+        }
+      }}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
+
+  // error message field
+  getByText(/this is a custom number error/i);
+});
+
+test('Should not show error onChange with valid value', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent
+      onValidate={({ eventType }) => {
+        if (eventType === 'change') {
+          return {
+            errorMessage: 'This is a custom number error',
+          };
+        }
+      }}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
+
+  // error message field should not show
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
+});
+
+test('Should not show field error onBlur or onChange by default', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent />
+  );
+
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
+  // don't show error message on the field
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '' } });
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
 });

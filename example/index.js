@@ -69,10 +69,9 @@ class Form extends Component {
   }
 
   onValidate = (errorData) => {
-    console.log(errorData);
     const { errorMessage, eventType, isError } = errorData;
+console.log(errorData);
     if (eventType === 'blur') this.setState({ errorMessage });
-
     if (isError && eventType === 'change') {
       return {
         errorMessage: 'There was some errorz.'

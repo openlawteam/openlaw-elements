@@ -73,21 +73,30 @@ export class Text extends React.PureComponent<Props, State> {
     }
   }
 
+  getGenericErrorMessage(includeVariableType: boolean = true) {
+    if (includeVariableType) {
+      return `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`;
+    }
+    return `${FIELD_DEFAULT_ERROR_MESSAGE}`;
+  }
+
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
-    const { getValidity, inputProps, name, onValidate } = this.props;
+    const { getValidity, inputProps, name, onValidate, variableType } = this.props;
     const { currentValue } = this.state;
     const hasValue = currentValue.length > 0;
     const { isError } = hasValue ? getValidity(name, currentValue) : {};
-    const updatedErrorMessage = (hasValue && isError)
-      ? `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`
-      : '';
+    const updatedErrorMessage = (!hasValue || !isError)
+      ? ''
+      : (variableType === 'Text')
+      ? this.getGenericErrorMessage(false)
+      : this.getGenericErrorMessage();
 
     const validationData = {
       ...this.baseErrorData,
 
       errorMessage: updatedErrorMessage,
       eventType: 'blur',
-      isError: updatedErrorMessage.length > 0,
+      isError: isError || updatedErrorMessage.length > 0 || false,
       value: currentValue,
     };
 

@@ -5,11 +5,25 @@ import {
   render,
 } from '@testing-library/react';
 import 'jest-dom/extend-expect';
-import { Openlaw } from 'openlaw';
+import { APIClient, Openlaw } from 'openlaw';
 
 import { Choice } from '../Choice';
+import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 
+const apiClient = new APIClient('');
+const FakeOpenlawComponent = props => (
+  <OpenLawForm
+    apiClient={apiClient}
+    executionResult={executionResult}
+    parameters={parameters}
+    onChangeFunction={() => {}}
+    openLaw={Openlaw}
+    variables={executedVariables}
+
+    {...props}
+  />
+);
 let choiceValues;
 let compiledTemplate;
 let executionResult;
@@ -259,4 +273,43 @@ test('Should not render error message onChange, if blank value.', () => {
   fireEvent.change(getByDisplayValue(/please choose/i), { target: { value: '' } });
 
   expect(() => getByText(/something looks incorrect\./i)).toThrow();
+});
+
+test('Can call onChangeFunction', () => {
+  const changeSpy = jest.fn();
+
+  const { getByDisplayValue } = render(
+    <FakeOpenlawComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(getByDisplayValue(/please choose/i), { target: { value: 'Memphis' } });
+  fireEvent.blur(getByDisplayValue(/memphis/i));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant bbq region/i);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/memphis/i);
+});
+
+test('Can call inputProps: onChange, onBlur', () => {
+  const changeSpy = jest.fn();
+  const blurSpy = jest.fn();
+
+  const { getByDisplayValue } = render(
+    <FakeOpenlawComponent
+      inputProps={{
+        'Choice': {
+          onChange: changeSpy,
+          onBlur: blurSpy,
+        },
+      }}
+    />
+  );
+
+  fireEvent.change(getByDisplayValue(/please choose/i), { target: { value: 'Memphis' } });
+  fireEvent.blur(getByDisplayValue(/memphis/i));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(blurSpy.mock.calls.length).toBe(1);
 });

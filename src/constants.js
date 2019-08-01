@@ -10,10 +10,19 @@ import type { FieldEnumType } from './flowTypes';
 
 type CSSClassNamesEnumType =
   'field'
-  | 'fieldError'
-  | 'fieldErrorMessage';
+  | 'fieldInputError'
+  | 'fieldInput'
+  | 'fieldErrorMessage'
+  | 'fieldLabel'
+  | 'fieldLabelText'
+  | 'getFieldTypeToLower';
 
-type TYPE_TO_READABLEType = {
+type CSSClassNamesType = {
+  [CSSClassNamesEnumType]: string,
+  fieldTypeToLower: (any) => string,
+};
+
+type TypeToReadableType = {
   [FieldEnumType]: string,
 };
 
@@ -37,19 +46,24 @@ export const ELEMENT_TYPES: Array<FieldEnumType> = [
 
 export const FIELD_DEFAULT_ERROR_MESSAGE = 'Something looks incorrect.';
 
-export const CSS_CLASS_NAMES: {[CSSClassNamesEnumType]: string} = {
+export const CSS_CLASS_NAMES: CSSClassNamesType = {
   field: `${CSS_CLASS_NAMESPACE}-field`,
-  fieldError: `${CSS_CLASS_NAMESPACE}-field--error`,
   fieldErrorMessage: `${CSS_CLASS_NAMESPACE}-field__error-message`,
+  fieldInput: `${CSS_CLASS_NAMESPACE}-field__input`,
+  fieldInputError: `${CSS_CLASS_NAMESPACE}-field__input--error`,
+  fieldLabel: `${CSS_CLASS_NAMESPACE}-field__label`,
+  fieldLabelText: `${CSS_CLASS_NAMESPACE}-field__label-text`,
+  fieldTypeToLower: (type: string) => type ? `${type.toLowerCase()}` : '',
 };
 
-export const TYPE_TO_READABLE: TYPE_TO_READABLEType = {
+export const TYPE_TO_READABLE: TypeToReadableType = {
   Address: 'Address',
   Choice: 'Choice',
   Date: 'Date',
   DateTime: 'Date \u0026 Time', /* Date & Time */
   EthAddress: 'Ethereum Address',
-  Identity: 'Identity',
+  ExternalSignature: 'Email',
+  Identity: 'Email',
   Image: 'Image',
   LargeText: 'Text box',
   Number: 'Number',

@@ -107,3 +107,12 @@ test('Can render without bad savedValue', () => {
   getByPlaceholderText(/docusign signatory/i);
   expect(() => getByDisplayValue(/test\.bad@/i)).toThrow();
 });
+
+test('Can identify the missing input fields', () => {
+  let templateText = '[[DocuSign Signatory: ExternalSignature(serviceName: "DocuSign")]]';
+  let compiledTemplate = Openlaw.compileTemplate(templateText).compiledTemplate;
+  let executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  let validatedExecution = Openlaw.validateContract(executionResult);
+  let missingInput = Openlaw.getMissingInputs(validatedExecution);
+  expect(missingInput).toContain('DocuSign Signatory');
+});

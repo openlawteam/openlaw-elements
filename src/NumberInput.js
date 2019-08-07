@@ -3,6 +3,7 @@
 import * as React from 'react';
 
 import { FieldError } from './FieldError';
+import { onBlurValidation, onChangeValidation } from './validation';
 import { CSS_CLASS_NAMES, FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from './constants';
 import type {
   FieldEnumType,
@@ -77,28 +78,16 @@ export class NumberInput extends React.PureComponent<Props, State> {
   }
 
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
-    const { getValidity, inputProps, name } = this.props;
+    const { inputProps } = this.props;
     const { currentValue } = this.state;
-    const hasValue = currentValue.length > 0;
-    const { isError } = hasValue ? getValidity(name, currentValue) : {};
-    const updatedErrorMessage = (hasValue && isError)
-      ? this.getGenericErrorMessage()
-      : '';
-    const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
-      ...this.baseErrorData,
-
-      errorMessage: updatedErrorMessage,
-      eventType: 'blur',
-      isError: isError || false,
-      value: currentValue,
-    });
+    const { errorMessage, shouldShowError } = onBlurValidation(currentValue, this.props); 
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
 
     this.setState({
-      errorMessage: errorMessageToSet,
-      shouldShowError: errorMessageToSet.length > 0,
+      errorMessage,
+      shouldShowError,
     }, () => {
       if (event && inputProps && inputProps.onBlur) {
         inputProps.onBlur(event);
@@ -108,26 +97,13 @@ export class NumberInput extends React.PureComponent<Props, State> {
 
   onChange(event: SyntheticInputEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
-    const { getValidity, inputProps, name, onChange, onValidate } = this.props;
-    const hasValue = eventValue.length > 0;
-    const { isError } = hasValue ? getValidity(name, eventValue) : {};
-    const maybeUserReturnedValidationData = onValidate && onValidate({
-      ...this.baseErrorData,
-
-      errorMessage: isError ? this.getGenericErrorMessage() : '',
-      eventType: 'change',
-      isError,
-      value: eventValue,
-    });
-    const maybeUserProvidedErrorMessage =
-      maybeUserReturnedValidationData && maybeUserReturnedValidationData.errorMessage
-        ? maybeUserReturnedValidationData.errorMessage
-        : ''; 
+    const { inputProps, name, onChange } = this.props;
+    const { errorMessage, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
 
     this.setState({
       currentValue: eventValue,
-      errorMessage: maybeUserProvidedErrorMessage,
-      shouldShowError: maybeUserProvidedErrorMessage.length > 0,
+      errorMessage,
+      shouldShowError,
     }, () => {
       onChange(
         name,

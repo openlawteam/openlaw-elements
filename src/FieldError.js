@@ -12,9 +12,11 @@ type FieldErrorData = {
 
 export const FieldError = ({ cleanName, errorMessage, shouldShowError }: FieldErrorData) =>
   (shouldShowError && errorMessage) && (
-    <div
-      className={CSS_CLASS_NAMES.fieldErrorMessage}
-      data-element-name={cleanName}>
-      {errorMessage}
+    <div>
+      <div
+        className={CSS_CLASS_NAMES.fieldErrorMessage}
+        data-element-name={cleanName}>
+        {errorMessage}
+      </div>
     </div>
   );

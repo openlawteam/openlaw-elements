@@ -19,3 +19,17 @@ export const cacheValue = (isEqualFn: (any, any) => boolean) => {
     return value;
   };
 };
+
+/**
+* classNameCleanSpace
+*
+* Cleans up multiple spaces and replaces with single.
+* Makes things a bit easier if you ever need to split className
+* to an array without empty strings. It also makes HTML source appear cleaner.
+* 
+* @param className<String> Any className string.
+* @returns <String> Clean, single-spaced className list.
+*/
+export const singleSpaceString = (className: string) => {
+  return className.trim().replace(/\s{2,}/, ' ');
+};

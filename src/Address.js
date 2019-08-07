@@ -345,9 +345,9 @@ export class Address extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { description, cleanName, inputProps, textLikeInputClass } = this.props;
+    const { description, cleanName, inputProps, textLikeInputClass, variableType } = this.props;
     const { currentValue, errorMessage, shouldShowError, suggestions } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldError : '';
+    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     const autoSuggestInputProps = {
@@ -357,7 +357,7 @@ export class Address extends React.PureComponent<Props, State> {
       ...inputProps,
 
       onBlur: this.onBlur,
-      className: `${CSS_CLASS_NAMES.field} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`,
+      className: `${CSS_CLASS_NAMES.fieldInput} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`,
       onChange: this.onChange,
       onKeyUp: this.onKeyUp,
       type: 'text',
@@ -365,9 +365,9 @@ export class Address extends React.PureComponent<Props, State> {
     };
 
     return (
-      <div className={`contract-variable ${cleanName}-address`} ref={this.ref}>
-        <label>
-          <span>{description}</span>
+      <div ref={this.ref} className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
+        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
+          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
 
           <Autosuggest
             getSectionSuggestions={getSectionSuggestions}

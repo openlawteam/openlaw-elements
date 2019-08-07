@@ -480,17 +480,3 @@ test('Should not show error onChange with valid value', () => {
   // error message field should not show
   expect(() => getByText(numberErrorTextRegex)).toThrow();
 });
-
-test('Should not show field error onBlur or onChange by default', () => {
-  const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
-  );
-
-  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
-  // don't show error message on the field
-  expect(() => getByText(numberErrorTextRegex)).toThrow();
-  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '' } });
-  expect(() => getByText(numberErrorTextRegex)).toThrow();
-  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
-  expect(() => getByText(numberErrorTextRegex)).toThrow();
-});

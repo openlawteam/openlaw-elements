@@ -2,6 +2,8 @@
 
 export type ObjectAnyType = { [string]: any };
 
+export type ImageValueType = { file: File, value: string };
+
 // All OpenLaw types which have representation in the Elements library
 export type FieldEnumType =
 	"Address"
@@ -32,7 +34,7 @@ export type FieldErrorType = {|
 	errorMessage: string,
 	eventType: "blur" | "change",
 	isError: boolean,
-	value: string,
+	value: string | ImageValueType,
 |};
 
 export type FieldPropsType = {
@@ -47,7 +49,7 @@ export type FieldPropsValueType = {
 	onChange?: (SyntheticInputEvent<any>) => mixed,
 };
 
-export type OnChangeFuncType = (string, (string | void)) => mixed;
+export type OnChangeFuncType = (string, (string | void), FieldErrorType) => mixed;
 
 export type OnValidateObjectReturnType = {
 	errorMessage?: string,

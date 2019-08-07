@@ -11,6 +11,7 @@ import { APIClient, Openlaw } from 'openlaw';
 
 import { Text } from '../Text';
 import { OpenLawForm } from '../OpenLawForm';
+import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 
 const getValidity = (name, value) => {
@@ -20,7 +21,7 @@ const getValidity = (name, value) => {
 
   return Openlaw.checkValidity(v[0], value, executionResult);
 };
-
+const genericErrorMessage = `${TYPE_TO_READABLE.Period}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 const periodPlaceholderTextRegex = /what is the longest bbq you ever conducted/i;
 const periodErrorTextRegex = /period of time: something looks incorrect/i;
 let apiClient;
@@ -303,13 +304,30 @@ test('Can show field-level, user-provided error onValidate (change)', () => {
   getByText(/this is a custom period error/i);
 });
 
-test('Can clear previous field-level, user-provided error onValidate (change event) with valid entry', () => {
-  const { getByText, getByPlaceholderText } = render(
+test('Should not clear previous error onChange, if value is bad', () => {
+  const { getByDisplayValue, getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent />
+  );
+
+  fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 we' } });
+  fireEvent.blur(getByDisplayValue(/1 we/i));
+
+  getByText(genericErrorMessage);
+
+  fireEvent.change(getByDisplayValue(/1 we/i), { target: { value: '1 w' } });
+
+  // continue to show error message on the field
+  getByText(genericErrorMessage);
+});
+
+test('Should not show error message onBlur if user has set empty string for "errorMessage"', () => {
+  const { getByDisplayValue, getByPlaceholderText, getByText } = render(
     <FakeOpenlawComponent
-      onValidate={({ errorMessage }) => {
-        if (errorMessage) {
+      onValidate={({ elementType, isError }) => {
+        if (isError && elementType === 'Period') {
           return {
-            errorMessage: 'This is a custom Period error',
+            // do not show error
+            errorMessage: '',
           };
         }
       }}
@@ -317,67 +335,32 @@ test('Can clear previous field-level, user-provided error onValidate (change eve
   );
 
   fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 we' } });
-  fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+  fireEvent.blur(getByDisplayValue(/1 we/i));
 
-  getByText(/this is a custom period error/i);
-
-  fireEvent.change(
-    getByPlaceholderText(periodPlaceholderTextRegex),
-    { target: { value: '1 week' } },
-  );
-
-  // don't show error message on the field
-  expect(() => getByText(/this is a custom period error/i)).toThrow();
+  expect(() => getByText(genericErrorMessage)).toThrow();
 });
 
-test('Can clear previous error onChange with valid entry', () => {
-  const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+test('Should not show error message onChange if user has set empty string for "errorMessage"', () => {
+  const { getByDisplayValue, getByPlaceholderText, getByText } = render(
+    <FakeOpenlawComponent
+      onValidate={(errorData) => {
+        const { eventType, isError } = errorData;
+        return {
+          // do not show error if user is making changes
+          errorMessage: (isError && eventType === 'change') && '',
+        };
+      }}
+    />
   );
 
   fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 we' } });
-  fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+  fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 w' } });
 
-  getByText(periodErrorTextRegex);
+  // should not show error
+  expect(() => getByText(genericErrorMessage)).toThrow();
 
-  fireEvent.change(
-    getByPlaceholderText(periodPlaceholderTextRegex),
-    { target: { value: '1 week' } },
-  );
+  fireEvent.blur(getByDisplayValue(/1 w/i));
 
-  // don't show error message on the field
-  expect(() => getByText(periodErrorTextRegex)).toThrow();
-});
-
-test('Field error is reset when no value and doesn\'t show onChange', () => {
-  const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
-  );
-
-  fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 we' } });
-  fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
-
-  getByText(periodErrorTextRegex);
-
-  fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '' } });
-  fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '0x' } });
-
-  // don't show error message on the field
-  expect(() => getByText(periodErrorTextRegex)).toThrow();
-});
-
-test('Can clear previous error onChange', () => {
-  const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
-  );
-
-  fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 we' } });
-  fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
-
-  getByText(periodErrorTextRegex);
-
-  fireEvent.change(getByPlaceholderText(periodPlaceholderTextRegex), { target: { value: '1 week' } });
-
-  // don't show error message on the field
-  expect(() => getByText(periodErrorTextRegex)).toThrow();
+  // error shows again as normal onBlur
+  getByText(genericErrorMessage);
 });

@@ -108,7 +108,6 @@ export const InputRenderer = (props: RendererProps) => {
         onChange={onChangeFunction}
         onValidate={onValidate}
         savedValue={savedValue}
-        textLikeInputClass={textLikeInputClass}
         variableType="Choice"
       />
     );
@@ -143,11 +142,14 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           enableTime={false}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Date}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -156,12 +158,14 @@ export const InputRenderer = (props: RendererProps) => {
         <DatePicker
           cleanName={cleanName}
           description={description}
-          enableTime
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.DateTime}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
           textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -229,6 +233,7 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           onValidate={onValidate}
           savedValue={savedValue}
+          variableType={variableType}
         />
       );
 

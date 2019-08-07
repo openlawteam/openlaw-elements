@@ -3,7 +3,9 @@
 import * as React from 'react';
 
 import { FieldError } from './FieldError';
-import { CSS_CLASS_NAMES, FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from './constants';
+import { onBlurValidation, onChangeValidation } from './validation';
+import { CSS_CLASS_NAMES } from './constants';
+import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
   FieldPropsValueType,
@@ -22,7 +24,6 @@ type Props = {
   onChange: OnChangeFuncType,
   onValidate: ?OnValidateFuncType,
   savedValue: string,
-  textLikeInputClass: string,
   variableType: FieldEnumType,
 };
 
@@ -33,16 +34,6 @@ type State = {
 };
 
 export class Choice extends React.PureComponent<Props, State> {
-  baseErrorData = {
-    elementName: this.props.cleanName,
-    elementType: this.props.variableType,
-    errorMessage: '',
-    isError: false,
-    value: this.props.savedValue || '',
-  };
-
-  readableVariableType: string = TYPE_TO_READABLE[this.props.variableType];
-
   state = {
     currentValue: this.props.savedValue || '',
     errorMessage: '',
@@ -58,33 +49,16 @@ export class Choice extends React.PureComponent<Props, State> {
   }
 
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
-    const { getValidity, inputProps, name, onValidate } = this.props;
+    const { inputProps } = this.props;
     const { currentValue } = this.state;
-    const hasValue = currentValue.length > 0;
-    const { isError } = hasValue ? getValidity(name, currentValue) : {};
-    const updatedErrorMessage = (hasValue && isError)
-      ? FIELD_DEFAULT_ERROR_MESSAGE
-      : '';
-
-    const validationData = {
-      ...this.baseErrorData,
-
-      errorMessage: updatedErrorMessage,
-      eventType: 'blur',
-      isError,
-      value: currentValue,
-    };
-
-    const userReturnedValidationData = onValidate && onValidate(validationData);
-    const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
-    const errorMessageToSet = userErrorMessage || updatedErrorMessage;
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(currentValue, this.props); 
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
 
     this.setState({
-      errorMessage: errorMessageToSet,
-      shouldShowError: errorMessageToSet.length > 0,
+      errorMessage,
+      shouldShowError,
     }, () => {
       if (event && inputProps && inputProps.onBlur) {
         inputProps.onBlur(event);
@@ -94,43 +68,21 @@ export class Choice extends React.PureComponent<Props, State> {
 
   onChange(event: SyntheticInputEvent<HTMLOptionElement>) {
     const eventValue = event.currentTarget.value;
-    const { getValidity, inputProps, name, onChange, onValidate } = this.props;
-    const hasValue = eventValue.length > 0;
-    const { isError } = hasValue ? getValidity(name, eventValue) : {};
-    const updatedErrorMessage = (hasValue && isError)
-      ? FIELD_DEFAULT_ERROR_MESSAGE
-      : '';
-
-    const validationData = {
-      ...this.baseErrorData,
-
-      errorMessage: this.state.errorMessage,
-      eventType: 'change',
-      isError: this.state.errorMessage.length > 0,
-      value: eventValue,
-    };
-
-    const userReturnedValidationData = onValidate && onValidate(validationData);
-    const { errorMessage: userErrorMessage } = userReturnedValidationData || {};
-    const errorMessageToSet = userErrorMessage || updatedErrorMessage;
-    const shouldShowError = userErrorMessage
-      ? { shouldShowError: true } // show because user said so
-      : (isError === false || !hasValue)
-      ? { shouldShowError: false } // do not show by default onChange
-      : null; // set nothing
+    const { inputProps, name, onChange } = this.props;
+    const { errorData, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
 
     this.setState({
       currentValue: eventValue,
-      errorMessage: errorMessageToSet,
-
-      ...shouldShowError,
+      errorMessage: errorData.errorMessage,
+      shouldShowError,
     }, () => {
       onChange(
         name,
         this.state.currentValue || undefined,
+        errorData,
       );
 
       if (event && inputProps && inputProps.onChange) {
@@ -148,7 +100,7 @@ export class Choice extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { choiceValues, cleanName, description, inputProps, textLikeInputClass, variableType } = this.props;
+    const { choiceValues, cleanName, description, inputProps, variableType } = this.props;
     const { currentValue, errorMessage, shouldShowError } = this.state;
     const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
@@ -161,7 +113,9 @@ export class Choice extends React.PureComponent<Props, State> {
           <select
             {...inputProps}
 
-            className={`${CSS_CLASS_NAMES.fieldInput} ${(textLikeInputClass || '')} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
+            className={singleSpaceString(
+              `${CSS_CLASS_NAMES.fieldSelect} ${cleanName} ${inputPropsClassName} ${errorClassName}`
+            )}
             onBlur={this.onBlur}
             onChange={this.onChange}
             value={currentValue}

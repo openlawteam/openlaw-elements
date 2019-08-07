@@ -9,12 +9,20 @@ import type { FieldEnumType } from './flowTypes';
  */
 
 type CSSClassNamesEnumType =
-  'field'
+  'button'
+  | 'buttonDisabled'
+  | 'buttonSecondary'
+  | 'field'
+  | 'fieldImageEditor'
+  | 'fieldImageEditorActions'
+  | 'fieldImageEditorActionsStacked'
   | 'fieldInputError'
   | 'fieldInput'
   | 'fieldErrorMessage'
   | 'fieldLabel'
   | 'fieldLabelText'
+  | 'fieldSelect'
+  | 'fieldTextarea'
   | 'getFieldTypeToLower';
 
 type CSSClassNamesType = {
@@ -47,13 +55,21 @@ export const ELEMENT_TYPES: Array<FieldEnumType> = [
 export const FIELD_DEFAULT_ERROR_MESSAGE = 'Something looks incorrect.';
 
 export const CSS_CLASS_NAMES: CSSClassNamesType = {
+  button: `${CSS_CLASS_NAMESPACE}-button`,
+  buttonDisabled: `${CSS_CLASS_NAMESPACE}-button--disabled`,
+  buttonSecondary: `${CSS_CLASS_NAMESPACE}-button-secondary`,
   field: `${CSS_CLASS_NAMESPACE}-field`,
   fieldErrorMessage: `${CSS_CLASS_NAMESPACE}-field__error-message`,
+  fieldImageEditor: `${CSS_CLASS_NAMESPACE}-field-image__editor`,
+  fieldImageEditorActions: `${CSS_CLASS_NAMESPACE}-field-image__editor-actions`,
+  fieldImageEditorActionsStacked: `${CSS_CLASS_NAMESPACE}-field-image__editor-actions--stacked`,
   fieldInput: `${CSS_CLASS_NAMESPACE}-field__input`,
   fieldInputError: `${CSS_CLASS_NAMESPACE}-field__input--error`,
   fieldLabel: `${CSS_CLASS_NAMESPACE}-field__label`,
   fieldLabelText: `${CSS_CLASS_NAMESPACE}-field__label-text`,
-  fieldTypeToLower: (type: string) => type ? `${type.toLowerCase()}` : '',
+  fieldSelect: `${CSS_CLASS_NAMESPACE}-field__select`,
+  fieldTextarea: `${CSS_CLASS_NAMESPACE}-field__textarea`,
+  fieldTypeToLower: (type: string) => type ? `${CSS_CLASS_NAMESPACE}-field-${type.toLowerCase()}` : '',
 };
 
 export const TYPE_TO_READABLE: TypeToReadableType = {

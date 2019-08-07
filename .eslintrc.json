@@ -5,13 +5,17 @@
     "plugin:react/recommended"
   ],
   "globals": {
+    "afterAll": true,
     "afterEach": true,
+    "beforeAll": true,
     "beforeEach": true,
     "describe": true,
     "document": true,
     "expect": true,
+    "global": true,
     "jest": true,
     "module": true,
+    "MouseEvent": true,
     "Promise": true,
     "require": true,
     "setTimeout": true,

@@ -3,10 +3,10 @@
 import * as React from 'react';
 
 import { FieldError } from './FieldError';
-import { CSS_CLASS_NAMES, FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from './constants';
+import { onBlurValidation, onChangeValidation } from './validation';
+import { CSS_CLASS_NAMES } from './constants';
 import type {
   FieldEnumType,
-  FieldErrorType,
   FieldPropsValueType,
   OnChangeFuncType,
   OnValidateFuncType,
@@ -30,7 +30,7 @@ type Props = {
 };
 
 type State = {
-  email: string,
+  currentValue: string,
   errorMessage: string,
   externalSignatureIdentity: string,
   serviceName: string,
@@ -50,10 +50,8 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
   // e.g. if it wants to be sure to do a Collection addition on enter press
   isDataValid = false;
 
-  readableVariableType: string = TYPE_TO_READABLE[this.props.variableType];
-
   state = {
-    email: '',
+    currentValue: '',
     errorMessage: '',
     externalSignatureIdentity: '',
     serviceName: '',
@@ -64,7 +62,6 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
     super(props);
 
     const self: any = this;
-    self.callOnValidateAndGetErrorMessage = this.callOnValidateAndGetErrorMessage.bind(this);
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
@@ -78,50 +75,31 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
       const { identity, serviceName } = JSON.parse(savedValue);
 
       this.setState({
-        email: (!isError && identity && identity.email ? identity.email : ''),
+        currentValue: (!isError && identity && identity.email ? identity.email : ''),
         serviceName: (!isError && serviceName) ? serviceName : '',
       });
     }
   }
 
-  callOnValidateAndGetErrorMessage(validationData: FieldErrorType): string {
-    const { onValidate } = this.props;
-    const userReturnedValidationData = onValidate && onValidate(validationData);
-    const { errorMessage } = userReturnedValidationData || {};
-    
-    return errorMessage || validationData.errorMessage;
-  }
-
-  getGenericErrorMessage(includeVariableType: boolean = true) {
-    if (includeVariableType) {
-      return `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`;
+  createExternalSignatureValue(value: string, serviceName: string): string {
+    try {
+      return this.props.openLaw.createExternalSignatureValue('', value, serviceName);
+    } catch (error) {
+      return '';
     }
-    return `${FIELD_DEFAULT_ERROR_MESSAGE}`;
   }
 
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
-    const { getValidity, inputProps, name } = this.props;
-    const { email, externalSignatureIdentity } = this.state;
-    const hasValue = email.length > 0;
-    const { isError } = hasValue ? getValidity(name, externalSignatureIdentity) : {};
-    const updatedErrorMessage = (hasValue && isError)
-      ? this.getGenericErrorMessage()
-      : '';
-    const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
-      ...this.baseErrorData,
-
-      errorMessage: updatedErrorMessage,
-      eventType: 'blur',
-      isError: isError || false,
-      value: email,
-    });
+    const { inputProps } = this.props;
+    const { externalSignatureIdentity } = this.state;
+    const { errorMessage, shouldShowError } = onBlurValidation(externalSignatureIdentity, this.props, this.state);
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
 
     this.setState({
-      errorMessage: errorMessageToSet,
-      shouldShowError: errorMessageToSet.length > 0,
+      errorMessage,
+      shouldShowError,
     }, () => {
       if (event && inputProps && inputProps.onBlur) {
         inputProps.onBlur(event);
@@ -131,39 +109,19 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
 
   onChange(event: SyntheticInputEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
-    const { inputProps, name, onChange, onValidate, openLaw } = this.props;
+    const { inputProps, name, onChange } = this.props;
     const { serviceName } = this.state;
-    let externalSignatureIdentity: string;
-
-    try {
-      externalSignatureIdentity = openLaw.createExternalSignatureValue('', eventValue, serviceName);
-      
-      this.isDataValid = true;
-    } catch (error) {
-      this.isDataValid = false;
-
-      externalSignatureIdentity = '';
-    }
-
-    const maybeUserReturnedValidationData = onValidate && onValidate({
-      ...this.baseErrorData,
-
-      errorMessage: (eventValue && !externalSignatureIdentity) ? this.getGenericErrorMessage() : '',
-      eventType: 'change',
-      isError: (eventValue.length > 0 && !externalSignatureIdentity) && true,
-      value: eventValue,
-    });
-    const maybeUserProvidedErrorMessage =
-      (maybeUserReturnedValidationData && maybeUserReturnedValidationData.errorMessage)
-        ? maybeUserReturnedValidationData.errorMessage
-        : ''; 
+    const externalSignatureIdentity = this.createExternalSignatureValue(eventValue, serviceName);
+    const { errorMessage, shouldShowError } = onChangeValidation(externalSignatureIdentity, this.props, this.state);
 
     this.setState({
-      email: eventValue,
+      currentValue: eventValue,
       externalSignatureIdentity,
-      errorMessage: maybeUserProvidedErrorMessage,
-      shouldShowError: maybeUserProvidedErrorMessage.length > 0,
+      errorMessage,
+      shouldShowError,
     }, () => {
+      this.isDataValid = externalSignatureIdentity.length > 0;
+
       onChange(
         name,
         externalSignatureIdentity || undefined,
@@ -187,7 +145,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
 
   render() {
     const { cleanName, description, inputProps, textLikeInputClass, variableType } = this.props;
-    const { email, errorMessage, serviceName, shouldShowError } = this.state;
+    const { currentValue, errorMessage, serviceName, shouldShowError } = this.state;
     const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
     const signatureServiceDescription = serviceName ? `Sign with ${serviceName}` : '';
@@ -208,7 +166,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}
             type="email"
-            value={email}
+            value={currentValue}
           />
 
           <FieldError

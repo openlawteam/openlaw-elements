@@ -3,10 +3,10 @@
 import * as React from 'react';
 
 import { FieldError } from './FieldError';
-import { CSS_CLASS_NAMES, FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from './constants';
+import { onBlurValidation, onChangeValidation } from './validation';
+import { CSS_CLASS_NAMES } from './constants';
 import type {
   FieldEnumType,
-  FieldErrorType,
   FieldPropsValueType,
   OnChangeFuncType,
   OnValidateFuncType,
@@ -30,7 +30,7 @@ type Props = {
 };
 
 type State = {
-  email: string,
+  currentValue: string,
   emailIdentity: string,
   errorMessage: string,
   shouldShowError: boolean,
@@ -49,10 +49,8 @@ export class Identity extends React.PureComponent<Props, State> {
   // e.g. if it wants to be sure to do a Collection addition on enter press
   isDataValid = false;
 
-  readableVariableType: string = TYPE_TO_READABLE[this.props.variableType];
-
   state = {
-    email: '',
+    currentValue: '',
     emailIdentity: '',
     errorMessage: '',
     shouldShowError: false,
@@ -62,7 +60,6 @@ export class Identity extends React.PureComponent<Props, State> {
     super(props);
 
     const self: any = this;
-    self.callOnValidateAndGetErrorMessage = this.callOnValidateAndGetErrorMessage.bind(this);
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
@@ -75,49 +72,30 @@ export class Identity extends React.PureComponent<Props, State> {
       const { isError } = getValidity(name, savedValue);
 
       this.setState({
-        email: !isError ? JSON.parse(savedValue).email : '',
+        currentValue: !isError ? JSON.parse(savedValue).email : '',
       });
     }
   }
-  
-  callOnValidateAndGetErrorMessage(validationData: FieldErrorType): string {
-    const { onValidate } = this.props;
-    const userReturnedValidationData = onValidate && onValidate(validationData);
-    const { errorMessage } = userReturnedValidationData || {};
-    
-    return errorMessage || validationData.errorMessage;
-  }
 
-  getGenericErrorMessage(includeVariableType: boolean = true) {
-    if (includeVariableType) {
-      return `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`;
+  createIdentityInternalValue(value: string): string {
+    try {
+      return this.props.openLaw.createIdentityInternalValue('', value);
+    } catch (error) {
+      return '';
     }
-    return `${FIELD_DEFAULT_ERROR_MESSAGE}`;
   }
 
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
-    const { getValidity, inputProps, name } = this.props;
-    const { email, emailIdentity } = this.state;
-    const hasValue = email.length > 0;
-    const { isError } = hasValue ? getValidity(name, emailIdentity) : {};
-    const updatedErrorMessage = (hasValue && isError)
-      ? this.getGenericErrorMessage()
-      : '';
-    const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
-      ...this.baseErrorData,
-
-      errorMessage: updatedErrorMessage,
-      eventType: 'blur',
-      isError: isError || false,
-      value: email,
-    });
+    const { inputProps } = this.props;
+    const { emailIdentity } = this.state;
+    const { errorMessage, shouldShowError } = onBlurValidation(emailIdentity, this.props, this.state);
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
 
     this.setState({
-      errorMessage: errorMessageToSet,
-      shouldShowError: errorMessageToSet.length > 0,
+      errorMessage,
+      shouldShowError,
     }, () => {
       if (event && inputProps && inputProps.onBlur) {
         inputProps.onBlur(event);
@@ -127,37 +105,18 @@ export class Identity extends React.PureComponent<Props, State> {
 
   onChange(event: SyntheticInputEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
-    const { inputProps, name, openLaw, onChange, onValidate } = this.props;
-    let emailIdentity: string;
-
-    try {
-      emailIdentity = openLaw.createIdentityInternalValue('', eventValue);
-      
-      this.isDataValid = true;
-    } catch (error) {
-      this.isDataValid = false;
-
-      emailIdentity = '';
-    }
-
-    const userReturnedValidationData = onValidate && onValidate({
-      ...this.baseErrorData,
-
-      errorMessage: (eventValue.length && !emailIdentity) ? this.getGenericErrorMessage() : '',
-      eventType: 'change',
-      isError: (eventValue.length > 0 && !emailIdentity) && true,
-      value: eventValue,
-    });
-    const maybeUserProvidedErrorMessage = userReturnedValidationData && userReturnedValidationData.errorMessage
-      ? userReturnedValidationData.errorMessage
-      : ''; 
+    const { inputProps, name, onChange } = this.props;
+    const emailIdentity = this.createIdentityInternalValue(eventValue);
+    const { errorMessage, shouldShowError } = onChangeValidation(emailIdentity, this.props, this.state);
 
     this.setState({
-      email: eventValue,
+      currentValue: eventValue,
       emailIdentity,
-      errorMessage: maybeUserProvidedErrorMessage,
-      shouldShowError: maybeUserProvidedErrorMessage.length > 0,
+      errorMessage,
+      shouldShowError,
     }, () => {
+      this.isDataValid = emailIdentity.length > 0;
+
       onChange(
         name,
         emailIdentity || undefined,
@@ -181,7 +140,7 @@ export class Identity extends React.PureComponent<Props, State> {
 
   render() {
     const { cleanName, description, inputProps, textLikeInputClass, variableType } = this.props;
-    const { email, errorMessage, shouldShowError } = this.state;
+    const { currentValue, errorMessage, shouldShowError } = this.state;
     const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
@@ -201,7 +160,7 @@ export class Identity extends React.PureComponent<Props, State> {
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}
             type="email"
-            value={email}
+            value={currentValue}
           />
 
           <FieldError

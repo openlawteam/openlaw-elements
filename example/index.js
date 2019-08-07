@@ -70,16 +70,18 @@ class Form extends Component {
 
   onValidate = (errorData) => {
     const { errorMessage, eventType, isError } = errorData;
-console.log(errorData);
-    if (eventType === 'blur') this.setState({ errorMessage });
-    if (isError && eventType === 'change') {
+    if (eventType === 'blur') {
       return {
-        errorMessage: 'There was some errorz.'
+        errorMessage: 'Bad, bad. No No. Image is bad size.',
       };
     }
+    return {
+      errorMessage: 'Bad kett',
+    };
   };
 
   update = (key, value, validationResult) => {
+    console.log(validationResult);
     if (validationResult && validationResult.isError) return;
 
     const updatedDraftParameters = key
@@ -129,6 +131,11 @@ console.log(errorData);
             <OpenLawForm
               apiClient={apiClient}
               executionResult={this.state.executionResult}
+              // inputProps={{
+              //   '*': {
+              //     disabled: true,
+              //   }
+              // }}
               parameters={this.state.parameters}
               onChangeFunction={this.update}
               onValidate={this.onValidate}

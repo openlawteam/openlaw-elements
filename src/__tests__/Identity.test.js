@@ -14,6 +14,8 @@ import { OpenLawForm } from '../OpenLawForm';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 
+const genericErrorMessage = `${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
+const placeholderTextRegex = /contestant email/i;
 const apiClient = new APIClient('');
 const getValidity = (name, value) => {
   const v = executedVariables.filter(v =>
@@ -64,7 +66,7 @@ test('Can render Identity', () => {
     />
   );
 
-  getByPlaceholderText(/contestant email/i);
+  getByPlaceholderText(placeholderTextRegex);
 });
 
 test('Can type a value', () => {
@@ -82,7 +84,7 @@ test('Can type a value', () => {
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant email/i), { target: { value: 'morgan@openlaw.io' } });
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@openlaw.io' } });
   
   getByDisplayValue(/morgan@openlaw\.io/i);
 });
@@ -102,7 +104,7 @@ test('Can render with savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/contestant email/i);
+  getByPlaceholderText(placeholderTextRegex);
   getByDisplayValue(/alex@openlaw\.io/i);
 });
 
@@ -121,7 +123,7 @@ test('Can render with savedValue and type another value', () => {
     />
   );
 
-  getByPlaceholderText(/contestant email/i);
+  getByPlaceholderText(placeholderTextRegex);
   getByDisplayValue(/alex@openlaw\.io/i);
 
   fireEvent.change(getByDisplayValue(/alex@openlaw\.io/i), { target: { value: 'morgan@openlaw.io' } });
@@ -144,7 +146,7 @@ test('Can render without bad savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/contestant email/i);
+  getByPlaceholderText(placeholderTextRegex);
   expect(() => getByDisplayValue(/alex\.bad@/i)).toThrow();
 });
 
@@ -158,10 +160,10 @@ test('Can call onChangeFunction', () => {
   );
 
   fireEvent.change(
-    getByPlaceholderText(/contestant email/i),
+    getByPlaceholderText(placeholderTextRegex),
     { target: { value: 'alex@openlaw.io' } },
   );
-  fireEvent.blur(getByPlaceholderText(/contestant email/i));
+  fireEvent.blur(getByPlaceholderText(placeholderTextRegex));
 
   expect(changeSpy.mock.calls.length).toBe(1);
   expect(changeSpy.mock.calls[0][0]).toMatch(/contestant email/i);
@@ -184,10 +186,10 @@ test('Can call inputProps: onChange, onBlur', () => {
   );
 
   fireEvent.change(
-    getByPlaceholderText(/contestant email/i),
+    getByPlaceholderText(placeholderTextRegex),
     { target: { value: 'alex@openlaw.io' } },
   );
-  fireEvent.blur(getByPlaceholderText(/contestant email/i));
+  fireEvent.blur(getByPlaceholderText(placeholderTextRegex));
 
   expect(changeSpy.mock.calls.length).toBe(1);
   expect(blurSpy.mock.calls.length).toBe(1);
@@ -208,10 +210,30 @@ test('Can show field-level error onBlur with bad value', () => {
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant email/i), { target: { value: 'morgan@' } });
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
   fireEvent.blur(getByDisplayValue(/morgan@/i));
 
-  getByText(`${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`);
+  getByText(genericErrorMessage);
+});
+
+test('Should not show error onBlur (no value)', () => {
+  const { getByPlaceholderText, getByText } = render(
+    <Identity
+      cleanName="Contestant-Email"
+      description="Contestant Email"
+      getValidity={getValidity}
+      name="Contestant Email"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+      variableType="Identity"
+    />
+  );
+
+  fireEvent.blur(getByPlaceholderText(placeholderTextRegex));
+
+  expect(() => getByText(`${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`)).toThrow();
 });
 
 test('Should not show error onChange by default', () => {
@@ -229,12 +251,12 @@ test('Should not show error onChange by default', () => {
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant email/i), { target: { value: 'morgan@' } });
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
 
   expect(() => getByText(`${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`)).toThrow();
 });
 
-test('Can show generic, field-level error onChange with bad value', () => {
+test('Can show generic, field-level error onValidate (change) with bad value', () => {
   const { getByPlaceholderText, getByText } = render(
     <Identity
       cleanName="Contestant-Email"
@@ -256,9 +278,9 @@ test('Can show generic, field-level error onChange with bad value', () => {
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant email/i), { target: { value: 'morgan@' } });
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
 
-  getByText(`${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`);
+  getByText(genericErrorMessage);
 });
 
 test('Can show a user-provided, field-level error onChange with bad value', () => {
@@ -283,7 +305,68 @@ test('Can show a user-provided, field-level error onChange with bad value', () =
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant email/i), { target: { value: 'morgan@' } });
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
 
   getByText(/this is a custom error/i);
+});
+
+test('Should not clear previous error onChange, if value is bad', () => {
+  const { getByDisplayValue, getByText, getByPlaceholderText } = render(
+    <FakeOpenlawComponent />
+  );
+
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
+  fireEvent.blur(getByDisplayValue(/morgan@/i));
+
+  getByText(genericErrorMessage);
+
+  fireEvent.change(getByDisplayValue(/morgan@/i), { target: { value: 'morga' } });
+
+  // continue to show error message on the field
+  getByText(genericErrorMessage);
+});
+
+test('Should not show error message onBlur if user has set empty string for "errorMessage"', () => {
+  const { getByDisplayValue, getByPlaceholderText, getByText } = render(
+    <FakeOpenlawComponent
+      onValidate={({ elementType, isError }) => {
+        if (isError && elementType === 'Identity') {
+          return {
+            // do not show error
+            errorMessage: '',
+          };
+        }
+      }}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
+  fireEvent.blur(getByDisplayValue(/morgan@/i));
+
+  expect(() => getByText(genericErrorMessage)).toThrow();
+});
+
+test('Should not show error message onChange if user has set empty string for "errorMessage"', () => {
+  const { getByDisplayValue, getByPlaceholderText, getByText } = render(
+    <FakeOpenlawComponent
+      onValidate={(errorData) => {
+        const { eventType, isError } = errorData;
+        return {
+          // do not show error if user is making changes
+          errorMessage: (isError && eventType === 'change') && '',
+        };
+      }}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan' } });
+
+  // should not show error
+  expect(() => getByText(genericErrorMessage)).toThrow();
+
+  fireEvent.blur(getByDisplayValue(/morgan/i));
+
+  // error shows again as normal onBlur
+  getByText(genericErrorMessage);
 });

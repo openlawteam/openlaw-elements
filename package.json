@@ -31,6 +31,9 @@
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)$": "<rootDir>/src/__mocks__/fileMock.js",
       "\\.(css|less)$": "<rootDir>/src/__mocks__/styleMock.js"
     },
+    "setupFiles": [
+      "jest-canvas-mock"
+    ],
     "setupFilesAfterEnv": [
       "@testing-library/react/cleanup-after-each"
     ],
@@ -91,6 +94,7 @@
     "flow-copy-source": "^2.0.3",
     "html-webpack-plugin": "^3.2.0",
     "jest": "^24.8.0",
+    "jest-canvas-mock": "^2.1.0",
     "jest-dom": "^3.5.0",
     "node-sass": "^4.12.0",
     "np": "^4.0.2",

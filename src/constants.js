@@ -1,6 +1,6 @@
 // @flow
 
-import type { FieldEnumType } from './flowTypes';
+import type { FieldEnumType, ValidationEventType } from './flowTypes';
 
 /**
  * Constants
@@ -21,6 +21,7 @@ type CSSClassNamesEnumType =
   | 'fieldErrorMessage'
   | 'fieldLabel'
   | 'fieldLabelText'
+  | 'fieldRadio'
   | 'fieldSelect'
   | 'fieldTextarea'
   | 'getFieldTypeToLower';
@@ -35,6 +36,9 @@ type TypeToReadableType = {
 };
 
 const CSS_CLASS_NAMESPACE = 'openlaw-el';
+
+export const BLUR_EVENT_ENUM: ValidationEventType = 'blur';
+export const CHANGE_EVENT_ENUM: ValidationEventType = 'change';
 
 export const ELEMENT_TYPES: Array<FieldEnumType> = [
   'Address',
@@ -67,6 +71,7 @@ export const CSS_CLASS_NAMES: CSSClassNamesType = {
   fieldInputError: `${CSS_CLASS_NAMESPACE}-field__input--error`,
   fieldLabel: `${CSS_CLASS_NAMESPACE}-field__label`,
   fieldLabelText: `${CSS_CLASS_NAMESPACE}-field__label-text`,
+  fieldRadio: `${CSS_CLASS_NAMESPACE}-field__radio`,
   fieldSelect: `${CSS_CLASS_NAMESPACE}-field__select`,
   fieldTextarea: `${CSS_CLASS_NAMESPACE}-field__textarea`,
   fieldTypeToLower: (type: string) => type ? `${CSS_CLASS_NAMESPACE}-field-${type.toLowerCase()}` : '',
@@ -75,6 +80,7 @@ export const CSS_CLASS_NAMES: CSSClassNamesType = {
 export const TYPE_TO_READABLE: TypeToReadableType = {
   Address: 'Address',
   Choice: 'Choice',
+  Collection: 'Collection',
   Date: 'Date',
   DateTime: 'Date \u0026 Time', /* Date & Time */
   EthAddress: 'Ethereum Address',

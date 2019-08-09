@@ -5,24 +5,32 @@ const uuidv4 = require('uuid/v4');
 
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
-import type { FieldPropsType } from './flowTypes';
+import { FieldError } from './FieldError';
+import { BLUR_EVENT_ENUM, CSS_CLASS_NAMES as css } from './constants';
+import { onBlurValidation, onChangeValidation } from './validation';
+import type {
+  FieldErrorType,
+  FieldPropsType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+} from './flowTypes';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
   inputProps?: FieldPropsType,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
+  onValidate: ?OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
-  textLikeInputClass: string,
   variable: {},
 };
 
 type State = {
   currentValue: string,
-  errorMsg: string,
+  errorMessage: string,
   focusIndex: number | null,
-  validationError: boolean,
+  shouldShowError: boolean,
 };
 
 export class Collection extends React.Component<Props, State> {
@@ -31,9 +39,9 @@ export class Collection extends React.Component<Props, State> {
 
   state = {
     currentValue: this.props.savedValue,
-    errorMsg: '',
+    errorMessage: '',
     focusIndex: null,
-    validationError: false,
+    shouldShowError: false,
   };
 
   constructor(props: Props) {
@@ -41,8 +49,8 @@ export class Collection extends React.Component<Props, State> {
 
     const self: any = this;
     self.add = this.add.bind(this);
-    self.onChange = this.onChange.bind(this);
     self.onEnter = this.onEnter.bind(this);
+    self.onValidate = this.onValidate.bind(this);
   }
 
   componentDidUpdate() {
@@ -50,20 +58,31 @@ export class Collection extends React.Component<Props, State> {
   }
 
   add() {
-    const variable = this.props.variable;
+    const { executionResult, savedValue, variable } = this.props;
     const variableName = this.openLaw.getName(variable);
     const newValue = this.openLaw.addElementToCollection(
       variable,
-      this.props.savedValue,
-      this.props.executionResult,
+      savedValue,
+      executionResult,
     );
+
+    const { errorData } = onChangeValidation(
+      newValue,
+      this.getValidationProps(),
+      this.state,
+    );
+
+    this.props.onChange(
+      variableName,
+      newValue,
+      errorData,
+    );
+
     const size = this.openLaw.getCollectionSize(
       variable,
       newValue,
-      this.props.executionResult,
+      executionResult,
     );
-
-    this.props.onChange(variableName, newValue);
 
     this.setState({
       focusIndex: size - 1,
@@ -75,7 +94,166 @@ export class Collection extends React.Component<Props, State> {
     return this.uniqueCollectionIds;
   }
 
-  generateInput(index: number) {
+  getValidationProps() {
+    const { executionResult, onValidate, variable } = this.props;
+
+    return {
+      cleanName: this.openLaw.getCleanName(variable),
+      getValidity: (name: string, value: string) => (
+        this.openLaw.checkValidity(variable, value, executionResult)
+      ),
+      name: this.openLaw.getName(variable),
+      onValidate,
+      variableType: this.openLaw.getType(variable),
+    };
+  }
+
+  handleElementFocus() {
+    if (this.state.focusIndex !== null) {
+      const index = (this.state.focusIndex >= 0) ? this.state.focusIndex : -1;
+
+      if (index === -1) return;
+
+      const element = document.querySelector(`.${this.openLaw.getCleanName(this.props.variable)}_${index}`);
+
+      if (element) element.focus();
+
+      // reset
+      this.setState({
+        focusIndex: null,
+      });
+    }
+  }
+
+  onChange: OnChangeFuncType = (key, value) => {
+    const { executionResult, savedValue, variable } = this.props;
+    const variableName = this.openLaw.getName(variable);
+    const index = parseInt(key.replace(`${variableName}_`, ''));
+
+    try {
+      const currentValue = this.openLaw.setElementToCollection(
+        value,
+        index,
+        variable,
+        savedValue,
+        executionResult,
+      );
+
+      const { errorData, shouldShowError } = onChangeValidation(
+        currentValue,
+        this.getValidationProps(),
+        this.state,
+      );
+
+      this.setState({
+        currentValue,
+        errorMessage: errorData.errorMessage,
+        shouldShowError,
+      }, () => {
+        this.props.onChange(
+          variableName,
+          currentValue,
+          errorData,
+        );
+      });
+    } catch (error) {
+      // const currentValue = this.openLaw.setElementToCollection(
+      //   undefined,
+      //   index,
+      //   variable,
+      //   savedValue,
+      //   executionResult,
+      // );
+
+      // const { errorData, shouldShowError } = onChangeValidation(
+      //   currentValue,
+      //   this.getValidationProps(),
+      //   this.state,
+      // );
+      
+      // this.setState({
+      //   currentValue,
+      //   errorMessage: errorData.errorMessage,
+      //   shouldShowError,
+      // }, () => {
+      //   this.props.onChange(
+      //     variableName,
+      //     currentValue,
+      //     errorData,
+      //   );
+      // });
+    }
+  }
+
+  onEnter(event: SyntheticKeyboardEvent<HTMLElement>, isDataValid: ?boolean = true) {
+    // do nothing if the event was already processed
+    if (event.defaultPrevented) {
+      return;
+    }
+
+    if (event.key === 'Enter' && isDataValid) {
+      this.add();
+    }
+
+    event.preventDefault();
+  }
+
+  onValidate(errorData: FieldErrorType) {
+    const returnedValidationData = this.props.onValidate && this.props.onValidate(errorData);
+
+    // For Collections, tap into the `eventType` from `onValidate`, called from within a field.
+    // This helps us by not needing an onBlur method to pass down to Collection-ready elements.
+    if (errorData.elementType !== 'Collection' && errorData.eventType === BLUR_EVENT_ENUM) {      
+      const { errorData:error, shouldShowError } = onBlurValidation(
+        this.state.currentValue,
+        this.getValidationProps(),
+        this.state,
+      );
+
+      this.setState({
+        errorMessage: error.errorMessage,
+        shouldShowError,
+      });
+    }
+
+    return returnedValidationData;
+  }
+
+  remove(index: number) {
+    const { variable } = this.props;
+    const variableName = this.openLaw.getName(variable);
+    const newValue = this.openLaw.removeElementFromCollection(
+      index,
+      variable,
+      this.props.executionResult,
+      this.props.savedValue,
+    );
+
+    const { errorData } = onChangeValidation(
+      newValue,
+      this.getValidationProps(),
+      this.state,
+    );
+
+    // delete client-side unique React key
+    this.removeUniqueCollectionId(index);
+
+    this.props.onChange(
+      variableName,
+      newValue,
+      errorData,
+    );
+  }
+
+  removeUniqueCollectionId(removedIndex: number): Array<string> {
+    this.uniqueCollectionIds = this.uniqueCollectionIds.filter((item, index) => {
+      if (index !== removedIndex) return item;
+    });
+
+    return this.uniqueCollectionIds;
+  }
+
+  renderFields(index: number) {
     const subVariable = this.openLaw.createVariableFromCollection(
       this.props.variable,
       index,
@@ -102,9 +280,9 @@ export class Collection extends React.Component<Props, State> {
               inputProps={inputProps}
               key={`${this.openLaw.getCleanName(subVariable)}-collection`}
               onChange={this.onChange}
+              onValidate={this.props.onValidate}
               openLaw={this.openLaw}
               savedValue={savedValue}
-              textLikeInputClass={this.props.textLikeInputClass}
               variable={subVariable}
             />
           ) : (
@@ -114,9 +292,9 @@ export class Collection extends React.Component<Props, State> {
               inputProps={inputProps}
               onChangeFunction={this.onChange}
               onKeyUp={this.onEnter}
+              onValidate={this.onValidate}
               openLaw={this.openLaw}
               savedValue={savedValue}
-              textLikeInputClass={this.props.textLikeInputClass}
               variable={subVariable}
             />
           )
@@ -131,99 +309,9 @@ export class Collection extends React.Component<Props, State> {
     );
   }
 
-  handleElementFocus() {
-    if (this.state.focusIndex !== null) {
-      const index = (this.state.focusIndex >= 0) ? this.state.focusIndex : -1;
-
-      if (index === -1) return;
-
-      // TODO should replace things like this with a ref
-      const element = document.querySelector(`.${this.openLaw.getCleanName(this.props.variable)}_${index}`);
-
-      if (element) element.focus();
-
-      // reset
-      this.setState({
-        focusIndex: null,
-      });
-    }
-  }
-
-  onChange(key: string, value: ?string) {
-    const variable = this.props.variable;
-    const variableName = this.openLaw.getName(variable);
-    const index = parseInt(key.replace(variableName + '_', ''));
-
-    try {
-      if (variable) {
-        const currentValue = this.openLaw.setElementToCollection(
-          value,
-          index,
-          variable,
-          this.props.savedValue,
-          this.props.executionResult,
-        );
-
-        this.setState({
-          currentValue,
-          validationError: false,
-        }, () => {
-          this.props.onChange(variableName, currentValue);
-        });
-      } else {
-        this.setState({
-          currentValue: '',
-          validationError: false,
-        }, () => {
-          this.props.onChange(this.openLaw.getName(variable));
-        });
-      }
-    } catch (error) {
-      this.setState({
-        validationError: true,
-      });
-    }
-  }
-
-  onEnter(event: SyntheticKeyboardEvent<HTMLElement>, isDataValid: ?boolean = true) {
-    // do nothing if the event was already processed
-    if (event.defaultPrevented) {
-      return;
-    }
-
-    if (event.key === 'Enter' && isDataValid) {
-      this.add();
-    }
-
-    event.preventDefault();
-  }
-
-  remove(index: number) {
-    const { variable } = this.props;
-    const variableName = this.openLaw.getName(variable);
-    const newValue = this.openLaw.removeElementFromCollection(
-      index,
-      variable,
-      this.props.executionResult,
-      this.props.savedValue,
-    );
-
-    // delete client-side unique React key
-    this.removeUniqueCollectionId(index);
-
-    this.props.onChange(variableName, newValue);
-  }
-
-  removeUniqueCollectionId(removedIndex: number): Array<string> {
-    this.uniqueCollectionIds = this.uniqueCollectionIds.filter((item, index) => {
-      if (index !== removedIndex) return item;
-    });
-
-    return this.uniqueCollectionIds;
-  }
-
   render() {
     const { variable } = this.props;
+    const { errorMessage, shouldShowError } = this.state;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
     const collectionSize = this.openLaw.getCollectionSize(
@@ -235,7 +323,7 @@ export class Collection extends React.Component<Props, State> {
     const variables = [];
 
     for (let index = 0; index < collectionSize; index++) {      
-      variables.push(this.generateInput(index));
+      variables.push(this.renderFields(index));
     }
 
     return (
@@ -244,17 +332,25 @@ export class Collection extends React.Component<Props, State> {
 
         {variables}
 
-        {/* TODO this should be a <button /> */}
-        <div className="button is-light" onClick={this.add}>
+        <button className={`${css.button}`} onClick={this.add}>
           Add
-        </div>
+        </button>
+
+        <FieldError
+          cleanName={cleanName}
+          errorMessage={errorMessage}
+          shouldShowError={shouldShowError}
+        />
       </div>
     );
   }
 }
 
 const TimesSVG = (props) => (
-  <svg className="svg-inline--fa fa-w-12" height="12" width="12" {...props} data-icon="times" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+  <svg
+    height="12" width="12" {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 384 512">
     <path
       fill="currentColor"
       d="M323.1 441l53.9-53.9c9.4-9.4 9.4-24.5 0-33.9L279.8 256l97.2-97.2c9.4-9.4 9.4-24.5 0-33.9L323.1 71c-9.4-9.4-24.5-9.4-33.9 0L192 168.2 94.8 71c-9.4-9.4-24.5-9.4-33.9 0L7 124.9c-9.4 9.4-9.4 24.5 0 33.9l97.2 97.2L7 353.2c-9.4 9.4-9.4 24.5 0 33.9L60.9 441c9.4 9.4 24.5 9.4 33.9 0l97.2-97.2 97.2 97.2c9.3 9.3 24.5 9.3 33.9 0z"

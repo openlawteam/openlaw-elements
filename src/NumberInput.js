@@ -4,10 +4,10 @@ import * as React from 'react';
 
 import { FieldError } from './FieldError';
 import { onBlurValidation, onChangeValidation } from './validation';
-import { CSS_CLASS_NAMES, FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from './constants';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
-  FieldErrorType,
   FieldPropsValueType,
   OnChangeFuncType,
   OnValidateFuncType,
@@ -25,7 +25,6 @@ type Props = {
   onKeyUp?: ValidateOnKeyUpFuncType,
   onValidate: ?OnValidateFuncType,
   savedValue: string,
-  textLikeInputClass: string,
   variableType: FieldEnumType,
 };
 
@@ -36,16 +35,6 @@ type State = {
 };
 
 export class NumberInput extends React.PureComponent<Props, State> {
-  baseErrorData = {
-    elementName: this.props.cleanName,
-    elementType: this.props.variableType,
-    errorMessage: '',
-    isError: false,
-    value: (this.props.savedValue || ''),
-  };
-
-  readableVariableType: string = TYPE_TO_READABLE[this.props.variableType];
-
   state = {
     currentValue: this.props.savedValue || '',
     errorMessage: '',
@@ -56,31 +45,15 @@ export class NumberInput extends React.PureComponent<Props, State> {
     super(props);
 
     const self: any = this;
-    self.callOnValidateAndGetErrorMessage = this.callOnValidateAndGetErrorMessage.bind(this);
     self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
   }
 
-  callOnValidateAndGetErrorMessage(validationData: FieldErrorType): string {
-    const { onValidate } = this.props;
-    const userReturnedValidationData = onValidate && onValidate(validationData);
-    const { errorMessage } = userReturnedValidationData || {};
-    
-    return errorMessage || validationData.errorMessage;
-  }
-
-  getGenericErrorMessage(includeVariableType: boolean = true) {
-    if (includeVariableType) {
-      return `${(this.readableVariableType ? `${this.readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`;
-    }
-    return `${FIELD_DEFAULT_ERROR_MESSAGE}`;
-  }
-
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
     const { inputProps } = this.props;
     const { currentValue } = this.state;
-    const { errorMessage, shouldShowError } = onBlurValidation(currentValue, this.props); 
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(currentValue, this.props); 
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
@@ -98,16 +71,20 @@ export class NumberInput extends React.PureComponent<Props, State> {
   onChange(event: SyntheticInputEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
     const { inputProps, name, onChange } = this.props;
-    const { errorMessage, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
+    const { errorData, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
+    
+    // persist event outside of this handler to a parent component
+    if (event) event.persist();
 
     this.setState({
       currentValue: eventValue,
-      errorMessage,
+      errorMessage: errorData.errorMessage,
       shouldShowError,
     }, () => {
       onChange(
         name,
         eventValue || undefined,
+        errorData,
       );
 
       if (event && inputProps && inputProps.onChange) {
@@ -117,30 +94,37 @@ export class NumberInput extends React.PureComponent<Props, State> {
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    if (this.props.onKeyUp) this.props.onKeyUp(event);
+    const { inputProps, onKeyUp } = this.props;
 
-    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
-      this.props.inputProps.onKeyUp(event);
+    if (onKeyUp) onKeyUp(event);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    if (inputProps && inputProps.onKeyUp) {
+      inputProps.onKeyUp(event);
     }
   }
 
   render() {
-    const { cleanName, description, inputProps, textLikeInputClass, variableType } = this.props;
+    const { cleanName, description, inputProps, variableType } = this.props;
     const { errorMessage, shouldShowError } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
+    const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
 
     return (
-      <div className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
-        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
-          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           <input
             placeholder={description}
 
             {...inputProps}
 
-            className={`${CSS_CLASS_NAMES.fieldInput} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
+            className={singleSpaceString(
+              `${css.fieldInput} ${cleanName} ${inputPropsClassName} ${errorClassName}`
+            )}
             onBlur={this.onBlur}
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}

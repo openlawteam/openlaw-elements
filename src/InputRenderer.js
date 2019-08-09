@@ -33,7 +33,6 @@ type RendererProps = {
   onValidate: ?OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
-  textLikeInputClass: string,
   variable: {},
 };
 
@@ -65,7 +64,6 @@ export const InputRenderer = (props: RendererProps) => {
     onKeyUp,
     openLaw,
     savedValue,
-    textLikeInputClass,
     variable,
   } = props;
   
@@ -131,7 +129,6 @@ export const InputRenderer = (props: RendererProps) => {
               ? openLaw.getFormattedAddress(openLaw.getAddress(savedValue))
               : ''
           }
-          textLikeInputClass={textLikeInputClass}
           variableType={variableType}
         />
       );
@@ -148,7 +145,6 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
           variableType={variableType}
         />
       );
@@ -164,25 +160,6 @@ export const InputRenderer = (props: RendererProps) => {
           onChange={onChangeFunction}
           onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
-          variableType={variableType}
-        />
-      );
-
-    case 'Identity':
-      return (
-        <Identity
-          cleanName={cleanName}
-          description={description}
-          getValidity={getValidity}
-          inputProps={inputPropsCached && inputPropsCached.Identity}
-          name={name}
-          onChange={onChangeFunction}
-          onKeyUp={onKeyUp}
-          onValidate={onValidate}
-          openLaw={openLaw}
-          savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
           variableType={variableType}
         />
       );
@@ -199,7 +176,6 @@ export const InputRenderer = (props: RendererProps) => {
           onKeyUp={onKeyUp}
           onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
           variableType={variableType}
         />
       );
@@ -217,7 +193,23 @@ export const InputRenderer = (props: RendererProps) => {
           onValidate={onValidate}
           openLaw={openLaw}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
+        />
+      );
+
+    case 'Identity':
+      return (
+        <Identity
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity}
+          inputProps={inputPropsCached && inputPropsCached.Identity}
+          name={name}
+          onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
+          onValidate={onValidate}
+          openLaw={openLaw}
+          savedValue={savedValue}
           variableType={variableType}
         />
       );
@@ -242,11 +234,13 @@ export const InputRenderer = (props: RendererProps) => {
         <LargeText
           cleanName={cleanName}
           description={description}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.LargeText}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -262,7 +256,6 @@ export const InputRenderer = (props: RendererProps) => {
           onKeyUp={onKeyUp}
           onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
           variableType={variableType}
         />
       );
@@ -279,7 +272,6 @@ export const InputRenderer = (props: RendererProps) => {
           onKeyUp={onKeyUp}
           onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
           variableType={variableType}
         />
       );
@@ -289,10 +281,13 @@ export const InputRenderer = (props: RendererProps) => {
         <YesNo
           cleanName={cleanName}
           description={description}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.YesNo}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
+          variableType={variableType}
         />
       );
 
@@ -308,7 +303,6 @@ export const InputRenderer = (props: RendererProps) => {
           onKeyUp={onKeyUp}
           onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
           variableType={variableType}
         />
       );

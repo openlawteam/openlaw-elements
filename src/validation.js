@@ -15,7 +15,6 @@ type PropsType = {
   getValidity: ValidityFuncType,
   name: string,
   onValidate: ?OnValidateFuncType,
-  savedValue: string,
   variableType: FieldEnumType,
 };
 
@@ -24,24 +23,13 @@ type ValidationReturnType = {
   shouldShowError: boolean,
 };
 
-export const getGenericErrorMessage = (variableType: FieldEnumType, includeVariableType: boolean = true) => {
+export const getGenericErrorMessage = (variableType: FieldEnumType) => {
   const readableVariableType: string = TYPE_TO_READABLE[variableType];
-
-  if (includeVariableType) {
-    return `${(readableVariableType ? `${readableVariableType}: ` : '')}${FIELD_DEFAULT_ERROR_MESSAGE}`;
-  }
-  return `${FIELD_DEFAULT_ERROR_MESSAGE}`;
+  return `${readableVariableType}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 };
 
 export const onBlurValidation = (value: string, props: ObjectAnyType, state?: ObjectAnyType): ValidationReturnType => {
-  const { cleanName, getValidity, name, onValidate, savedValue, variableType }: PropsType = props;
-  const baseErrorData = {
-    elementName: cleanName,
-    elementType: variableType,
-    errorMessage: '',
-    isError: false,
-    value: (savedValue || ''),
-  };
+  const { cleanName, getValidity, name, onValidate, variableType }: PropsType = props;
 
   // check validity
   const { isError } = value.length > 0
@@ -51,8 +39,8 @@ export const onBlurValidation = (value: string, props: ObjectAnyType, state?: Ob
     : {};
 
   const errorDataToSend = {
-    ...baseErrorData,
-
+    elementName: cleanName,
+    elementType: variableType,
     errorMessage: isError ? getGenericErrorMessage(variableType) : '',
     eventType: 'blur',
     isError: isError || false,
@@ -84,6 +72,9 @@ export const onBlurValidation = (value: string, props: ObjectAnyType, state?: Ob
   };
 };
 
+// By default we don't show errors onChange.
+// Therefore, we fall back to `state.errorMessage` and `state.shouldShowError`,
+// which were set from from blur.
 export const onChangeValidation = (value: string | ImageValueType, props: ObjectAnyType, state: ObjectAnyType): ValidationReturnType => {
   const { cleanName, getValidity, name, onValidate, variableType }: PropsType = props;
   const isIdentityType = (variableType === 'Identity' || variableType === 'ExternalSignature');

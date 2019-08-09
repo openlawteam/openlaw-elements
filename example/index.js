@@ -69,19 +69,30 @@ class Form extends Component {
   }
 
   onValidate = (errorData) => {
-    const { errorMessage, eventType, isError } = errorData;
-    if (eventType === 'blur') {
+    const { errorMessage, elementType, eventType, isError } = errorData;
+    console.log(errorData);
+
+    if (eventType === 'blur' && elementType === 'Collection' && Object.keys(JSON.parse(errorData.value).values).length === 0) {
       return {
-        errorMessage: 'Bad, bad. No No. Image is bad size.',
+        errorMessage: 'Please add at least 1 Ethereum address.',
       };
     }
-    return {
-      errorMessage: 'Bad kett',
-    };
+
+    if (isError && eventType === 'blur') {
+      return {
+        errorMessage: 'Eth address is not correct',
+      };
+    }
+
+    // if (isError && eventType === 'change') {
+    //   return {
+    //     errorMessage: 'error on change.',
+    //   };
+    // }
   };
 
   update = (key, value, validationResult) => {
-    console.log(validationResult);
+    // console.log(key, value, validationResult);
     if (validationResult && validationResult.isError) return;
 
     const updatedDraftParameters = key

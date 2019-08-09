@@ -5,7 +5,7 @@ import * as React from 'react';
 import ImageCrop from './ImageCrop';
 import { FieldError } from './FieldError';
 import { onBlurValidation, onChangeValidation } from './validation';
-import { CSS_CLASS_NAMES } from './constants';
+import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
@@ -56,6 +56,7 @@ const IMG_MAX_WIDTH = 600;
 
 export class ImageInput extends React.PureComponent<Props, State> {
   fileRef: {current: null | HTMLInputElement} = React.createRef();
+  labelRef: {current: null | HTMLLabelElement} = React.createRef();
 
   state = {
     currentValue: this.props.savedValue,
@@ -71,12 +72,12 @@ export class ImageInput extends React.PureComponent<Props, State> {
     super(props);
 
     const self: any = this;
+    self.handleFileDialogOpenClick = this.handleFileDialogOpenClick.bind(this);
     self.handleFileChange = this.handleFileChange.bind(this);
     self.handleImageCancel = this.handleImageCancel.bind(this);
     self.handleImageCrop = this.handleImageCrop.bind(this);
     self.handleImageDelete = this.handleImageDelete.bind(this);
-    self.handleShowCropper = this.handleShowCropper.bind(this);
-    self.handleToggleModal = this.handleToggleModal.bind(this);
+    self.handleToggleEditor = this.handleToggleEditor.bind(this);
     self.updateImage = this.updateImage.bind(this);
   }
 
@@ -162,9 +163,17 @@ export class ImageInput extends React.PureComponent<Props, State> {
     };
   }
 
-  handleFileChange(event: SyntheticEvent<HTMLInputElement>) {
+  handleFileDialogOpenClick() {
+    this.labelRef.current && this.labelRef.current.click();
+  }
+
+  handleFileChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const { inputProps } = this.props;
     const file = event.currentTarget.files[0];
     const reader = new window.FileReader();
+
+    // persist event outside of this handler to a parent component
+    event.persist();
 
     reader.onload = () => {
       const url = (typeof reader.result === 'string') ? reader.result : reader.result.toString();
@@ -180,6 +189,10 @@ export class ImageInput extends React.PureComponent<Props, State> {
         errorMessage,
         shouldShowError,
         showModal: true,
+      }, () => {
+        if (event && inputProps && inputProps.onChange) {
+          inputProps.onChange(event);
+        }
       });
     };
 
@@ -211,7 +224,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
       });
     }
 
-    this.handleToggleModal();
+    this.handleToggleEditor();
   }
 
   handleImageCrop(croppedValue: string) {
@@ -219,17 +232,9 @@ export class ImageInput extends React.PureComponent<Props, State> {
   }
 
   handleImageDelete() {
-    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(
-      '',
-      this.props,
-      this.state,
-    );
-
     this.setState({
       croppedValue: '',
       currentValue: '',
-      errorMessage,
-      shouldShowError,
       showModal: false,
     }, () => {
       const fileInputRef = this.fileRef.current;
@@ -239,11 +244,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
     });
   }
 
-  handleShowCropper() {
-    this.setState({ showCropper: true });
-  }
-
-  handleToggleModal() {
+  handleToggleEditor() {
     this.setState({ showModal: !(this.state.showModal) });
   }
 
@@ -289,7 +290,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
       resizedImageDataURL = '';
     }
 
-    const { errorData, shouldShowError } = onBlurValidation(resizedImageDataURL, this.props, this.state);
+    const { errorData, shouldShowError } = onChangeValidation(resizedImageDataURL, this.props, this.state);
 
     this.setState({
       croppedValue: '',
@@ -312,13 +313,13 @@ export class ImageInput extends React.PureComponent<Props, State> {
     const isInputDisabled = (inputProps && inputProps.disabled);
 
     return (
-      <div className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
         {savedValue
           ? (
             <Fragment>
               <button
-                className={CSS_CLASS_NAMES.button}
-                onClick={this.handleToggleModal}
+                className={css.button}
+                onClick={this.handleToggleEditor}
                 disabled={disableEditRemoteImage}
               >
                 {`Edit ${description}`}
@@ -333,27 +334,29 @@ export class ImageInput extends React.PureComponent<Props, State> {
           ) : (
             <Fragment>
               <label
-                htmlFor={`image-${cleanName}`}
+                htmlFor={`openlaw-el-image-${cleanName}`}
+                ref={this.labelRef}
               >
-                <span
-                  className={singleSpaceString(
-                    `${CSS_CLASS_NAMES.button}
-                    ${isInputDisabled ? CSS_CLASS_NAMES.buttonDisabled : ''}`
-                  )}>
-                  {`Select ${description}`}
-                </span>
-
                 <input
                   accept="image/png, image/jpeg, image/svg+xml, image/tiff, image/bmp, image/gif"
 
                   {...inputProps}
 
-                  className={singleSpaceString(`${CSS_CLASS_NAMES.fieldInput} ${inputPropsClassName}`)}
-                  id={`image-${cleanName}`}
+                  className={singleSpaceString(`${css.fieldInput} ${inputPropsClassName}`)}
+                  id={`openlaw-el-image-${cleanName}`}
                   onChange={this.handleFileChange}
                   ref={this.fileRef}
                   type="file"
                 />
+                
+                <button
+                  className={singleSpaceString(
+                    `${css.button}
+                    ${isInputDisabled ? css.buttonDisabled : ''}`
+                  )}
+                  onClick={this.handleFileDialogOpenClick}>
+                  {`Select ${description}`}
+                </button>
 
                 <FieldError
                   cleanName={cleanName}
@@ -366,7 +369,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
         }
 
         {(showModal && currentValue) && (
-          <div className={CSS_CLASS_NAMES.fieldImageEditor}>
+          <div className={css.fieldImageEditor}>
             <ImageCrop
               crop={{
                 x: 0,
@@ -374,38 +377,38 @@ export class ImageInput extends React.PureComponent<Props, State> {
                 width: 100,
                 height: 100,
               }}
-              dataURL={this.state.currentValue}
+              dataURL={currentValue}
               onImageCrop={this.handleImageCrop}
               showDeleteButton={false}
             />
 
             <div className={
               singleSpaceString(
-                `${CSS_CLASS_NAMES.fieldImageEditorActions}
-                ${savedValue && CSS_CLASS_NAMES.fieldImageEditorActionsStacked}`
+                `${css.fieldImageEditorActions}
+                ${savedValue && css.fieldImageEditorActionsStacked}`
               )}>
               <button
-                className={`${CSS_CLASS_NAMES.button}`}
+                className={`${css.button}`}
                 onClick={this.updateImage}
               >
                 Save
               </button>
 
               <div>
-                <a
-                  className={CSS_CLASS_NAMES.buttonSecondary}
+                <button
+                  className={css.buttonSecondary}
                   onClick={this.handleImageCancel}
                 >
                   Cancel
-                </a>
+                </button>
                 
                 {savedValue && (
-                  <a
-                    className={CSS_CLASS_NAMES.buttonSecondary}
+                  <button
+                    className={css.buttonSecondary}
                     onClick={this.handleImageDelete}
                   >
                     Delete
-                  </a>
+                  </button>
                 )}
               </div>
             </div>

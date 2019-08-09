@@ -9,11 +9,13 @@ import {
 import 'jest-dom/extend-expect';
 import { APIClient, Openlaw } from 'openlaw';
 
-import { Text } from '../Text';
+import { LargeText } from '../LargeText';
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 
 const apiClient = new APIClient('');
+const placeholderTextRegex = /contestant personal statement/i;
+const appPlaceholderTextRegex = /please write a brief personal statement/i;
 const getValidity = (name, value) => {
   const v = executedVariables.filter(v =>
     Openlaw.getName(v) === name
@@ -51,11 +53,11 @@ afterEach(cleanup);
 
 test('Can render Text', () => {
   const { getByPlaceholderText } = render(
-    <Text
-      cleanName="Contestant-Name"
-      description="Contestant Name"
+    <LargeText
+      cleanName="Contestant-Personal-Statement"
+      description="Contestant Personal Statement"
       getValidity={getValidity}
-      name="Contestant Name"
+      name="Contestant Personal Statement"
       onChange={() => {}}
       onKeyUp={() => {}}
       openLaw={Openlaw}
@@ -63,56 +65,56 @@ test('Can render Text', () => {
     />
   );
 
-  getByPlaceholderText(/contestant name/i);
+  getByPlaceholderText(placeholderTextRegex);
 });
 
 test('Can render with savedValue', () => {
   const { getByDisplayValue, getByPlaceholderText } = render(
-    <Text
-      cleanName="Contestant-Name"
-      description="Contestant Name"
+    <LargeText
+      cleanName="Contestant-Personal-Statement"
+      description="Contestant Personal Statement"
       getValidity={getValidity}
-      name="Contestant Name"
+      name="Contestant Personal Statement"
       onChange={() => {}}
       onKeyUp={() => {}}
       openLaw={Openlaw}
-      savedValue="Alex Smith"
+      savedValue="This is my personal statement"
     />
   );
 
-  getByPlaceholderText(/contestant name/i);
-  getByDisplayValue(/alex smith/i);
+  getByPlaceholderText(placeholderTextRegex);
+  getByDisplayValue(/this is my personal statement/i);
 });
 
 test('Can render with savedValue and type another value', () => {
   const { getByDisplayValue, getByPlaceholderText } = render(
-    <Text
-      cleanName="Contestant-Name"
-      description="Contestant Name"
+    <LargeText
+      cleanName="Contestant-Personal-Statement"
+      description="Contestant Personal Statement"
       getValidity={getValidity}
-      name="Contestant Name"
+      name="Contestant Personal Statement"
       onChange={() => {}}
       onKeyUp={() => {}}
       openLaw={Openlaw}
-      savedValue="Alex Smith"
+      savedValue="This is my personal statement"
     />
   );
 
-  getByPlaceholderText(/contestant name/i);
-  getByDisplayValue(/alex smith/i);
+  getByPlaceholderText(placeholderTextRegex);
+  getByDisplayValue(/this is my personal statement/i);
 
-  fireEvent.change(getByDisplayValue(/alex smith/i), { target: { value: 'Morgan Smith' } });
+  fireEvent.change(getByDisplayValue(/this is my personal statement/i), { target: { value: 'Morgan Smith' } });
   
   getByDisplayValue(/morgan smith/i);
 });
 
 test('Can render with field-level, user-provided error onValidate (change)', () => {
   const { getByPlaceholderText, getByText } = render(
-    <Text
-      cleanName="Contestant-Name"
-      description="Contestant Name"
+    <LargeText
+      cleanName="Contestant-Personal-Statement"
+      description="Contestant Personal Statement"
       getValidity={getValidity}
-      name="Contestant Name"
+      name="Contestant Personal Statement"
       onChange={() => {}}
       onKeyUp={() => {}}
       onValidate={({ eventType, value }) => {
@@ -127,18 +129,18 @@ test('Can render with field-level, user-provided error onValidate (change)', () 
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant name/i), { target: { value: 'Morgan Smith' } });
+  fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'Hi' } });
   
-  getByText(/sorry, morgan smith is incorrect/i);
+  getByText(/sorry, hi is incorrect/i);
 });
 
 test('Can render with field-level, user-provided error onValidate (blur)', () => {
   const { getByPlaceholderText, getByText } = render(
-    <Text
-      cleanName="Contestant-Name"
-      description="Contestant Name"
+    <LargeText
+      cleanName="Contestant-Personal-Statement"
+      description="Contestant Personal Statement"
       getValidity={getValidity}
-      name="Contestant Name"
+      name="Contestant Personal Statement"
       onChange={() => {}}
       onKeyUp={() => {}}
       onValidate={({ eventType }) => {
@@ -153,8 +155,8 @@ test('Can render with field-level, user-provided error onValidate (blur)', () =>
     />
   );
 
-  fireEvent.focus(getByPlaceholderText(/contestant name/i));
-  fireEvent.blur(getByPlaceholderText(/contestant name/i));
+  fireEvent.focus(getByPlaceholderText(placeholderTextRegex));
+  fireEvent.blur(getByPlaceholderText(placeholderTextRegex));
   
   getByText(/this is a custom blur error/i);
 });
@@ -169,14 +171,14 @@ test('Can call onChangeFunction', () => {
   );
 
   fireEvent.change(
-    getByPlaceholderText(/contestant name/i),
-    { target: { value: 'Morgan Smith' } },
+    getByPlaceholderText(appPlaceholderTextRegex),
+    { target: { value: 'This is my personal statement' } },
   );
-  fireEvent.blur(getByPlaceholderText(/contestant name/i));
+  fireEvent.blur(getByPlaceholderText(appPlaceholderTextRegex));
 
   expect(changeSpy.mock.calls.length).toBe(1);
-  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant name/i);
-  expect(changeSpy.mock.calls[0][1]).toMatch(/morgan smith/i);
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant personal statement/i);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/this is my personal statement/i);
 });
 
 test('Can call inputProps: onChange, onBlur', () => {
@@ -186,7 +188,7 @@ test('Can call inputProps: onChange, onBlur', () => {
   const { getByPlaceholderText } = render(
     <FakeOpenlawComponent
       inputProps={{
-        'Text': {
+        'LargeText': {
           onChange: changeSpy,
           onBlur: blurSpy,
         },
@@ -195,10 +197,10 @@ test('Can call inputProps: onChange, onBlur', () => {
   );
 
   fireEvent.change(
-    getByPlaceholderText(/contestant name/i),
-    { target: { value: 'Morgan Smith' } },
+    getByPlaceholderText(appPlaceholderTextRegex),
+    { target: { value: 'This is my personal statement' } },
   );
-  fireEvent.blur(getByPlaceholderText(/contestant name/i));
+  fireEvent.blur(getByPlaceholderText(appPlaceholderTextRegex));
 
   expect(changeSpy.mock.calls.length).toBe(1);
   expect(blurSpy.mock.calls.length).toBe(1);

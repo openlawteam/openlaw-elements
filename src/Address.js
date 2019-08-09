@@ -4,7 +4,8 @@ import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 
 import { FieldError } from './FieldError';
-import { CSS_CLASS_NAMES } from './constants';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
   FieldErrorType,
@@ -26,7 +27,6 @@ type Props = {
   onValidate: ?OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
-  textLikeInputClass: string,
   variableType: FieldEnumType,
 };
 
@@ -75,6 +75,8 @@ const renderSuggestionsContainer = (data) => {
     </div>
   );
 };
+
+// NOTE: Address handles its validation a bit differently to the other components.
 
 export class Address extends React.PureComponent<Props, State> {
   baseErrorData = {
@@ -207,12 +209,15 @@ export class Address extends React.PureComponent<Props, State> {
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    if (this.props.onKeyUp) {
-      this.props.onKeyUp(event, this.isDataValid);
-    }
+    const { inputProps, onKeyUp } = this.props;
 
-    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
-      this.props.inputProps.onKeyUp(event);
+    if (onKeyUp) onKeyUp(event, this.isDataValid);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    if (inputProps && inputProps.onKeyUp) {
+      inputProps.onKeyUp(event);
     }
   }
 
@@ -295,12 +300,13 @@ export class Address extends React.PureComponent<Props, State> {
           const addressDetails = await apiClient.getAddressDetails(suggestion.placeId);
           const { addressData, openlawAddress } = await this.createOpenLawAddress(addressDetails);
 
-          const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+          const errorData = {
             ...this.baseErrorData,
 
             eventType: 'blur',
             value: addressData.address,
-          });
+          };
+          const errorMessageToSet = this.callOnValidateAndGetErrorMessage(errorData);
 
           this.setState({
             currentValue: addressData.address,
@@ -309,27 +315,46 @@ export class Address extends React.PureComponent<Props, State> {
             this.isDataValid = true;
             this.isCreatingAddress = false;
 
-            onChange(name, openlawAddress);
+            onChange(
+              name,
+              openlawAddress,
+              {
+                ...errorData,
+
+                errorMessage: errorMessageToSet,
+              },
+            );
 
             if (event && inputProps && inputProps.onChange) {
               inputProps.onChange(event);
             }
           });
         } catch (error) {
-          const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+          const errorData = {
             ...this.baseErrorData,
 
             errorMessage: 'Something went wrong while creating an address.',
             eventType: 'blur',
             isError: true,
             value: '',
-          });
+          };
+          const errorMessageToSet = this.callOnValidateAndGetErrorMessage(errorData);
 
           this.setState({
             currentValue: '',
             errorMessage: errorMessageToSet,
           }, () => {
             this.isDataValid = false;
+
+            onChange(
+              name,
+              undefined,
+              {
+                ...errorData,
+
+                errorMessage: errorMessageToSet,
+              },
+            );
           });
         }
       }
@@ -345,10 +370,10 @@ export class Address extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { description, cleanName, inputProps, textLikeInputClass, variableType } = this.props;
+    const { description, cleanName, inputProps, variableType } = this.props;
     const { currentValue, errorMessage, shouldShowError, suggestions } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
+    const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
 
     const autoSuggestInputProps = {
       placeholder: description,
@@ -357,7 +382,9 @@ export class Address extends React.PureComponent<Props, State> {
       ...inputProps,
 
       onBlur: this.onBlur,
-      className: `${CSS_CLASS_NAMES.fieldInput} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`,
+      className: singleSpaceString(
+        `${css.fieldInput} ${cleanName} ${inputPropsClassName} ${errorClassName}`
+      ),
       onChange: this.onChange,
       onKeyUp: this.onKeyUp,
       type: 'text',
@@ -365,9 +392,9 @@ export class Address extends React.PureComponent<Props, State> {
     };
 
     return (
-      <div ref={this.ref} className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
-        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
-          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
+      <div ref={this.ref} className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           <Autosuggest
             getSectionSuggestions={getSectionSuggestions}

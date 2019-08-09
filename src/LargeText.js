@@ -2,9 +2,16 @@
 
 import * as React from 'react';
 
-import { CSS_CLASS_NAMES } from './constants';
+import { FieldError } from './FieldError';
+import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
-import type { FieldPropsValueType, OnChangeFuncType } from './flowTypes';
+import { onBlurValidation, onChangeValidation } from './validation';
+import type {
+  FieldEnumType,
+  FieldPropsValueType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
@@ -12,45 +19,86 @@ type Props = {
   inputProps: ?FieldPropsValueType,
   name: string,
   onChange: OnChangeFuncType,
+  onValidate: ?OnValidateFuncType,
   savedValue: string,
-  textLikeInputClass: string,
+  variableType: FieldEnumType,
 };
 
 type State = {
   currentValue: string,
+  errorMessage: string,
+  shouldShowError: boolean,
 };
 
 export class LargeText extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue || '',
+    errorMessage: '',
+    shouldShowError: false,
   };
 
   constructor(props: Props) {
     super(props);
 
     const self: any = this;
+    self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
   }
 
-  onChange(event: SyntheticEvent<*>) {
+  onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
+    const { inputProps } = this.props;
+    const { currentValue } = this.state;
+
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(currentValue, this.props, this.state); 
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    this.setState({
+      errorMessage,
+      shouldShowError,
+    }, () => {
+      if (event && inputProps && inputProps.onBlur) {
+        inputProps.onBlur(event);
+      }
+    });
+  }
+
+  onChange(event: SyntheticInputEvent<HTMLTextAreaElement>) {
     const eventValue = event.currentTarget.value;
-    const { name, onChange } = this.props;
+    const { inputProps, name, onChange } = this.props;
+
+    const { errorData, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
 
     this.setState({
       currentValue: eventValue,
+      errorMessage: errorData.errorMessage,
+      shouldShowError,
     }, () => {
-      onChange(name, eventValue || undefined);
+      onChange(
+        name,
+        eventValue || undefined,
+        errorData,
+      );
+
+      if (event && inputProps && inputProps.onChange) {
+        inputProps.onChange(event);
+      }
     });
   }
 
   render() {
-    const { cleanName, description, inputProps, textLikeInputClass } = this.props;
+    const { cleanName, description, inputProps, variableType } = this.props;
+    const { errorMessage, shouldShowError } = this.state;
     const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
 
     return (
-      <div className="contract-variable">
-        <label>
-          <span>{description}</span>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           <textarea
             placeholder={description}
@@ -59,10 +107,17 @@ export class LargeText extends React.PureComponent<Props, State> {
             {...inputProps}
 
             className={singleSpaceString(
-              `${CSS_CLASS_NAMES.fieldTextarea} ${textLikeInputClass} ${cleanName} ${inputPropsClassName}`
+              `${css.fieldTextarea} ${cleanName} ${inputPropsClassName}`
             )}
+            onBlur={this.onBlur}
             onChange={this.onChange}
             value={this.state.currentValue}
+          />
+
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
           />
         </label>
       </div>

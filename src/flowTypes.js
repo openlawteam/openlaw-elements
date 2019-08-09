@@ -8,6 +8,7 @@ export type ImageValueType = { file: File, value: string };
 export type FieldEnumType =
 	"Address"
 	| "Choice"
+	| "Collection"
 	| "Date"
 	| "DateTime" // renders to <DatePicker />
 	| "EthAddress" // renders to <Text />
@@ -17,6 +18,7 @@ export type FieldEnumType =
 	| "LargeText"
 	| "Number"
 	| "Period" // renders to <Text />
+	| "Structure"
 	| "Text"
 	| "YesNo";
 
@@ -28,11 +30,13 @@ export type FieldAndWildcardEnumType =
 
 export type ValidateOnKeyUpFuncType = (SyntheticKeyboardEvent<HTMLInputElement>, ?boolean) => mixed;
 
+export type ValidationEventType = "blur" | "change";
+
 export type FieldErrorType = {|
 	elementName: string,
 	elementType: FieldEnumType,
 	errorMessage: string,
-	eventType: "blur" | "change",
+	eventType: ValidationEventType,
 	isError: boolean,
 	value: string | ImageValueType,
 |};

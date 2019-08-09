@@ -6,9 +6,13 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
-import type { OnValidateFuncType, FieldPropsType, OnChangeFuncType } from './flowTypes';
+import type {
+  OnValidateFuncType,
+  FieldPropsType,
+  OnChangeFuncType,
+} from './flowTypes';
 
-type Props = {
+type Props = {|
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
   executionResult: {},
   inputProps?: FieldPropsType,
@@ -23,10 +27,9 @@ type Props = {
   sections: Array<any>,
   sectionTransform?: (any, number) => {},
   sectionVariablesMap: (any, number) => { [string]: Array<string> },
-  textLikeInputClass?: string,
   unsectionedTitle?: string,
   variables: Array<{}>,
-};
+|};
 
 type RendererInputProps = {
   ...Props,
@@ -43,18 +46,17 @@ type RendererSectionProps = {
 const renderInputs = (props: RendererInputProps) => {
   const {
     apiClient, // for API call to Google for geo data (if generating an Address)
-    executionResult = {},
+    executionResult,
     inputProps,
     onChangeFunction,
     onValidate,
-    openLaw = {},
-    parameters = {},
-    variable = {},
+    openLaw,
+    parameters,
+    variable,
   } = props;
 
   const savedValue = parameters[openLaw.getName(variable)] || '';
   const cleanName = openLaw.getCleanName(variable);
-  const textLikeInputClass = props.textLikeInputClass ? `${props.textLikeInputClass} ` : '';
 
   // Structure: can contain all types of inputs in <InputRenderer />
   if (openLaw.isStructuredType(variable, executionResult)) {
@@ -67,7 +69,6 @@ const renderInputs = (props: RendererInputProps) => {
         onChange={onChangeFunction}
         openLaw={openLaw}
         savedValue={savedValue}
-        textLikeInputClass={textLikeInputClass}
         variable={variable}
       />
     );
@@ -82,11 +83,11 @@ const renderInputs = (props: RendererInputProps) => {
         inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
+        onValidate={onValidate}
         openLaw={openLaw}
         savedValue={
           savedValue || openLaw.getCollectionValue(variable, executionResult, '')
         }
-        textLikeInputClass={textLikeInputClass}
         variable={variable}
       />
     );
@@ -102,7 +103,6 @@ const renderInputs = (props: RendererInputProps) => {
       onValidate={onValidate}
       openLaw={openLaw}
       savedValue={savedValue}
-      textLikeInputClass={textLikeInputClass}
       variable={variable}
     />
   );

@@ -4,7 +4,8 @@ import * as React from 'react';
 
 import { FieldError } from './FieldError';
 import { onBlurValidation, onChangeValidation } from './validation';
-import { CSS_CLASS_NAMES } from './constants';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
   FieldPropsValueType,
@@ -25,7 +26,6 @@ type Props = {
   onValidate: ?OnValidateFuncType,
   openLaw: Object,
   savedValue: string,
-  textLikeInputClass: string,
   variableType: FieldEnumType,
 };
 
@@ -92,10 +92,11 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
     const { inputProps } = this.props;
     const { externalSignatureIdentity } = this.state;
-    const { errorMessage, shouldShowError } = onBlurValidation(externalSignatureIdentity, this.props, this.state);
+    
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(externalSignatureIdentity, this.props, this.state);
 
     // persist event outside of this handler to a parent component
-    if (event) event.persist();
+    event.persist();
 
     this.setState({
       errorMessage,
@@ -112,12 +113,16 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
     const { inputProps, name, onChange } = this.props;
     const { serviceName } = this.state;
     const externalSignatureIdentity = this.createExternalSignatureValue(eventValue, serviceName);
-    const { errorMessage, shouldShowError } = onChangeValidation(externalSignatureIdentity, this.props, this.state);
+
+    const { errorData, shouldShowError } = onChangeValidation(externalSignatureIdentity, this.props, this.state);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
 
     this.setState({
       currentValue: eventValue,
+      errorMessage: errorData.errorMessage,
       externalSignatureIdentity,
-      errorMessage,
       shouldShowError,
     }, () => {
       this.isDataValid = externalSignatureIdentity.length > 0;
@@ -125,6 +130,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
       onChange(
         name,
         externalSignatureIdentity || undefined,
+        errorData,
       );
 
       if (event && inputProps && inputProps.onChange) {
@@ -134,26 +140,29 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    if (this.props.onKeyUp) {
-      this.props.onKeyUp(event, this.isDataValid);
-    }
+    const { inputProps, onKeyUp } = this.props;
 
-    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
-      this.props.inputProps.onKeyUp(event);
+    if (onKeyUp) onKeyUp(event, this.isDataValid);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    if (inputProps && inputProps.onKeyUp) {
+      inputProps.onKeyUp(event);
     }
   }
 
   render() {
-    const { cleanName, description, inputProps, textLikeInputClass, variableType } = this.props;
+    const { cleanName, description, inputProps, variableType } = this.props;
     const { currentValue, errorMessage, serviceName, shouldShowError } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
+    const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
     const signatureServiceDescription = serviceName ? `Sign with ${serviceName}` : '';
 
     return (
-      <div className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
-        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
-          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           <input
             placeholder={description}
@@ -161,7 +170,9 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
 
             {...inputProps}
 
-            className={`${CSS_CLASS_NAMES.fieldInput} ${textLikeInputClass} ${cleanName} ${inputPropsClassName} ${errorClassName}`}
+            className={singleSpaceString(
+              `${css.fieldInput} ${cleanName} ${inputPropsClassName} ${errorClassName}`
+            )}
             onBlur={this.onBlur}
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}

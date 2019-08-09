@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { FieldError } from './FieldError';
 import { onBlurValidation, onChangeValidation } from './validation';
-import { CSS_CLASS_NAMES } from './constants';
+import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
@@ -51,10 +51,11 @@ export class Choice extends React.PureComponent<Props, State> {
   onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
     const { inputProps } = this.props;
     const { currentValue } = this.state;
+    
     const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(currentValue, this.props); 
 
     // persist event outside of this handler to a parent component
-    if (event) event.persist();
+    event.persist();
 
     this.setState({
       errorMessage,
@@ -69,10 +70,11 @@ export class Choice extends React.PureComponent<Props, State> {
   onChange(event: SyntheticInputEvent<HTMLOptionElement>) {
     const eventValue = event.currentTarget.value;
     const { inputProps, name, onChange } = this.props;
+
     const { errorData, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
 
     // persist event outside of this handler to a parent component
-    if (event) event.persist();
+    event.persist();
 
     this.setState({
       currentValue: eventValue,
@@ -102,19 +104,19 @@ export class Choice extends React.PureComponent<Props, State> {
   render() {
     const { choiceValues, cleanName, description, inputProps, variableType } = this.props;
     const { currentValue, errorMessage, shouldShowError } = this.state;
-    const errorClassName = (errorMessage && shouldShowError) ? CSS_CLASS_NAMES.fieldInputError : '';
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
+    const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
 
     return (
-      <div className={`${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}`}>
-        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
-          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           <select
             {...inputProps}
 
             className={singleSpaceString(
-              `${CSS_CLASS_NAMES.fieldSelect} ${cleanName} ${inputPropsClassName} ${errorClassName}`
+              `${css.fieldSelect} ${cleanName} ${inputPropsClassName} ${errorClassName}`
             )}
             onBlur={this.onBlur}
             onChange={this.onChange}

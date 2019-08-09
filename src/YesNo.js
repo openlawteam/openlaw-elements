@@ -2,24 +2,41 @@
 
 import * as React from 'react';
 
-import type { FieldPropsValueType } from './flowTypes';
+import { FieldError } from './FieldError';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
+import { onBlurValidation, onChangeValidation } from './validation';
+import type {
+  FieldEnumType,
+  FieldPropsValueType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+  ValidityFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
   description: string,
+  getValidity: ValidityFuncType,
   inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, string, boolean) => mixed,
+  onChange: OnChangeFuncType,
+  onValidate: ?OnValidateFuncType,
   savedValue: string,
+  variableType: FieldEnumType,
 };
 
 type State = {
   currentValue: string,
+  errorMessage: string,
+  shouldShowError: boolean,
 };
 
 export class YesNo extends React.PureComponent<Props, State> {
   state = {
     currentValue: this.props.savedValue,
+    errorMessage: '',
+    shouldShowError: false,
   };
 
   noRef: {current: null | HTMLInputElement} = React.createRef();
@@ -29,6 +46,7 @@ export class YesNo extends React.PureComponent<Props, State> {
     super(props);
 
     const self: any = this;
+    self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
   }
 
@@ -47,16 +65,49 @@ export class YesNo extends React.PureComponent<Props, State> {
     }
   }
 
-  onChange(event: SyntheticEvent<HTMLInputElement>) {
+  onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
     const eventValue = event.currentTarget.value;
-    const { name } = this.props;
+    const { inputProps } = this.props;
+
+    const { errorData, shouldShowError } = onBlurValidation(eventValue, this.props, this.state);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
 
     this.setState({
       currentValue: eventValue,
+      errorMessage: errorData.errorMessage,
+      shouldShowError,
     }, () => {
-      // uses an added param `force` set to `true`
-      // TODO change should be in openlaw app, not here!
-      this.props.onChange(name, eventValue, true);
+      if (event && inputProps && inputProps.onBlur) {
+        inputProps.onBlur(event);
+      }
+    });
+  }
+
+  onChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const eventValue = event.currentTarget.value;
+    const { inputProps, name, onChange } = this.props;
+
+    const { errorData, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    this.setState({
+      currentValue: eventValue,
+      errorMessage: errorData.errorMessage,
+      shouldShowError,
+    }, () => {
+      onChange(
+        name,
+        eventValue,
+        errorData,
+      );
+
+      if (event && inputProps && inputProps.onChange) {
+        inputProps.onChange(event);
+      }
     });
   }
 
@@ -68,29 +119,31 @@ export class YesNo extends React.PureComponent<Props, State> {
     if (currentYesRef && currentNoRef && this.props.savedValue === 'true') {
       currentYesRef.checked = true;
     }
+
     if (currentNoRef && currentYesRef && this.props.savedValue === 'false') {
       currentNoRef.checked = true;
     }
   }
 
   render() {
-    const { cleanName, description, inputProps } = this.props;
-    const additionalClass = this.state.currentValue ? ' conditional-set' : '';
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
+    const { cleanName, description, inputProps, variableType } = this.props;
+    const { errorMessage, shouldShowError } = this.state;
+    const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
 
     return (
-      <div
-        className={`contract-variable contract-question${additionalClass}`}
-      >
-        <label className="label">{description}</label>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
+        </label>
 
         <div>
           <label>
             <input
               {...inputProps}
 
-              className={`${cleanName}${inputPropsClassName}`}
+              className={singleSpaceString(`${css.fieldRadio} ${cleanName} ${inputPropsClassName}`)}
               name={cleanName}
+              onBlur={this.onBlur}
               onChange={this.onChange}
               ref={this.yesRef}
               type="radio"
@@ -103,8 +156,9 @@ export class YesNo extends React.PureComponent<Props, State> {
             <input
               {...inputProps}
               
-              className={`${cleanName}${inputPropsClassName}`}
+              className={singleSpaceString(`${css.fieldRadio} ${cleanName} ${inputPropsClassName}`)}
               name={cleanName}
+              onBlur={this.onBlur}
               onChange={this.onChange}
               ref={this.noRef}
               type="radio"
@@ -112,6 +166,12 @@ export class YesNo extends React.PureComponent<Props, State> {
             />
             <span>No</span>
           </label>
+
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
+          />
         </div>
       </div>
     );

@@ -6,7 +6,7 @@ import 'flatpickr/dist/flatpickr.css';
 
 import { FieldError } from './FieldError';
 import { onChangeValidation, onBlurValidation } from './validation';
-import { CSS_CLASS_NAMES } from './constants';
+import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
@@ -23,7 +23,6 @@ type Props = {
   name: string,
   onChange: OnChangeFuncType,
   savedValue: string,
-  textLikeInputClass: string,
   variableType: FieldEnumType,
 };
 
@@ -77,7 +76,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
   }
 
   getFlatpickrOptions() {
-    const { cleanName, inputProps, textLikeInputClass, savedValue, variableType } = this.props;
+    const { cleanName, inputProps, savedValue, variableType } = this.props;
     const { enableTime } = this.state;
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
     const format = enableTime ? 'F j, Y h:i K' : 'F j, Y';
@@ -92,7 +91,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
       altFormat: format,
       altInput: true,
       altInputClass: singleSpaceString(
-        `${CSS_CLASS_NAMES.fieldInput} ${textLikeInputClass || ''} ${cleanName} ${inputPropsClassName}`,
+        `${css.fieldInput} ${cleanName} ${inputPropsClassName}`,
       ),
       dateFormat: format,
       defaultDate: savedValue ? new Date(parseInt(savedValue)) : '',
@@ -149,10 +148,10 @@ export class DatePicker extends React.PureComponent<Props, State> {
 
     return (
       <div className={singleSpaceString(
-        `${CSS_CLASS_NAMES.field} ${CSS_CLASS_NAMES.fieldTypeToLower(variableType)}
+        `${css.field} ${css.fieldTypeToLower(variableType)}
       `)}>
-        <label className={`${CSS_CLASS_NAMES.fieldLabel}`}>
-          <span className={`${CSS_CLASS_NAMES.fieldLabelText}`}>{description}</span>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           {/* flatpickr-enabled input */}
           {/* options are handled in this.getFlatpickrOptions */}

@@ -6,13 +6,27 @@ import {
   render,
 } from '@testing-library/react';
 import 'jest-dom/extend-expect';
-import { Openlaw } from 'openlaw';
+import { APIClient, Openlaw } from 'openlaw';
 
 import { ImageInput } from '../ImageInput';
+import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 import openlawLogoBase64 from '../__mocks__/testImage.js';
 import { CSS_CLASS_NAMES } from '../constants';
 
+const apiClient = new APIClient('');
+const FakeOpenlawComponent = props => (
+  <OpenLawForm
+    apiClient={apiClient}
+    executionResult={executionResult}
+    parameters={parameters}
+    onChangeFunction={() => {}}
+    openLaw={Openlaw}
+    variables={executedVariables}
+
+    {...props}
+  />
+);
 const getValidity = (name, value) => {
   const v = executedVariables.filter(v =>
     Openlaw.getName(v) === name
@@ -525,4 +539,70 @@ test('Can hide error message on delete via user-provided empty string', async ()
   await new Promise(r => { setTimeout(r); });
 
   expect(document.querySelector(`.${CSS_CLASS_NAMES.fieldErrorMessage}`)).toBeNull();
+});
+
+test('Can call onChangeFunction', async () => {
+  const changeSpy = jest.fn();
+
+  const { getByText } = render(
+    <FakeOpenlawComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    document.querySelector('input[type="file"]'),
+    {
+      target: {
+        // eslint-disable-next-line no-undef
+        files: [new File(file, 'logo.png', { type: 'image/png' })],
+      },
+    },
+  );
+  
+  await new Promise(r => { setTimeout(r, 10); });
+
+  fireEvent.click(getByText(/save/i));
+
+  await new Promise(r => { setTimeout(r); });
+
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant picture/i);
+  expect(changeSpy.mock.calls[0][1]).toContain('data:image/png;');
+});
+
+test('Can call inputProps: onChange, onBlur', async () => {
+  const changeSpy = jest.fn();
+  const blurSpy = jest.fn();
+
+  const { getByText } = render(
+    <FakeOpenlawComponent
+      inputProps={{
+        'Image': {
+          onBlur: blurSpy,
+          onChange: changeSpy,
+        }
+      }}
+    />
+  );
+
+  fireEvent.change(
+    document.querySelector('input[type="file"]'),
+    {
+      target: {
+        // eslint-disable-next-line no-undef
+        files: [new File(file, 'logo.png', { type: 'image/png' })],
+      },
+    },
+  );
+  
+  await new Promise(r => { setTimeout(r, 10); });
+
+  fireEvent.click(getByText(/save/i));
+
+  await new Promise(r => { setTimeout(r); });
+  
+  fireEvent.blur(document.querySelector('input[type="file"]'));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(blurSpy.mock.calls.length).toBe(1);
 });

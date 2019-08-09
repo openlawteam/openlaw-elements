@@ -24,7 +24,7 @@ export default `<%
 [[Contestant BBQ Region]]
 [[BBQ Love Limit]]
 [[Contestant Personal Statement]]
-[[FavoriteMeats: Collection<Text>]]
+[[Favorite Meats: Collection<EthAddress>]]
 
 ==Medical Info==
 [[Contestant BBQ Medical]]
@@ -90,10 +90,10 @@ Name: [[MedicalContact.Emergency Contact Name]]
 Phone: [[MedicalContact.Emergency Contact Phone]]
 
 # Collection definition
-[[#FavoriteMeats: Collection<Text>]]
+[[#Favorite Meats: Collection<EthAddress>]]
 
 **Contestant's Favorite Meats**
-{{#for each Meat: FavoriteMeats =>
+{{#for each Meat: Favorite Meats =>
   - Meat Type: [[Meat]]
 }}
 

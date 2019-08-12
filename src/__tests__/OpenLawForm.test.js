@@ -14,13 +14,13 @@ import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 const { Fragment } = React;
 
 const isEveryInputDisabled = () => Array.from(
-  document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
+  document.querySelector('.openlaw-el-form').querySelectorAll('input, select, textarea')
 ).every(el => {
   return el.disabled;
 });
 
 const isEveryInputEnabled = () => Array.from(
-  document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
+  document.querySelector('.openlaw-el-form').querySelectorAll('input, select, textarea')
 ).every(el => {
   return (!el.disabled || el.disabled === false);
 });
@@ -200,7 +200,7 @@ test('Can render with passed inputProps (merged: all + specific types)', () => {
   );
 
   const addressElement = document
-    .querySelector('.openlaw-form')
+    .querySelector('.openlaw-el-form')
     .querySelector('input[placeholder="Is this thing on?"]');
 
   expect(isEveryInputDisabled()).toBe(true);

@@ -46,7 +46,6 @@ const FakeAddressComponent = (props) => {
         onValidate={validationResult => act(() => { onValidate(validationResult); })}
         openLaw={Openlaw}
         savedValue=""
-        textLikeInputClass=""
         variableType="Address"
 
         {...props}
@@ -113,7 +112,6 @@ test('Can render', () => {
       onChange={() => {}}
       openLaw={Openlaw}
       savedValue=""
-      textLikeInputClass=""
       variableType="Address"
     />
   );

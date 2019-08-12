@@ -6,6 +6,7 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
+import { CSS_CLASS_NAMES as css } from './constants';
 import type {
   OnValidateFuncType,
   FieldPropsType,
@@ -67,6 +68,7 @@ const renderInputs = (props: RendererInputProps) => {
         inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
+        onValidate={onValidate}
         openLaw={openLaw}
         savedValue={savedValue}
         variable={variable}
@@ -145,7 +147,7 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
       }
 
       return (
-        <div className="contract-section" key={`${sectionData.section}-${index}`}>
+        <div key={`${sectionData.section}-${index}`}>
           <span>{sectionData.section}</span>
 
           {variables
@@ -197,7 +199,7 @@ export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
   }
 
   return (
-    <div className="openlaw-form">
+    <div className={css.form}>
       {formContent}
     </div>
   );

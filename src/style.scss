@@ -22,13 +22,16 @@ $light-grey: #d8d8d8;
 $mid-grey: #aaaaaa;
 $off-white: #f2f2f2;
 $purple-grey: #828092;
-$red-error--dark: #ad4040;
-$red-error--light: #fef6f7;
-$red-error__border: #ec9f9f;
-$red: #ec4c64;
+$red-error__bg: #fef6f7;
+$red-error: #ff7070;
 $very-light-grey: #eeeeee;
 $white-smoke: #f5f5f5;
 $white: #ffffff;
+
+// Measurements
+$text-input-height: 2.25rem;
+
+/* SHARED */
 
 %button-reset {
   -moz-appearance: none;
@@ -84,218 +87,62 @@ $white: #ffffff;
   white-space: nowrap; /* added line */
 }
 
-.flatpickr-calendar {
+/* FORM */
+
+.#{$NAMESPACE}-form {
   font-family: $system-sans;
 }
 
-.openlaw-form {
-  font-family: $system-sans;
+/* COLLECTION */
 
-  .contract-section {
-    padding-bottom: 1rem;
+.#{$NAMESPACE}-collection__description {
+  font-weight: 600;
+  margin-bottom: .75rem;
+}
 
-    > span:first-of-type {
-      display: block;
-      font-size: 1.375rem;
-      font-weight: 400;
-      margin-bottom: 1rem;
-      word-break: break-word;
-    }
+.#{$NAMESPACE}-collection__row {
+  display: flex;
+}
+
+.#{$NAMESPACE}-collection__button-remove {
+  @extend %button-reset;
+
+  display: flex;
+  height: $text-input-height;
+  justify-content: center;
+  margin-left: .5rem;
+  transition: color .25s ease, box-shadow .25s ease, border-radius .25s ease;
+  width: $text-input-height;
+
+  svg {
+    height: 1.1rem;
+    width: 1.1rem;
   }
 
-  .contract-variable {
-    // display: flex;
-    // flex-direction: column;
-    // margin: 0 0 1.2rem;
-    // position: relative;
-    // width: 100%;
-
-    // label > span {
-    //   display: none;
-    // }
-
-    // [type="email"],
-    // [type="number"],
-    // [type="text"],
-    // select {
-    //   @extend %text-input;
-
-    //   // Must procede border-bottom line
-    //   border: 0;
-    //   border-bottom: 1px solid $grey;
-
-    //   height: 2.25rem;
-
-    //   &:focus {
-    //     border-bottom-color: $blue--aqua;
-    //     background: $blue--aqua-lite;
-    //   }
-
-    //   &::placeholder {
-    //     color: $mid-grey;
-    //   }
-
-    //   .ios-label {
-    //     color: $mid-grey;
-    //     font-size: 1rem;
-    //     position: absolute;
-    //     top: .3125rem;
-    //     left: .5625rem;
-    //   }
-    // }
-
-    // textarea {
-    //   @extend %text-input;
-
-    //   border: 1px solid $grey;
-    //   height: 9rem;
-    // }
-
-    // &.file {
-    //   label span,
-    //   button {
-    //     border-radius: 6px;
-    //     border: 1px solid $purple-grey;
-    //     display: block;
-    //     color: #333;
-    //     cursor: pointer;
-    //     display: inline-block;
-    //     font-size: 1rem;
-    //     padding: .1875rem 1.5rem;
-    //     text-align: center;
-    //   }
-
-    //   label span {
-    //     &:focus,
-    //     &:hover {
-    //       background-color: $off-white;
-    //     }
-    //   }
-    }
-
-    [type="date"]:focus ~ .ios-label,
-    [type="date"]:active ~ .ios-label {
-      display: none;
-    }
-
-    // button.image {
-    //   border: none;
-    //   font-family: inherit;
-
-    //   &:disabled {
-    //     opacity: .5;
-    //     cursor: not-allowed;
-    //   }
-    // }
-
-    // > .button {
-    //   width: fit-content;
-    // }
-
-    // &.choice label {
-    //   font-weight: 300;
-
-    //   > span {
-    //     display: block;
-    //     margin-bottom: .5rem;
-    //   }
-    // }
-
-    // &.contract-question {
-    //   label {
-    //     font-weight: 300;
-    //     margin: 0 0 .6rem;
-
-    //     > span {
-    //       display: inline;
-    //     }
-    //   }
-    // }
-
-    &.external-signature small {
-      margin: 6px 10px 0;
-      display: inline-block;
-      color: #7e7e7e;
-    }
-
-    // input:disabled,
-    // select:disabled,
-    // textarea:disabled,
-    // label span.ole-image__span--disabled {
-    //   background: #e8e8e8;
-    //   color: #6d6d6d;
-
-    //   &:hover {
-    //     background: #e8e8e8;
-    //     cursor: not-allowed;
-    //   }
-    // }
-
-  [type="radio"]  {
-    margin: 0 1.125rem;
+  span {
+    @extend %visually-hidden;
   }
 
-  .Collapsible__trigger {
-    color: $dark-grey;
-    cursor: pointer;
-    display: block;
-    font-family: $system-sans;
-    font-size: 1.375rem;
-    margin: 1.5rem 0 1rem;
-    word-break: break-word;
+  &:hover,
+  &:focus {
+    border-radius: .5rem;
+    box-shadow: 0 0 0 2px currentColor inset;
+    color: $red-error;
   }
 
-  .collection-variable-description {
-    font-weight: bold;
-    margin-bottom: .9rem;
+  &:focus {
+    outline: none;
   }
+}
 
-  .collection-variable-remove {
-    color: $red;
-    cursor: pointer;
-    margin-left: .3rem;
-    padding: 0 .6rem;
+/* STRUCTURE */
 
-     svg {
-       height: 1.1rem;
-       width: 1.1rem;
-     }
-  }
+.#{$NAMESPACE}-structure {
+  width: 100%;
+}
 
-  .collection-variable-row {
-    display: flex;
-  }
-
-  .contract-description-draft {
-    background-color: paleturquoise !important;
-  }
-
-  // .button {
-  //   -moz-appearance: none;
-  //   -webkit-appearance: none;
-  //   align-items: center;
-  //   background-color: $white-smoke;
-  //   border-radius: .1875rem;
-  //   border: 0;
-  //   box-sizing: border-box;
-  //   color: $dark-grey;
-  //   cursor: pointer;
-  //   display: inline-flex;
-  //   font-size: 1rem;
-  //   height: 2.25rem;
-  //   justify-content: flex-start;
-  //   line-height: 1.5;
-  //   padding: .375rem .75rem;
-  //   position: relative;
-  //   text-align: center;
-  //   user-select: none;
-  //   vertical-align: top;
-  //   white-space: nowrap;
-
-  //   &:hover {
-  //     background-color: $very-light-grey;
-  //   }
-  // }
+.#{$NAMESPACE}-collection__row .#{$NAMESPACE}-structure {
+  margin-bottom: 1.5rem;
 }
 
 /* FIELDS */
@@ -326,15 +173,13 @@ $white: #ffffff;
 .#{$NAMESPACE}-field__select {
   @extend %text-input;
 
-  // Must precede border-bottom line
   border: 0;
-  border-bottom: 1px solid $grey;
-
-  height: 2.25rem;
+  box-shadow: 0 -0.109rem 0 0 $grey inset;
+  height: $text-input-height;
+  transition: box-shadow .25s ease;
 
   &:focus {
-    border-bottom-color: $blue--aqua;
-    background: $blue--aqua-lite;
+    box-shadow: 0 -0.1875rem 0 0 $blue--aqua inset;
   }
 
   .ios-label {
@@ -362,8 +207,14 @@ $white: #ffffff;
 .#{$NAMESPACE}-field__textarea {
   @extend %text-input;
 
-  border: 1px solid $grey;
+  border: none;
+  box-shadow: 0 0 0 0.109rem $grey inset;
   height: 9rem;
+  transition: box-shadow .25s ease;
+
+  &:focus {
+    box-shadow: 0 0 0 0.1875rem $blue--aqua inset;
+  }
 }
 
 .#{$NAMESPACE}-field__input[type="file"] {
@@ -431,6 +282,14 @@ $white: #ffffff;
   }
 }
 
+.#{$NAMESPACE}-field-externalsignature .#{$NAMESPACE}-field__input ~ small {
+  display: inline-block;
+  font-size: .6875rem;
+  font-weight: bold;
+  margin-top: .375rem;
+  padding: 0 .625rem;
+}
+
 /* BUTTONS */
 
 .#{$NAMESPACE}-button {
@@ -443,7 +302,7 @@ $white: #ffffff;
   display: inline-flex;
   font-size: 1rem;
   font-weight: 500;
-  height: 2.25rem;
+  height: $text-input-height;
   justify-content: flex-start;
   line-height: 1.5;
   padding: .375rem 0.625rem;
@@ -493,17 +352,18 @@ $white: #ffffff;
 }
 
 /* ERRORS */
-  
+
 .#{$NAMESPACE}-field__input--error {
-  border-bottom-color: $red-error__border !important;
+  box-shadow: 0 -0.1875rem 0 0 $red-error inset;
 }
 
 .#{$NAMESPACE}-field__error-message {
-  background-color: $red-error--light;
+  background-color: $red-error__bg;
   border-radius: .375rem;
-  color: $red-error--dark;
+  color: $red-error;
   display: inline-block;
   font-size: .875em;
+  font-weight: bold;
   line-height: 1.5;
   margin-top: .375rem;
   padding: .1875em .625em;
@@ -551,5 +411,28 @@ $white: #ffffff;
     cursor: pointer;
     margin: 0 -.625rem;
     padding: .625rem;
+  }
+}
+
+/* OVERRIDES: FLATPICKR CAL */
+
+.flatpickr-calendar {
+  font-family: $system-sans;
+}
+
+.flatpickr-day {
+  &:hover {
+    background: $blue--aqua-lite;
+    border-color: transparent;
+  }
+  
+  &.selected {
+    background: $blue--aqua;
+    border-color: transparent;
+
+    &:hover {
+      background: $blue--aqua;
+      border-color: transparent;
+    }
   }
 }

@@ -3,23 +3,28 @@
 import * as React from 'react';
 
 import { InputRenderer } from './InputRenderer';
-import type { FieldPropsType } from './flowTypes';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
+import type {
+  FieldPropsType,
+  ObjectAnyType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+} from './flowTypes';
 
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
   inputProps?: FieldPropsType,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
+  onValidate: ?OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
-  textLikeInputClass: string,
   variable: {},
 };
 
 type State = {
   currentValue: string,
-  validationError: boolean,
-  errorMsg: string,
 };
 
 export class Structure extends React.Component<Props, State> {
@@ -27,91 +32,79 @@ export class Structure extends React.Component<Props, State> {
 
   state = {
     currentValue: this.props.savedValue,
-    errorMsg: '',
-    needsFocus: undefined,
-    validationError: false,
   };
 
-  constructor(props: Props) {
-    super(props);
+  onChange: OnChangeFuncType = (key, value, errorData) => {
+    const { executionResult, onChange, variable } = this.props;
+    const variableName = this.openLaw.getName(variable);
 
-    const self: any = this;
-    self.onChange = this.onChange.bind(this);
+    try {
+      const { savedValue } = this.props;
+
+      const currentValue = this.openLaw.setStructureFieldValue(
+        variable,
+        key,
+        value,
+        (savedValue || undefined),
+        executionResult,
+      );
+
+      this.setState({
+        currentValue,
+      }, () => {
+        onChange(
+          variableName,
+          currentValue,
+          errorData,
+        );
+      });
+    } catch (error) {
+      onChange(
+        variableName,
+        this.state.currentValue || undefined,
+        errorData,
+      );
+    }
   }
 
-  generateInput(subVariable: Object) {
-    const { apiClient, executionResult, inputProps, textLikeInputClass } = this.props;
+  renderFields(subVariable: ObjectAnyType) {
+    const { apiClient, executionResult, inputProps, onValidate, variable } = this.props;
     const savedValueProp = this.props.savedValue === '' ? undefined : this.props.savedValue;
     const structureFieldValue = this.openLaw.getStructureFieldValue(
-      this.props.variable,
+      variable,
       subVariable,
       savedValueProp,
-      this.props.executionResult,
+      executionResult,
     );
 
     return (
-      <div className="structure-variable-row" key={this.openLaw.getName(subVariable)}>
+      <div
+        className={css.structureRow}
+        key={this.openLaw.getName(subVariable)}>
         <InputRenderer
           apiClient={apiClient}
           executionResult={executionResult}
           inputProps={inputProps}
           onChangeFunction={this.onChange}
+          onValidate={onValidate}
           openLaw={this.openLaw}
           savedValue={structureFieldValue || ''}
-          textLikeInputClass={textLikeInputClass}
           variable={subVariable}
         />
       </div>
     );
   }
 
-  onChange(key: string, value: ?string) {
-    const variable = this.props.variable;
-    const variableName = this.openLaw.getName(variable);
-
-    try {
-      if (variable) {
-        const { savedValue } = this.props;
-
-        const currentValue = this.openLaw.setStructureFieldValue(
-          variable,
-          key,
-          value,
-          (savedValue || undefined),
-          this.props.executionResult,
-        );
-        this.setState({
-          currentValue,
-          validationError: false,
-        }, () => {
-          this.props.onChange(variableName, currentValue);
-        });
-      } else {
-        this.setState({
-          currentValue: '',
-          validationError: false,
-        }, () => {
-          this.props.onChange(this.openLaw.getName(variable));
-        });
-      }
-    } catch (error) {
-      this.setState({
-        validationError: true,
-      });
-    }
-  }
-
   render() {
-    const variable = this.props.variable;
+    const { executionResult, variable } = this.props;
     const cleanName = this.openLaw.getCleanName(variable);
-
     const fields = this.openLaw.getStructureFieldDefinitions(
       variable,
-      this.props.executionResult,
-    ).map(field => this.generateInput(field));
+      executionResult,
+    ).map(field => this.renderFields(field));
 
     return (
-      <div className={`contract-variable structure-variable ${cleanName}`}>
+      <div className={singleSpaceString(`${css.structure} ${cleanName}`)}>
         {fields}
       </div>
     );

@@ -339,7 +339,8 @@ export class ImageInput extends React.PureComponent<Props, State> {
               >
                 <input
                   accept="image/png, image/jpeg, image/svg+xml, image/tiff, image/bmp, image/gif"
-
+                  tabIndex={-1}
+                  
                   {...inputProps}
 
                   className={singleSpaceString(`${css.fieldInput} ${inputPropsClassName}`)}

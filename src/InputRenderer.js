@@ -24,7 +24,7 @@ import type {
   ValidityErrorObjectType,
 } from './flowTypes';
 
-type RendererProps = {
+type RendererProps = {|
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
   inputProps?: FieldPropsType,
@@ -34,7 +34,7 @@ type RendererProps = {
   openLaw: Object, // opt-out of type checker
   savedValue: string,
   variable: {},
-};
+|};
 
 // keep React rendering happy with the same Array reference, if not changed.
 const getChoiceValuesCached = cacheValue(deepEqual);

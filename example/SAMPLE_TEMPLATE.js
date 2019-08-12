@@ -24,7 +24,7 @@ export default `<%
 [[Contestant BBQ Region]]
 [[BBQ Love Limit]]
 [[Contestant Personal Statement]]
-[[Favorite Meats: Collection<EthAddress>]]
+[[Favorite Meats: Collection<Text>]]
 
 ==Medical Info==
 [[Contestant BBQ Medical]]
@@ -39,80 +39,74 @@ export default `<%
 [[Contestant DOB: Date "Date of Birth"]]
 [[Contestant Picture: Image]]
 
-# Basic YesNo
-[[BBQ Contestant Status: YesNo "Are you a returning U.S. BBQ Championships contestant?"]]
+**Basic YesNo**
+Returning Contestant: [[BBQ Contestant Status: YesNo "Are you a returning U.S. BBQ Championships contestant?"]]
 
-# Number
+**Number**
 [[Contestant BBQ Experience Years: Number "How many years of BBQ experience do you have?"]]
 
-# Period
+**Period**
 [[Contestant Longest BBQ: Period "What is the longest BBQ you ever conducted? (e.g. 1 week, 1 day 2 hours)"]]
 
-# Choice type
 [[Contestant Regional Style: Choice("Carolinas", "Hawaii", "Kansas City", "Memphis", "Texas")]]
 
-# Choice type usage
+**Choice type**
 [[Contestant BBQ Region: Contestant Regional Style "Your Regional Style"]]
 
-# Basic YesNo Conditional
+**Basic YesNo Conditional**
 {{BBQ Love Limit "Do you love BBQ?" =>
   I, [[Contestant Name]], declare I love BBQ.
 }}
 
-# Nested conditional
+**Nested conditional**
 {{Contestant BBQ Medical "Do you have any medical complications related to BBQ sauces?" =>
   [[Please explain your BBQ sauce medical history: LargeText]]
 }}
 
-# LargeText
+**LargeText**
 [[Contestant Personal Statement: LargeText "Please write a brief personal statement"]]
 
-# Ethereum Address
+**Ethereum Address**
 [[Contestant ETH Address: EthAddress "Your ETH address for the registration fee ($200)"]]
 
-# DateTime
+**DateTime**
 [[Contestant Signature Date Time: DateTime "Date & Time of Signature"]]
 
-# Identity
 [[Contestant Email: Identity | Signature]]
 
-# Structure definition
 [[Contestant Emergency Contact: Structure(
   Emergency Contact Name: Text;
   Emergency Contact Phone: Text
 )]]
 
-# Structure type var
 [[#MedicalContact: Contestant Emergency Contact]]
 
-**Emergency Contact**
+**Structure**
 Name: [[MedicalContact.Emergency Contact Name]]
 Phone: [[MedicalContact.Emergency Contact Phone]]
 
-# Collection definition
-[[#Favorite Meats: Collection<EthAddress>]]
+[[#Favorite Meats: Collection<Text>]]
 
-**Contestant's Favorite Meats**
+**Collection**
 {{#for each Meat: Favorite Meats =>
   - Meat Type: [[Meat]]
 }}
 
-# Structure for Collection definition
 [[BBQ Certifications: Structure(
   Title: Text;
-  Date: Date
+  Date: Date;
+  Certifier Eth Address: EthAddress
 )]]
 
-# Collection of Structure definition
 [[#CertList: Collection<BBQ Certifications>]]
 
-**Contestant BBQ Certifications**
+**Collection: Structure**
 {{#for each Cert: CertList =>
   **Certifcation:**
   - Certification Title: [[Cert.Title]]
   - Certification Date: [[Cert.Date]]
+  - Certifier Eth Address: [[Certifier Eth Address]]
 }}
 
-# External Signature: "DocuSign"
 [[DocuSign Signatory: ExternalSignature(serviceName: "DocuSign")]]
 `;

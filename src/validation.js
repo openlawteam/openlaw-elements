@@ -101,7 +101,7 @@ export const onChangeValidation = (value: string | ImageValueType, props: Object
   // determine error message & visibility
   const errorMessage = (returnedValidationData && typeof returnedValidationData.errorMessage === 'string')
     ? returnedValidationData.errorMessage
-    : state.errorMessage;
+    : state.errorMessage || errorDataToSend.errorMessage;
 
   const shouldShowError =
     (returnedValidationData && returnedValidationData.errorMessage)

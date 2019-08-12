@@ -35,8 +35,6 @@ type State = {
 };
 
 export class Text extends React.PureComponent<Props, State> {
-  isDataValid = true;
-
   state = {
     currentValue: this.props.savedValue || '',
     errorMessage: '',
@@ -95,8 +93,6 @@ export class Text extends React.PureComponent<Props, State> {
       errorMessage: errorData.errorMessage,
       shouldShowError,
     }, () => {
-      this.isDataValid = shouldShowError ? false : true;
-
       onChange(
         name,
         this.state.currentValue || undefined,
@@ -112,7 +108,7 @@ export class Text extends React.PureComponent<Props, State> {
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
     const { inputProps, onKeyUp } = this.props;
 
-    if (onKeyUp) onKeyUp(event, this.isDataValid);
+    if (onKeyUp) onKeyUp(event);
 
     // persist event outside of this handler to a parent component
     event.persist();

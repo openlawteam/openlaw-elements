@@ -402,7 +402,7 @@ test('Can clear search results on escape', async () => {
   expect(() => getByText(/49 bogart st\., brooklyn/i)).toThrow();
 });
 
-test('Can clear search results on double escape', async () => {
+test('Can clear input on double escape', async () => {
   mockAxios.get
     .mockImplementationOnce(() => Promise.resolve(bogartSearchResult));
 
@@ -433,15 +433,35 @@ test('Can clear search results on double escape', async () => {
   expect(() => getByDisplayValue(/49 boga/i)).toThrow();
 });
 
-test('Can show error onBlur (no value)', () => {
-  const { getByPlaceholderText, getByTestId, getByText } = render(
+test('Should not show error onBlur if no value', () => {
+  const { getByPlaceholderText, getByText } = render(
     <FakeAddressComponent />
   );
 
   fireEvent.blur(getByPlaceholderText(/mailing address/i));
 
   expect(() => getByText(/please choose a valid address from the options\./i)).toThrow();
-  expect(() => getByTestId('error-message')).toThrow();
+});
+
+test('Should not show error onBlur if bad input, then input deleted.', async () => {
+  const { getByDisplayValue, getByPlaceholderText, getByText } = render(
+    <FakeAddressComponent />
+  );
+
+  fireEvent.focus(getByPlaceholderText(/mailing address/i));
+  fireEvent.change(getByPlaceholderText(/mailing address/i), { target: { value: '49 Boga' } });
+  fireEvent.blur(getByPlaceholderText(/mailing address/i));
+
+  getByText(/please choose a valid address from the options\./i);
+
+  fireEvent.focus(getByDisplayValue(/49 boga/i));
+  fireEvent.change(getByDisplayValue(/49 boga/i), { target: { value: '' } });
+  fireEvent.blur(getByPlaceholderText(/mailing address/i));
+  
+  expect(() => getByText(/please choose a valid address from the options\./i)).toThrow();
+
+  // wait for async processes to finish
+  await new Promise(r => setTimeout(r));
 });
 
 test('Can show user-provided error onBlur via onValidate', () => {
@@ -530,12 +550,12 @@ test('Can attempt to select an address by click, but catch error and show generi
       );
   });
 
-  // select address from drop-down list
-  fireEvent.click(getByText(/49 Bogart St\., Brooklyn/i));
+  // attempt to select address from drop-down list
+  fireEvent.click(getByText(/49 bogart st\., brooklyn/i));
 
-  // value is set
+  // intermediate value should be set
   await wait(() => {
-    expect(() => getByDisplayValue(/49 Bogart St, Brooklyn, NY 11206, USA/i)).toThrow();
+    getByDisplayValue(/49 bogart st\., brooklyn/i);
   });
 
   // error message is showing
@@ -578,11 +598,16 @@ test('Can attempt to select an address by click, but catch error and show user-p
   });
 
   // select address from drop-down list
-  fireEvent.click(getByText(/49 Bogart St\., Brooklyn/i));
+  fireEvent.click(getByText(/49 bogart st\., brooklyn/i));
 
-  // value is set
+  // intermediate value should be set
   await wait(() => {
-    expect(() => getByDisplayValue(/49 Bogart St, Brooklyn, NY 11206, USA/i)).toThrow();
+    getByDisplayValue(/49 bogart st\., brooklyn/i);
+  });
+
+  // value should not be set
+  await wait(() => {
+    expect(() => getByDisplayValue(/49 bogart st, brooklyn, ny 11206, usa/i)).toThrow();
   });
 
   // error message is showing

@@ -260,19 +260,18 @@ export class Collection extends React.Component<Props, State> {
   }
 
   render() {
-    const { variable } = this.props;
+    const { executionResult, savedValue, variable } = this.props;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
     const collectionSize = this.openLaw.getCollectionSize(
       variable,
-      this.props.savedValue,
-      this.props.executionResult,
+      savedValue,
+      executionResult,
     );
-
-    const variables = [];
+    const fields = [];
 
     for (let index = 0; index < collectionSize; index++) {      
-      variables.push(this.renderFields(index));
+      fields.push(this.renderFields(index));
     }
 
     return (
@@ -281,7 +280,7 @@ export class Collection extends React.Component<Props, State> {
           <span>{description}</span>
         </div>
 
-        {variables}
+        {fields}
 
         <button
           className={`${css.button}`}

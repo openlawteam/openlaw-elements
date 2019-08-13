@@ -11,6 +11,7 @@ import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
   FieldPropsValueType,
+  ObjectAnyType,
   OnChangeFuncType,
   ValidityFuncType,
 } from './flowTypes';
@@ -48,6 +49,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
     const self: any = this;
     self.onFlatpickrChange = this.onFlatpickrChange.bind(this);
     self.onFlatpickrClose = this.onFlatpickrClose.bind(this);
+    self.onFlatpickrOpen = this.onFlatpickrOpen.bind(this);
     self.getFlatpickrOptions = this.getFlatpickrOptions.bind(this);
   }
 
@@ -98,7 +100,8 @@ export class DatePicker extends React.PureComponent<Props, State> {
       // allow time selection 00:00, AM/PM
       enableTime: this.state.enableTime,
       onClose: this.onFlatpickrClose,
-      
+      onOpen: this.onFlatpickrOpen,
+
       ...changeFunction,
     };
   }
@@ -137,6 +140,11 @@ export class DatePicker extends React.PureComponent<Props, State> {
     });
   }
 
+  // mainly for focus via keyboard
+  onFlatpickrOpen(s: Array<Date>, d: string, instance: ObjectAnyType) {
+    instance.calendarContainer.focus();
+  }
+
   shouldShowIOSLabel() {
     const isIOS = !!window.navigator.platform && /iPad|iPhone|iPod/.test(window.navigator.platform);
     return isIOS && !this.props.savedValue;
@@ -152,6 +160,11 @@ export class DatePicker extends React.PureComponent<Props, State> {
       `)}>
         <label className={`${css.fieldLabel}`}>
           <span className={`${css.fieldLabelText}`}>{description}</span>
+          
+          {this.shouldShowIOSLabel() && (
+            // https://flatpickr.js.org/mobile-support/
+            <span className="ios-label">{description}</span>
+          )}
 
           {/* flatpickr-enabled input */}
           {/* options are handled in this.getFlatpickrOptions */}
@@ -169,10 +182,6 @@ export class DatePicker extends React.PureComponent<Props, State> {
             shouldShowError={shouldShowError}
           />
         </label>
-
-        {this.shouldShowIOSLabel() &&
-          <span className="ios-label">{description}</span>
-        }
       </div>
     );
   }

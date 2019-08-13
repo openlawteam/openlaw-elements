@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { act } from 'react-dom/test-utils';
 import {
   cleanup,
   fireEvent,
@@ -24,6 +25,52 @@ const isEveryInputEnabled = () => Array.from(
 ).every(el => {
   return (!el.disabled || el.disabled === false);
 });
+
+const FakeApp = () => {
+  const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
+  const { executionResult: initialExecutionResult } = Openlaw.execute(compiledTemplate, {}, {});
+
+  const [ result, setNewResult ] = useState({
+    executionResult: initialExecutionResult,
+    parameters: {},
+    variables: Openlaw.getExecutedVariables(initialExecutionResult, {}),
+  });
+
+  const onChange = (key, value, validationResult) => {
+    if (validationResult && validationResult.isError) return;
+
+    const concatParameters = { ...result.parameters, [key]: value };
+    const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
+    const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, concatParameters);
+
+    if (errorMessage) {
+      // eslint-disable-next-line no-undef
+      console.error('Openlaw Execution Error:', errorMessage);
+      return;
+    }
+
+    setNewResult({
+      executionResult,
+      parameters: concatParameters,
+      variables: Openlaw.getExecutedVariables(executionResult, {}),
+    });
+  };
+
+  const { executionResult, parameters, variables } = result;
+
+  return (
+    <OpenLawForm
+      apiClient={new APIClient('')}
+      executionResult={executionResult}
+      parameters={parameters}
+      onChangeFunction={(key, value, validationResult) => (
+        act(() => onChange(key, value, validationResult))
+      )}
+      openLaw={Openlaw}
+      variables={variables}
+    />
+  );
+};
 
 let apiClient;
 let parameters;
@@ -311,4 +358,26 @@ test('Can surface error through onValidate (Period)', () => {
   getByText(/please correct the form errors\./i);
   // specific, internal form error should be shown
   getByText(/period of time: something looks incorrect\./i);
+});
+
+test('Can render & toggle conditional field', () => {
+  const { getByPlaceholderText } = render(
+    <FakeApp />
+  );
+
+  expect(() => getByPlaceholderText(/please explain your bbq sauce medical history/i)).toThrow();
+
+  const yes = document.querySelector('.Contestant-BBQ-Medical[value="true"]');
+  const no = document.querySelector('.Contestant-BBQ-Medical[value="false"]');
+
+  // show conditional field
+  fireEvent.click(yes);
+
+  getByPlaceholderText(/please explain your bbq sauce medical history/i);
+
+  // hide conditional field
+  fireEvent.click(no);
+  
+  // field should not show
+  expect(() => getByPlaceholderText(/please explain your bbq sauce medical history/i)).toThrow();
 });

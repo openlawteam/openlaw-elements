@@ -18,7 +18,7 @@ export default `<%
 [[Contestant BBQ Experience Years]]
 [[Contestant Longest BBQ]]
 [[BBQ Contestant Status]]
-[[CertList: Collection<BBQ Certifications>]]
+[[Certification List: Collection<BBQ Certifications>]]
 
 ==Preferences==
 [[Contestant BBQ Region]]
@@ -93,18 +93,18 @@ Phone: [[MedicalContact.Emergency Contact Phone]]
 }}
 
 [[BBQ Certifications: Structure(
-  Title: Text;
-  Date: Date;
+  Certification Title: Text;
+  Certification Date: Date;
   Certifier Eth Address: EthAddress
 )]]
 
-[[#CertList: Collection<BBQ Certifications>]]
+[[#Certification List: Collection<BBQ Certifications>]]
 
 **Collection: Structure**
-{{#for each Cert: CertList =>
+{{#for each Cert: Certification List =>
   **Certifcation:**
-  - Certification Title: [[Cert.Title]]
-  - Certification Date: [[Cert.Date]]
+  - Title: [[Cert.Certification Title]]
+  - Date: [[Cert.Certification Date]]
   - Certifier Eth Address: [[Certifier Eth Address]]
 }}
 

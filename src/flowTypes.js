@@ -28,7 +28,7 @@ export type FieldAndWildcardEnumType =
 	"*"
 	| FieldEnumType;
 
-export type ValidateOnKeyUpFuncType = (SyntheticKeyboardEvent<HTMLInputElement>, ?boolean) => mixed;
+export type ValidateOnKeyUpFuncType = (SyntheticKeyboardEvent<HTMLInputElement>) => mixed;
 
 export type ValidationEventType = "blur" | "change";
 

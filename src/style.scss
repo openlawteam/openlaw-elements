@@ -181,14 +181,6 @@ $text-input-height: 2.25rem;
   &:focus {
     box-shadow: 0 -0.1875rem 0 0 $blue--aqua inset;
   }
-
-  .ios-label {
-    color: $mid-grey;
-    font-size: 1rem;
-    position: absolute;
-    top: .3125rem;
-    left: .5625rem;
-  }
 }
 
 .#{$NAMESPACE}-field__radio {
@@ -208,6 +200,7 @@ $text-input-height: 2.25rem;
   @extend %text-input;
 
   border: none;
+  border-radius: .375rem;
   box-shadow: 0 0 0 0.109rem $grey inset;
   height: 9rem;
   transition: box-shadow .25s ease;
@@ -279,6 +272,26 @@ $text-input-height: 2.25rem;
     &:first-child {
       margin-right: 3rem;
     }
+  }
+}
+
+.#{$NAMESPACE}-field-date,
+.#{$NAMESPACE}-field-datetime {
+  // https://flatpickr.js.org/mobile-support/
+  input[type="date"],
+  input[type="datetime-local"] {
+    display: flex;
+    font-size: 1rem;
+    margin-bottom: 1.2rem;
+    width: 100%;
+  }
+
+  .ios-label {
+    display: block;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: .375rem 0;
+    padding: 0;
   }
 }
 
@@ -377,10 +390,14 @@ $text-input-height: 2.25rem;
 }
 
 .react-autosuggest__suggestion {
+  background-color: $white; 
+  font-weight: 600;
+  transition: background .1s ease;
+
   &:hover,
   &[aria-selected="true"] {
     background-color: $blue--aqua;
-    color: white;
+    color: $white;
   }
 
   &-default {
@@ -396,7 +413,10 @@ $text-input-height: 2.25rem;
 }
 
 .react-autosuggest__suggestions-container--open {
-  background-color: #ebfdff;
+  background-color: $white;
+  box-shadow: 0 0 0 2px;
+  border-radius: 0 0 .375rem .375rem;
+  margin-top: -.0625rem;
   position: absolute;
   width: 100%;
   z-index: 10;
@@ -426,12 +446,18 @@ $text-input-height: 2.25rem;
     border-color: transparent;
   }
   
-  &.selected {
+  &.selected,
+  &.nextMonthDay.selected {
     background: $blue--aqua;
     border-color: transparent;
 
     &:hover {
       background: $blue--aqua;
+      border-color: transparent;
+    }
+
+    &:focus {
+      background: darken($blue--aqua, 10%);
       border-color: transparent;
     }
   }

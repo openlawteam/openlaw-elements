@@ -15,6 +15,11 @@
         padding: 0;
       }
 
+      hr {
+        margin: 3rem 0;
+        border: 1px solid #eee;
+      }
+
       pre {
         word-break: break-all;
         white-space: pre-wrap;
@@ -23,7 +28,8 @@
   		.banner {
 		    color: grey;
 		    font-family: sans-serif;
-		    padding: 16px 0;
+		    padding: 1rem .75rem;
+        text-align: center;
   		}
 
       .button {
@@ -39,7 +45,10 @@
         margin: 0 1rem 1.5rem 0; 
         outline: none;
         padding: .1875em .75rem;
-        transition: box-shadow .25s ease;
+        transition: box-shadow .25s ease, color .25s ease;
+      }
+      .button:active {
+        color: #37c3dc;
       }
       .button:hover, .button:focus {
         box-shadow: 0 0 0 0.1875rem #37c3dc inset;
@@ -48,10 +57,6 @@
       .buttonsWrap {
         display: flex;
         justify-content: center;
-      }
-
-      hr {
-        margin: 3rem 0;
       }
 
       .paneLeft {

@@ -88,7 +88,6 @@ export class Address extends React.PureComponent<Props, State> {
   };
 
   isCreatingAddress = false;
-  isDataValid = false;
 
   ref: {current: null | HTMLDivElement} = React.createRef();
 
@@ -114,6 +113,8 @@ export class Address extends React.PureComponent<Props, State> {
     self.onSuggestionSelected = this.onSuggestionSelected.bind(this);
   }
 
+  // Causes input to lose focus only. Does not call onBlur() handler, as I don't believe we
+  // have control over it any more.
   blurInput() {
     const { cleanName } = this.props;
     const inputElement = this.ref.current && this.ref.current.querySelector(`input.${cleanName}`);
@@ -136,42 +137,35 @@ export class Address extends React.PureComponent<Props, State> {
     });
   }
 
-  onBlur(event: SyntheticFocusEvent<HTMLInputElement>, selectedItem: ObjectAnyType) {
-    const { highlightedSuggestion } = selectedItem;
+  onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
+    const { inputProps } = this.props;
+    const { currentValue, errorMessage } = this.state;
+    const updatedErrorMessage = (errorMessage && currentValue)
+      ? errorMessage
+      : '';
 
-    // handle validation when user focuses away
-    if (!highlightedSuggestion) {
-      const { inputProps } = this.props;
-      const { currentValue, errorMessage } = this.state;
-      const updatedErrorMessage = errorMessage
-        ? errorMessage
-        : (currentValue && this.isDataValid === false)
-        ? 'Please choose a valid address from the options.'
-        : '';
+    const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+      ...this.baseErrorData,
 
-      const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
-        ...this.baseErrorData,
+      errorMessage: updatedErrorMessage,
+      eventType: 'blur',
+      isError: updatedErrorMessage.length > 0,
+      value: currentValue,
+    });
 
-        errorMessage: updatedErrorMessage,
-        eventType: 'blur',
-        isError: updatedErrorMessage.length > 0,
-        value: currentValue,
-      });
+    // persist event outside of this handler to a parent component
+    if (event) event.persist();
 
-      // persist event outside of this handler to a parent component
-      if (event) event.persist();
-
-      this.setState(() => {
-        return {
-          errorMessage: errorMessageToSet,
-          shouldShowError: errorMessageToSet.length > 0,
-        };
-      }, () => {
-        if (event && inputProps && inputProps.onBlur) {
-          inputProps.onBlur(event);
-        }
-      });
-    }   
+    this.setState(() => {
+      return {
+        errorMessage: errorMessageToSet,
+        shouldShowError: errorMessageToSet.length > 0,
+      };
+    }, () => {
+      if (event && inputProps && inputProps.onBlur) {
+        inputProps.onBlur(event);
+      }
+    });
   }
 
   // Set current value of autosuggest box (onChange method required)
@@ -185,8 +179,6 @@ export class Address extends React.PureComponent<Props, State> {
       value: newValue,
     });
 
-    const errorMessageToSet = errorMessage
-      ? { errorMessage } : null;
     const shouldShowError = errorMessage.length > 0
       ? { shouldShowError: true } : null;
 
@@ -195,13 +187,10 @@ export class Address extends React.PureComponent<Props, State> {
 
     this.setState({
       currentValue: newValue,
+      errorMessage: errorMessage || 'Please choose a valid address from the options.',
 
-      ...errorMessageToSet,
       ...shouldShowError,
     }, () => {
-      // flag dirty input, as we haven't fetched anything and validated with OpenLaw
-      this.isDataValid = false;
-
       if (event && inputProps && inputProps.onChange) {
         inputProps.onChange(event);
       }
@@ -211,7 +200,7 @@ export class Address extends React.PureComponent<Props, State> {
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
     const { inputProps, onKeyUp } = this.props;
 
-    if (onKeyUp) onKeyUp(event, this.isDataValid);
+    if (onKeyUp) onKeyUp(event);
 
     // persist event outside of this handler to a parent component
     event.persist();
@@ -280,14 +269,14 @@ export class Address extends React.PureComponent<Props, State> {
   // Will be called every time suggestion is selected via mouse or keyboard,
   // and blur the input.
   async onSuggestionSelected(event: SyntheticInputEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) {
-    const { method } = autosuggestEvent;
+    const { method, suggestion } = autosuggestEvent;
 
     // cause the element to lose focus on 'enter'
     // this is already handled for click via `focusInputOnSuggestionClick={false}`
     if (method === 'enter' || method === 'click') {
-      setTimeout(() => this.blurInput());
+      // schedule after Autosuggest's events, but before our async calls below
+      setTimeout(this.blurInput);
 
-      const { suggestion } = autosuggestEvent;
       const { apiClient, inputProps, name, onChange } = this.props;
       
       if (suggestion) {
@@ -312,7 +301,6 @@ export class Address extends React.PureComponent<Props, State> {
             currentValue: addressData.address,
             errorMessage: errorMessageToSet,
           }, () => {
-            this.isDataValid = true;
             this.isCreatingAddress = false;
 
             onChange(
@@ -330,21 +318,24 @@ export class Address extends React.PureComponent<Props, State> {
             }
           });
         } catch (error) {
+          this.blurInput();
+
           const errorData = {
             ...this.baseErrorData,
 
             errorMessage: 'Something went wrong while creating an address.',
             eventType: 'blur',
             isError: true,
-            value: '',
+            value: suggestion.address,
           };
           const errorMessageToSet = this.callOnValidateAndGetErrorMessage(errorData);
 
           this.setState({
-            currentValue: '',
+            currentValue: suggestion.address,
             errorMessage: errorMessageToSet,
+            shouldShowError: errorMessageToSet.length > 0,
           }, () => {
-            this.isDataValid = false;
+            this.isCreatingAddress = false;
 
             onChange(
               name,

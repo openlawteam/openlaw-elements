@@ -17,13 +17,6 @@ import SectionsRenderer from './SectionsRenderer';
 import SampleTemplateText from './SAMPLE_TEMPLATE';
 
 const styles = {
-  notificationError: {
-    textAlign: 'center',
-    color: '#ad4040',
-    background: '#ffdfe4',
-    padding: 6,
-    fontFamily: 'sans-serif',
-  },
   wrap: {
     width: '100%',
   },
@@ -52,7 +45,6 @@ class Form extends Component {
   };
 
   state = {
-    definedValues: {},
     executionResult: {},
     parameters: {},
     variables: [],

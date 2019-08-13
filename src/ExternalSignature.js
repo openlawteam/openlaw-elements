@@ -46,10 +46,6 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
     value: (this.props.savedValue || ''),
   };
 
-  // currently used as a helper to send the parent's "on[Event]" props
-  // e.g. if it wants to be sure to do a Collection addition on enter press
-  isDataValid = false;
-
   state = {
     currentValue: '',
     errorMessage: '',
@@ -125,8 +121,6 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
       externalSignatureIdentity,
       shouldShowError,
     }, () => {
-      this.isDataValid = externalSignatureIdentity.length > 0;
-
       onChange(
         name,
         externalSignatureIdentity || undefined,
@@ -142,7 +136,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
     const { inputProps, onKeyUp } = this.props;
 
-    if (onKeyUp) onKeyUp(event, this.isDataValid);
+    if (onKeyUp) onKeyUp(event);
 
     // persist event outside of this handler to a parent component
     event.persist();

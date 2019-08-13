@@ -286,7 +286,7 @@ $text-input-height: 2.25rem;
     width: 100%;
   }
 
-  .ios-label {
+  .#{$NAMESPACE}-field__label--ios {
     display: block;
     font-size: 1rem;
     font-weight: bold;

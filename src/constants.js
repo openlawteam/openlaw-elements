@@ -22,6 +22,7 @@ type CSSClassNamesEnumType =
   | 'fieldInput'
   | 'fieldErrorMessage'
   | 'fieldLabel'
+  | 'fieldLabelIos'
   | 'fieldLabelText'
   | 'fieldRadio'
   | 'fieldSelect'
@@ -62,6 +63,7 @@ export const CSS_CLASS_NAMES: CSSClassNamesType = {
   fieldInput: `${CSS_CLASS_NAMESPACE}-field__input`,
   fieldInputError: `${CSS_CLASS_NAMESPACE}-field__input--error`,
   fieldLabel: `${CSS_CLASS_NAMESPACE}-field__label`,
+  fieldLabelIos: `${CSS_CLASS_NAMESPACE}-field__label--ios`,
   fieldLabelText: `${CSS_CLASS_NAMESPACE}-field__label-text`,
   fieldRadio: `${CSS_CLASS_NAMESPACE}-field__radio`,
   fieldSelect: `${CSS_CLASS_NAMESPACE}-field__select`,

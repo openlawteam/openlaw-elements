@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Openlaw } from 'openlaw';
 
 import Form from './Form';
@@ -20,6 +20,14 @@ const App = () => {
   const [formState, liftFormState] = useState();
   const [previewHTML, setPreviewHTML] = useState();
   const [view, toggleView] = useState('source');
+  const [autoRun, setAutoRun] = useState(false);
+
+  useEffect(() => {
+    if (autoRun) {
+      renderPreviewHTML(formState, setPreviewHTML)();
+      toggleView('preview');
+    }
+  }, [formState]);
 
   return (
     <Fragment>
@@ -27,11 +35,19 @@ const App = () => {
       <div className="buttonsWrap">
         <button
           onClick={() => {
+            renderPreviewHTML(formState, setPreviewHTML)();
             toggleView('preview');
-            return renderPreviewHTML(formState, setPreviewHTML)();
           }}
           className="button">
           Run preview
+        </button>
+
+        <button
+          onClick={() => {
+            setAutoRun(!autoRun);
+          }}
+          className="button">
+          Auto run <span>{!autoRun ? '▶' : '◼'}</span>
         </button>
 
         {previewHTML && (
@@ -45,10 +61,12 @@ const App = () => {
       </div>
 
       <div className="wrapApp">
+        {/* FORM */}
         <div className="paneLeft">
           <Form stateLifter={liftFormState} />
         </div>
 
+        {/* PREVIEW */}
         <div className="paneRight">
           {(previewHTML && view === 'preview')
             ? (

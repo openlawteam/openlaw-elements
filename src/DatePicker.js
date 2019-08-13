@@ -47,10 +47,10 @@ export class DatePicker extends React.PureComponent<Props, State> {
     super(props);
 
     const self: any = this;
+    self.getFlatpickrOptions = this.getFlatpickrOptions.bind(this);
     self.onFlatpickrChange = this.onFlatpickrChange.bind(this);
     self.onFlatpickrClose = this.onFlatpickrClose.bind(this);
     self.onFlatpickrOpen = this.onFlatpickrOpen.bind(this);
-    self.getFlatpickrOptions = this.getFlatpickrOptions.bind(this);
   }
 
   componentDidMount() {
@@ -163,7 +163,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
           
           {this.shouldShowIOSLabel() && (
             // https://flatpickr.js.org/mobile-support/
-            <span className="ios-label">{description}</span>
+            <span className={css.fieldLabelIos}>{description}</span>
           )}
 
           {/* flatpickr-enabled input */}

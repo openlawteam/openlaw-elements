@@ -42,7 +42,7 @@ afterEach(cleanup);
 
 describe('Date type', () => {
   test('Can render', () => {
-    const { getAllByPlaceholderText, getByLabelText } = render(
+    const { getByLabelText } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -56,11 +56,10 @@ describe('Date type', () => {
     );
 
     getByLabelText(/date of birth/i);
-    expect(getAllByPlaceholderText(/date of birth/i).length).toBe(2);
   });
 
   test('Can render with savedValue', () => {
-    const { getByLabelText, getAllByDisplayValue } = render(
+    const { getByLabelText, getByDisplayValue } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -74,11 +73,11 @@ describe('Date type', () => {
     );
 
     getByLabelText(/date of birth/i);
-    expect(getAllByDisplayValue(/january 1, 1984/i).length).toBe(2);
+    getByDisplayValue(/january 1, 1984/i);
   });
 
   test('Can select a date', () => {
-    const { getAllByDisplayValue } = render(
+    const { getByDisplayValue, getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -90,9 +89,8 @@ describe('Date type', () => {
         variableType="Date"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-DOB');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+    
+    const flatpickrEnabledInput = getByPlaceholderText(/date of birth/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -105,11 +103,11 @@ describe('Date type', () => {
     );
 
     expect(document.querySelector('span[aria-label="January 3, 1984"].selected')).not.toBeNull();
-    expect(getAllByDisplayValue('January 3, 1984').length).toBe(2);
+    getByDisplayValue('January 3, 1984');
   });
   
   test('Can press backspace to clear input', () => {
-    const { getAllByDisplayValue } = render(
+    const { getAllByDisplayValue , getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -122,9 +120,7 @@ describe('Date type', () => {
       />
     );
     
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-DOB');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+    const flatpickrEnabledInput = getByPlaceholderText(/date of birth/i);
 
     fireEvent.focus(flatpickrEnabledInput);
     fireEvent.keyDown(flatpickrEnabledInput, { key: 'Backspace', keyCode: 8 });
@@ -134,7 +130,7 @@ describe('Date type', () => {
   test('Can call onChangeFunction', () => {
     const changeSpy = jest.fn();
 
-    render(
+    const { getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -146,9 +142,8 @@ describe('Date type', () => {
         variableType="Date"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-DOB');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+    
+    const flatpickrEnabledInput = getByPlaceholderText(/date of birth/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -168,7 +163,7 @@ describe('Date type', () => {
   });
 
   test('Can validate a date', () => {
-    const { getByText } = render(
+    const { getByText, getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -180,9 +175,8 @@ describe('Date type', () => {
         variableType="Date"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-DOB');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date of birth/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -198,7 +192,7 @@ describe('Date type', () => {
   });
 
   test('Can validate date and render user-provided error message', () => {
-    const { getByText } = render(
+    const { getByText, getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -215,9 +209,8 @@ describe('Date type', () => {
         variableType="Date"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-DOB');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date of birth/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -235,7 +228,7 @@ describe('Date type', () => {
   test('Can call user-provided onValidate', () => {
     const validateSpy = jest.fn();
 
-    render(
+    const { getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-DOB"
         description="Date of Birth"
@@ -248,9 +241,8 @@ describe('Date type', () => {
         variableType="Date"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-DOB');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date of birth/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -288,7 +280,7 @@ describe('Date type', () => {
 
 describe('DateTime type', () => {
   test('Can render', () => {
-    const { getAllByPlaceholderText, getByLabelText } = render(
+    const { getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -301,12 +293,11 @@ describe('DateTime type', () => {
       />
     );
 
-    getByLabelText(/date & time of signature/i);
-    expect(getAllByPlaceholderText(/date & time of signature/i).length).toBe(2);
+    getByPlaceholderText(/date & time of signature/i);
   });
 
   test('Can render with savedValue', () => {
-    const { getByLabelText, getAllByDisplayValue } = render(
+    const { getByDisplayValue, getByLabelText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -321,11 +312,11 @@ describe('DateTime type', () => {
 
     getByLabelText(/date & time of signature/i);
     
-    expect(getAllByDisplayValue(/january 1, 1984/i).length).toBe(2);
+    getByDisplayValue(/january 1, 1984/i);
   });
 
   test('Can select a date with time', () => {
-    const { getAllByDisplayValue } = render(
+    const { getByDisplayValue, getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -337,9 +328,8 @@ describe('DateTime type', () => {
         variableType="DateTime"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-Signature-Date-Time');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date & time of signature/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -355,11 +345,11 @@ describe('DateTime type', () => {
     fireEvent.focus(document.body);
 
     expect(document.querySelector('span[aria-label="January 3, 1984"].selected')).not.toBeNull();
-    expect(getAllByDisplayValue('January 3, 1984 12:00 AM').length).toBe(2);
+    getByDisplayValue('January 3, 1984 12:00 AM');
   });
 
   test('Can press backspace to clear input', () => {
-    const { getAllByDisplayValue } = render(
+    const { getByDisplayValue, getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -372,22 +362,20 @@ describe('DateTime type', () => {
       />
     );
     
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-Signature-Date-Time');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
-
+    const flatpickrEnabledInput = getByPlaceholderText(/date & time of signature/i);
+    
     fireEvent.focus(flatpickrEnabledInput);
     fireEvent.keyDown(flatpickrEnabledInput, { key: 'Backspace', keyCode: 8 });
     // take focus away
     fireEvent.focus(document.body);
 
-    expect(() => getAllByDisplayValue(/january 1, 1984/i)).toThrow();
+    expect(() => getByDisplayValue(/january 1, 1984/i)).toThrow();
   });
 
   test('Can call onChangeFunction', async () => {
     const changeSpy = jest.fn();
 
-    render(
+    const { getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -399,9 +387,8 @@ describe('DateTime type', () => {
         variableType="DateTime"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-Signature-Date-Time');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date & time of signature/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -423,7 +410,7 @@ describe('DateTime type', () => {
   });
 
   test('Can validate a date & time', () => {
-    const { getByText } = render(
+    const { getByPlaceholderText, getByText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -435,9 +422,8 @@ describe('DateTime type', () => {
         variableType="DateTime"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-Signature-Date-Time');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date & time of signature/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -456,7 +442,7 @@ describe('DateTime type', () => {
   });
 
   test('Can validate date & time and render user-provided error message', () => {
-    const { getByText } = render(
+    const { getByPlaceholderText, getByText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -473,9 +459,8 @@ describe('DateTime type', () => {
         variableType="DateTime"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-Signature-Date-Time');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date & time of signature/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);
@@ -493,7 +478,7 @@ describe('DateTime type', () => {
   test('Can call user-provided onValidate', () => {
     const validateSpy = jest.fn();
 
-    render(
+    const { getByPlaceholderText } = render(
       <DatePicker
         cleanName="Contestant-Signature-Date-Time"
         description="Date & Time of Signature"
@@ -506,9 +491,8 @@ describe('DateTime type', () => {
         variableType="DateTime"
       />
     );
-    const handlers = document.querySelector('.flatpickr-input')._flatpickr._handlers;
-    const visibleInput = document.querySelector('.Contestant-Signature-Date-Time');
-    const flatpickrEnabledInput = handlers.filter(el => el.element === visibleInput)[0].element;
+
+    const flatpickrEnabledInput = getByPlaceholderText(/date & time of signature/i);
     
     // open flatpickr
     fireEvent.focus(flatpickrEnabledInput);

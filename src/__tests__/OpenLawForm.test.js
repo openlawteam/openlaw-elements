@@ -4,9 +4,9 @@ import {
   cleanup,
   fireEvent,
   render,
-  waitForDomChange,
+  wait,
 } from '@testing-library/react';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import { APIClient, Openlaw } from 'openlaw';
 
 import { OpenLawForm } from '../OpenLawForm';
@@ -298,7 +298,7 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
   }
 
   // render with initial props
-  const { container, getByText } = render(<FakeComponent />);
+  const { getByText } = render(<FakeComponent />);
 
   // every element should be disabled
   expect(isEveryInputDisabled()).toBe(true);
@@ -307,10 +307,8 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
   // to trigger a props change
   fireEvent.click(getByText(/start/i));
 
-  await waitForDomChange({ container });
-
   // every element should be enabled
-  expect(isEveryInputEnabled()).toBe(true);
+  await wait(() => expect(isEveryInputEnabled()).toBe(true));
 });
 
 test('Can surface error through onValidate (Period)', () => {

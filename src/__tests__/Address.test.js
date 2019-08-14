@@ -8,7 +8,7 @@ import {
   wait,
   waitForElement,
 } from '@testing-library/react';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import { APIClient, Openlaw } from 'openlaw';
 
 import { Address } from '../Address';

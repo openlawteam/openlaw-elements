@@ -6,7 +6,7 @@ import {
   fireEvent,
   render,
 } from '@testing-library/react';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import { APIClient, Openlaw } from 'openlaw';
 
 import { Text } from '../Text';

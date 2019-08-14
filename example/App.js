@@ -6,7 +6,9 @@ import SampleTemplateText from './SAMPLE_TEMPLATE';
 
 /**
  * Example app showing how you can render `OpenLawForm`
- * with a valid OpenLaw template.
+ * with a valid OpenLaw template. In this app, we have a 
+ * static template, meaning in this context
+ * that it is not able to be edited by the user within the app.
  */
 
 const renderPreviewHTML = (formState, callback) => () => {
@@ -60,7 +62,7 @@ const App = () => {
         )}
       </div>
 
-      <div className="wrapApp">
+      <Fragment>
         {/* FORM */}
         <div className="paneLeft">
           <Form stateLifter={liftFormState} />
@@ -76,7 +78,7 @@ const App = () => {
             ) : <pre className="pre">{SampleTemplateText}</pre>
           }
         </div>
-      </div>
+      </Fragment>
     </Fragment>
   );
 };

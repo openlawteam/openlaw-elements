@@ -138,7 +138,6 @@ export const InputRenderer = (props: RendererProps) => {
         <DatePicker
           cleanName={cleanName}
           description={description}
-          enableTime={false}
           getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Date}
           name={name}

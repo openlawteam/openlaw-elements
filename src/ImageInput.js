@@ -55,6 +55,7 @@ const { Fragment } = React;
 const IMG_MAX_WIDTH = 600;
 
 export class ImageInput extends React.PureComponent<Props, State> {
+  currentFile: File | void;
   fileRef: {current: null | HTMLInputElement} = React.createRef();
   labelRef: {current: null | HTMLLabelElement} = React.createRef();
 
@@ -74,7 +75,8 @@ export class ImageInput extends React.PureComponent<Props, State> {
     const self: any = this;
     self.handleFileDialogOpenClick = this.handleFileDialogOpenClick.bind(this);
     self.handleFileChange = this.handleFileChange.bind(this);
-    self.handleImageCancel = this.handleImageCancel.bind(this);
+    self.handleImageCancelCreate = this.handleImageCancelCreate.bind(this);
+    self.handleImageCancelEdit = this.handleImageCancelEdit.bind(this);
     self.handleImageCrop = this.handleImageCrop.bind(this);
     self.handleImageDelete = this.handleImageDelete.bind(this);
     self.handleToggleEditor = this.handleToggleEditor.bind(this);
@@ -196,7 +198,11 @@ export class ImageInput extends React.PureComponent<Props, State> {
       });
     };
 
-    if (file) reader.readAsDataURL(file);
+    if (file) {
+      reader.readAsDataURL(file);
+
+      this.currentFile = file;
+    }
 
     if (!file) {
       this.setState({
@@ -205,7 +211,31 @@ export class ImageInput extends React.PureComponent<Props, State> {
     }
   }
 
-  handleImageCancel(event: SyntheticEvent<HTMLAnchorElement>) {
+  handleImageCancelCreate(event: SyntheticEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+
+    const fileInputRef = this.fileRef.current;
+    if (fileInputRef) fileInputRef.value = '';
+
+    this.currentFile = undefined;
+
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(
+      { file: this.currentFile, value: '' },
+      this.props,
+      this.state,
+    );
+
+    this.setState({
+      croppedValue: '',
+      currentValue: '',
+      errorMessage,
+      shouldShowError
+    }, () => {
+      this.handleToggleEditor();
+    });
+  }
+
+  handleImageCancelEdit(event: SyntheticEvent<HTMLAnchorElement>) {
     event.preventDefault();
 
     const fileInputRef = this.fileRef.current;
@@ -239,6 +269,8 @@ export class ImageInput extends React.PureComponent<Props, State> {
     }, () => {
       const fileInputRef = this.fileRef.current;
       if (fileInputRef) fileInputRef.value = '';
+
+      this.currentFile = undefined;
 
       this.updateImage();
     });
@@ -290,7 +322,13 @@ export class ImageInput extends React.PureComponent<Props, State> {
       resizedImageDataURL = '';
     }
 
-    const { errorData, shouldShowError } = onChangeValidation(resizedImageDataURL, this.props, this.state);
+    // const { errorData, shouldShowError } = onBlurValidation(resizedImageDataURL, this.props, this.state);
+    const { errorData, shouldShowError } = onBlurValidation(
+      { file: this.currentFile, value: this.state.currentValue },
+      this.props,
+      this.state,
+    );
+    // const { errorData, shouldShowError } = onChangeValidation(resizedImageDataURL, this.props, this.state);
 
     this.setState({
       croppedValue: '',
@@ -298,6 +336,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
       shouldShowError,
       showModal: false,
     }, () => {
+
       onChange(
         name,
         resizedImageDataURL || undefined,
@@ -343,7 +382,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
                   
                   {...inputProps}
 
-                  className={singleSpaceString(`${css.fieldInput} ${inputPropsClassName}`)}
+                  className={singleSpaceString(`${css.fieldInput} ${cleanName} ${inputPropsClassName}`)}
                   id={`openlaw-el-image-${cleanName}`}
                   onChange={this.handleFileChange}
                   ref={this.fileRef}
@@ -398,7 +437,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
               <div>
                 <button
                   className={css.buttonSecondary}
-                  onClick={this.handleImageCancel}
+                  onClick={savedValue ? this.handleImageCancelEdit : this.handleImageCancelCreate}
                 >
                   Cancel
                 </button>

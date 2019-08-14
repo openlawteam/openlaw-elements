@@ -13,6 +13,7 @@ import { ExternalSignature } from '../ExternalSignature';
 import { OpenLawForm } from '../OpenLawForm';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const genericErrorMessage = `${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 const placeholderTextRegex = /docusign signatory/i;
@@ -30,7 +31,7 @@ let FakeOpenlawComponent;
 beforeEach(() => {
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
   FakeOpenlawComponent = props => (
     <OpenLawForm
@@ -54,7 +55,7 @@ test('Can render ExternalSignature', () => {
     <ExternalSignature
       cleanName="DocuSign Signatory"
       description="DocuSign Signatory"
-      getValidity={(name, value) => Openlaw.checkValidity(executedVariables[name], value, executionResult)}
+      getValidity={getValidity}
       name="DocuSign Signatory"
       onChange={() => {}}
       onKeyUp={() => {}}

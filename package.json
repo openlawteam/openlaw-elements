@@ -34,9 +34,6 @@
     "setupFiles": [
       "jest-canvas-mock"
     ],
-    "testPathIgnorePatterns": [
-      "/__tests__/ExternalSignature"
-    ],
     "transformIgnorePatterns": [
       "/node_modules/",
       "/openlaw-client/"

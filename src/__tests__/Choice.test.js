@@ -10,6 +10,7 @@ import { APIClient, Openlaw } from 'openlaw';
 import { Choice } from '../Choice';
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const apiClient = new APIClient('');
 const FakeOpenlawComponent = props => (
@@ -34,7 +35,7 @@ let parameters;
 beforeEach(() => {
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
   choiceValues = Openlaw.getChoiceValues(
     executedVariables.filter(v =>

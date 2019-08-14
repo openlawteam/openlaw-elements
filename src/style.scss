@@ -262,7 +262,6 @@ $text-input-height: 2.25rem;
 
   > .#{$NAMESPACE}-button ~ div {
     @extend %flex-row-split;
-    width: 100%;
   }
 
   .#{$NAMESPACE}-button-secondary {
@@ -348,6 +347,7 @@ $text-input-height: 2.25rem;
 
   color: $grey;
   font-size: 1rem;
+  font-weight: bold;
   transition: color ease .25s;
 
   &:hover,
@@ -370,7 +370,7 @@ $text-input-height: 2.25rem;
   box-shadow: 0 -0.1875rem 0 0 $red-error inset;
 }
 
-.#{$NAMESPACE}-field__error-message {
+.#{$NAMESPACE}-field__error-message span {
   background-color: $red-error__bg;
   border-radius: .375rem;
   color: $red-error;

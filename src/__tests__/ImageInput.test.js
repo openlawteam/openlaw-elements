@@ -13,6 +13,7 @@ import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 import openlawLogoBase64 from '../__mocks__/testImage.js';
 import { CSS_CLASS_NAMES } from '../constants';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const apiClient = new APIClient('');
 const FakeOpenlawComponent = props => (
@@ -48,6 +49,7 @@ const file = [base64ToArrayBuffer(openlawLogoBase64)];
 const tinyBase64ImgValue =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNM' +
   's+9AAAAFUlEQVR42mNkYPhfz0AEYBxVSF+FAP5FDvcfRYWgAAAAAElFTkSuQmCC';
+
 let parameters;
 let compiledTemplate;
 let executionResult;
@@ -66,7 +68,7 @@ beforeAll(() => {
 beforeEach(() => {
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
 });
 
@@ -342,7 +344,7 @@ test('Can show user-provided error message on cancel', async () => {
       onChange={() => {}}
       onKeyUp={() => {}}
       onValidate={({ value }) => {
-        if (!value) {
+        if (!value.file) {
           return {
             errorMessage: 'Please provide an image',
           };
@@ -475,7 +477,7 @@ test('Can show user-provided error message on delete', async () => {
         }}
         onKeyUp={() => {}}
         onValidate={({ value }) => {
-          if (!value) {
+          if (!value.file) {
             return {
               errorMessage: 'Please provide an image',
             };

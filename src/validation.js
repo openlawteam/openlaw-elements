@@ -28,14 +28,17 @@ export const getGenericErrorMessage = (variableType: FieldEnumType) => {
   return `${readableVariableType}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 };
 
-export const onBlurValidation = (value: string, props: ObjectAnyType, state?: ObjectAnyType): ValidationReturnType => {
+export const onBlurValidation = (value: string | ImageValueType, props: ObjectAnyType, state?: ObjectAnyType): ValidationReturnType => {
   const { cleanName, getValidity, name, onValidate, variableType }: PropsType = props;
+  const isIdentityOrSignatureType = (variableType === 'Identity' || variableType === 'ExternalSignature');
 
   // check validity
-  const { isError } = value.length > 0
+  const { isError } = (typeof value === 'string') && value.length > 0
     ? getValidity(name, value)
-    : (variableType === 'Identity' || variableType === 'ExternalSignature') && (state && state.currentValue.length)
+    : (typeof value === 'string') && isIdentityOrSignatureType && (state && state.currentValue.length)
     ? getValidity(name, value)
+    : (typeof value === 'object') && (variableType === 'Image') 
+    ? getValidity(name, value.value)
     : {};
 
   const errorDataToSend = {

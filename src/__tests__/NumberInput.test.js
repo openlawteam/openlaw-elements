@@ -11,6 +11,7 @@ import { NumberInput } from '../NumberInput';
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const numberPlaceholderTextRegex = /contestant bbq experience years/i;
 const numberTemplatePlaceholderTextRegex = /how many years of bbq experience do you have\?/i;
@@ -36,7 +37,7 @@ let executedVariables;
 beforeEach(() => {
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
 });
 

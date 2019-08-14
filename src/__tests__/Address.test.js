@@ -14,6 +14,7 @@ import { APIClient, Openlaw } from 'openlaw';
 import { Address } from '../Address';
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 /**
  * Note about mock implementations in Jest:
@@ -57,7 +58,7 @@ const FakeAddressComponent = (props) => {
 const FakeOpenlawComponent = props => {
   const parameters = {};
   const compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  const executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  const executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   const executedVariables = Openlaw.getExecutedVariables(executionResult, {});
 
   return (

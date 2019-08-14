@@ -11,7 +11,6 @@ import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
   FieldPropsValueType,
-  ObjectAnyType,
   OnChangeFuncType,
   ValidityFuncType,
 } from './flowTypes';
@@ -50,7 +49,6 @@ export class DatePicker extends React.PureComponent<Props, State> {
     self.getFlatpickrOptions = this.getFlatpickrOptions.bind(this);
     self.onFlatpickrChange = this.onFlatpickrChange.bind(this);
     self.onFlatpickrClose = this.onFlatpickrClose.bind(this);
-    self.onFlatpickrOpen = this.onFlatpickrOpen.bind(this);
   }
 
   componentDidMount() {
@@ -67,8 +65,8 @@ export class DatePicker extends React.PureComponent<Props, State> {
         // destroy old flatpickr instance
         this.flatpickrInstance.destroy();
         // start a new flatpickr instance
-        this.flatpickrInstance = flatpickr([this.flatpickrRef.current], this.getFlatpickrOptions());
-      }, 0);
+        flatpickr([this.flatpickrRef.current], this.getFlatpickrOptions());
+      });
     }
   }
 
@@ -78,10 +76,8 @@ export class DatePicker extends React.PureComponent<Props, State> {
   }
 
   getFlatpickrOptions() {
-    const { cleanName, inputProps, savedValue, variableType } = this.props;
+    const { savedValue, variableType } = this.props;
     const { enableTime } = this.state;
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
-    const format = enableTime ? 'F j, Y h:i K' : 'F j, Y';
     // this is so change and blur are fired in the correct order for validation
     // for different flatpickr input types
     const changeFunction = (variableType === 'DateTime')
@@ -89,18 +85,11 @@ export class DatePicker extends React.PureComponent<Props, State> {
       : { onValueUpdate: this.onFlatpickrChange };
 
     return {
-      // display in a friendly format (e.g. January, 1, 1971)
-      altFormat: format,
-      altInput: true,
-      altInputClass: singleSpaceString(
-        `${css.fieldInput} ${cleanName} ${inputPropsClassName}`,
-      ),
-      dateFormat: format,
+      dateFormat: enableTime ? 'F j, Y h:i K' : 'F j, Y',
       defaultDate: savedValue ? new Date(parseInt(savedValue)) : '',
       // allow time selection 00:00, AM/PM
-      enableTime: this.state.enableTime,
+      enableTime,
       onClose: this.onFlatpickrClose,
-      onOpen: this.onFlatpickrOpen,
 
       ...changeFunction,
     };
@@ -140,11 +129,6 @@ export class DatePicker extends React.PureComponent<Props, State> {
     });
   }
 
-  // mainly for focus via keyboard
-  onFlatpickrOpen(s: Array<Date>, d: string, instance: ObjectAnyType) {
-    instance.calendarContainer.focus();
-  }
-
   shouldShowIOSLabel() {
     const isIOS = !!window.navigator.platform && /iPad|iPhone|iPod/.test(window.navigator.platform);
     return isIOS && !this.props.savedValue;
@@ -153,6 +137,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
   render() {
     const { cleanName, description, inputProps, variableType } = this.props;
     const { errorMessage, shouldShowError } = this.state;
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
       <div className={singleSpaceString(
@@ -173,6 +158,9 @@ export class DatePicker extends React.PureComponent<Props, State> {
             
             {...inputProps}
 
+            className={singleSpaceString(
+              `${css.fieldInput} ${cleanName} ${inputPropsClassName}`,
+            )}
             ref={this.flatpickrRef}
           />
 

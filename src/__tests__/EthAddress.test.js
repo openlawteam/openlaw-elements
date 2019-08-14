@@ -13,6 +13,7 @@ import { Text } from '../Text';
 import { OpenLawForm } from '../OpenLawForm';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const getValidity = (name, value) => {
   const v = executedVariables.filter(v =>
@@ -35,7 +36,7 @@ beforeEach(() => {
   apiClient = new APIClient('');
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
 
   FakeOpenlawComponent = props => (

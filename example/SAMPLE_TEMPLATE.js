@@ -74,6 +74,8 @@ Returning Contestant: [[BBQ Contestant Status: YesNo "Are you a returning U.S. B
 
 [[Contestant Email: Identity | Signature]]
 
+[[DocuSign Signatory: ExternalSignature(serviceName: "DocuSign")]]
+
 [[Contestant Emergency Contact: Structure(
   Emergency Contact Name: Text;
   Emergency Contact Phone: Text

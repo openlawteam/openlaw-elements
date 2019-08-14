@@ -2,7 +2,7 @@
 
 export type ObjectAnyType = { [string]: any };
 
-export type ImageValueType = { file: File, value: string };
+export type ImageValueType = { file: File | void, value: string };
 
 // All OpenLaw types which have representation in the Elements library
 export type FieldEnumType =

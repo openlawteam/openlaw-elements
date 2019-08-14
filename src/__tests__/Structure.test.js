@@ -10,10 +10,11 @@ import { APIClient, Openlaw } from 'openlaw';
 
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const FakeApp = () => {
   const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
-  const { executionResult: initialExecutionResult } = Openlaw.execute(compiledTemplate, {}, {});
+  const { executionResult: initialExecutionResult } = Openlaw.execute(compiledTemplate, {}, {}, externalCallStructures);
 
   const [ result, setNewResult ] = useState({
     executionResult: initialExecutionResult,
@@ -29,7 +30,7 @@ const FakeApp = () => {
 
     const concatParameters = { ...result.parameters, [key]: value };
     const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
-    const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, concatParameters);
+    const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, concatParameters, externalCallStructures);
 
     if (errorMessage) {
       // eslint-disable-next-line no-undef

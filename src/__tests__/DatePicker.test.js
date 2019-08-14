@@ -12,6 +12,7 @@ import { Openlaw } from 'openlaw';
 import { DatePicker } from '../DatePicker';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const genericDateErrorMessage = `${TYPE_TO_READABLE.Date}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 const genericDateTimeErrorMessage = `${TYPE_TO_READABLE.DateTime}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
@@ -30,7 +31,7 @@ let executedVariables;
 beforeEach(() => {
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
 });
 

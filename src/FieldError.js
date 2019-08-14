@@ -15,6 +15,6 @@ export const FieldError = ({ cleanName, errorMessage, shouldShowError }: FieldEr
     <div
       className={CSS_CLASS_NAMES.fieldErrorMessage}
       data-element-name={cleanName}>
-      {errorMessage}
+      <span>{errorMessage}</span>
     </div>
   );

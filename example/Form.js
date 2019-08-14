@@ -18,6 +18,7 @@ import '../src/style.scss';
 import { apiClientSingleton } from './auth';
 import SectionsRenderer from './SectionsRenderer';
 import SampleTemplateText from './SAMPLE_TEMPLATE';
+import externalCallStructures from './externalCallStructuresHelper.js';
 import type { FieldErrorType } from '../src/flowTypes';
 
 type Props = {
@@ -30,11 +31,16 @@ type State = {
   variables: Array<{ [string]: any }>,
 };
 
+/**
+* Examples of custom validation
+*
+* Return an errorMessage key to provide your own
+* or override & hide a validation error with an empty string.
+*
+* You can also call your other validation handlers, etc. inside here.
+*/
 const onValidate = (validationResult) => {
-  // Custom validation
-  //
-  // Return an errorMessage key to provide your own
-  // or override & hide a validation error with an empty string.
+  // show custom error message if name is incorrect on blur event
   if (
     validationResult.elementType === 'Text'
     && validationResult.eventType === 'blur'
@@ -43,6 +49,17 @@ const onValidate = (validationResult) => {
   ) {
     return {
       errorMessage: 'Please, only participants with the name "Smoky" can enter.',
+    };
+  }
+
+  // show custom error message if file name is incorrect
+  if (
+    validationResult.elementName === 'Contestant-Picture'
+    && validationResult.value.file
+    && !validationResult.value.file.name.includes('smoky-with-beer')
+  ) {
+    return {
+      errorMessage: 'Please upload a file with a name that includes "smoky-with-beer"',
     };
   }
 };
@@ -57,7 +74,7 @@ const onValidate = (validationResult) => {
 class Form extends Component<Props, State> {
   // set some initial state values
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  initialExecutionResult = Openlaw.execute(this.compiledTemplate, {}, {}).executionResult;
+  initialExecutionResult = Openlaw.execute(this.compiledTemplate, {}, {}, externalCallStructures).executionResult;
   initialVariables = Openlaw.getExecutedVariables(this.initialExecutionResult, {});
 
   state = {
@@ -66,6 +83,10 @@ class Form extends Component<Props, State> {
     variables: this.initialVariables,
   };
 
+  componentDidMount() {
+    this.props.stateLifter(this.state);
+  }
+
   onElementChange = (key: string, value: string, validationResult: FieldErrorType) => {
     if (validationResult && validationResult.isError) return;
 
@@ -73,7 +94,7 @@ class Form extends Component<Props, State> {
     const { parameters } = this.state;
 
     const mergedParameters = { ...parameters, [key]: value };
-    const { executionResult, errorMessage } = Openlaw.execute(this.compiledTemplate, {}, mergedParameters);
+    const { executionResult, errorMessage } = Openlaw.execute(this.compiledTemplate, {}, mergedParameters, externalCallStructures);
 
     if (errorMessage) {
       // eslint-disable-next-line no-undef

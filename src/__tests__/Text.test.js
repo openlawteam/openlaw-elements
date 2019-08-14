@@ -12,6 +12,7 @@ import { APIClient, Openlaw } from 'openlaw';
 import { Text } from '../Text';
 import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import externalCallStructures from '../../example/externalCallStructuresHelper.js';
 
 const apiClient = new APIClient('');
 const getValidity = (name, value) => {
@@ -31,7 +32,7 @@ let FakeOpenlawComponent;
 beforeEach(() => {
   parameters = {};
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
+  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
   executedVariables = Openlaw.getExecutedVariables(executionResult, {});
   FakeOpenlawComponent = props => (
     <OpenLawForm

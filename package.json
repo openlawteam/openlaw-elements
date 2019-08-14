@@ -61,7 +61,7 @@
     "prepublishOnly": "npm run lint && npm run flow && npm run build",
     "release": "np",
     "sass": "npx node-sass src/style.scss csstmp/openlaw-elements.min.css --output-style compressed",
-    "start": "cross-env NODE_ENV=esm webpack-dev-server --hot --config webpack.config.dev.js --host=0.0.0.0",
+    "start": "cross-env NODE_ENV=esm webpack-dev-server --hot --config webpack.config.dev.js",
     "test": "jest",
     "test:coverage": "npm test -- --coverage --collectCoverageFrom=\"src/**/*.{js,jsx}\" && ./bin/make-coverage-badge.js --output-path \"./src/__tests__/coverge-badge.svg\" && rimraf ./coverage"
   },
@@ -98,7 +98,7 @@
     "jest-dom": "^3.5.0",
     "node-sass": "^4.12.0",
     "np": "^4.0.2",
-    "openlaw": "^0.2.15",
+    "openlaw": "^0.2.16",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "rimraf": "^2.6.3",

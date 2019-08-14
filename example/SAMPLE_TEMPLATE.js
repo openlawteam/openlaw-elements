@@ -107,6 +107,4 @@ Phone: [[MedicalContact.Emergency Contact Phone]]
   - Date: [[Cert.Certification Date]]
   - Certifier Eth Address: [[Certifier Eth Address]]
 }}
-
-[[DocuSign Signatory: ExternalSignature(serviceName: "DocuSign")]]
 `;

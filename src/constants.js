@@ -29,6 +29,7 @@ type CSSClassNamesEnumType =
   | 'fieldTextarea'
   | 'form'
   | 'getFieldTypeToLower'
+  | 'section'
   | 'structure'
   | 'structureRow';
 
@@ -70,6 +71,7 @@ export const CSS_CLASS_NAMES: CSSClassNamesType = {
   fieldTextarea: `${CSS_CLASS_NAMESPACE}-field__textarea`,
   fieldTypeToLower: (type: string) => type ? `${CSS_CLASS_NAMESPACE}-field-${type.toLowerCase()}` : '',
   form: `${CSS_CLASS_NAMESPACE}-form`,
+  section: `${CSS_CLASS_NAMESPACE}-section`,
   structure: `${CSS_CLASS_NAMESPACE}-structure`,
   structureRow: `${CSS_CLASS_NAMESPACE}-structure__row`,
 };

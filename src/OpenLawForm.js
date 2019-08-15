@@ -147,7 +147,7 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
       }
 
       return (
-        <div key={`${sectionData.section}-${index}`}>
+        <div className={css.section} key={`${sectionData.section}-${index}`}>
           <span>{sectionData.section}</span>
 
           {variables

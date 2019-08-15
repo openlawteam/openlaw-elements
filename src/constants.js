@@ -30,6 +30,7 @@ type CSSClassNamesEnumType =
   | 'form'
   | 'getFieldTypeToLower'
   | 'section'
+  | 'sectionTitle'
   | 'structure'
   | 'structureRow';
 
@@ -72,6 +73,7 @@ export const CSS_CLASS_NAMES: CSSClassNamesType = {
   fieldTypeToLower: (type: string) => type ? `${CSS_CLASS_NAMESPACE}-field-${type.toLowerCase()}` : '',
   form: `${CSS_CLASS_NAMESPACE}-form`,
   section: `${CSS_CLASS_NAMESPACE}-section`,
+  sectionTitle: `${CSS_CLASS_NAMESPACE}-section__title`,
   structure: `${CSS_CLASS_NAMESPACE}-structure`,
   structureRow: `${CSS_CLASS_NAMESPACE}-structure__row`,
 };

@@ -10,8 +10,8 @@ import '@testing-library/jest-dom/extend-expect';
 import { APIClient, Openlaw } from 'openlaw';
 
 import { OpenLawForm } from '../OpenLawForm';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import SampleTemplate from '../../example/SAMPLE_TEMPLATE';
+import { getTemplateExecutionData } from '../__test_utils__/helpers';
 
 const { Fragment } = React;
 
@@ -28,21 +28,19 @@ const isEveryInputEnabled = () => Array.from(
 });
 
 const FakeApp = () => {
-  const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
-  const { executionResult: initialExecutionResult } = Openlaw.execute(compiledTemplate, {}, {}, externalCallStructures);
+  const { executedVariables, executionResult: initialExecutionResult } = getTemplateExecutionData(SampleTemplate, {}, true);
 
   const [ result, setNewResult ] = useState({
     executionResult: initialExecutionResult,
     parameters: {},
-    variables: Openlaw.getExecutedVariables(initialExecutionResult, {}),
+    variables: executedVariables,
   });
 
   const onChange = (key, value, validationResult) => {
     if (validationResult && validationResult.isError) return;
 
     const concatParameters = { ...result.parameters, [key]: value };
-    const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
-    const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, concatParameters, externalCallStructures);
+    const { executedVariables, executionResult, errorMessage } = getTemplateExecutionData(SampleTemplate, concatParameters, true);
 
     if (errorMessage) {
       // eslint-disable-next-line no-undef
@@ -53,7 +51,7 @@ const FakeApp = () => {
     setNewResult({
       executionResult,
       parameters: concatParameters,
-      variables: Openlaw.getExecutedVariables(executionResult, {}),
+      variables: executedVariables,
     });
   };
 
@@ -73,19 +71,15 @@ const FakeApp = () => {
   );
 };
 
-let apiClient;
-let parameters;
-let compiledTemplate;
-let executionResult;
+const apiClient = new APIClient('');
 let executedVariables;
+let executionResult;
 let onChange;
+let parameters;
 
 beforeEach(() => {
-  apiClient = new APIClient('');
   parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
+  ({ executedVariables, executionResult } = getTemplateExecutionData(SampleTemplate, {}, true));
   onChange = () => {};
 });
 

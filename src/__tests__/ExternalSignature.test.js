@@ -7,46 +7,20 @@ import {
   render,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { APIClient, Openlaw } from 'openlaw';
+import { Openlaw } from 'openlaw';
 
 import { ExternalSignature } from '../ExternalSignature';
-import { OpenLawForm } from '../OpenLawForm';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
+
+const template = 'Please sign below with your DocuSign email: [[DocuSign Signatory: ExternalSignature(serviceName: "DocuSign")]]';
+const getValidity = testGetValidity(
+  getTemplateExecutionData(template, {}, true),
+);
 
 const genericErrorMessage = `${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 const placeholderTextRegex = /docusign signatory/i;
-const apiClient = new APIClient('');
-const getValidity = (name, value) => {
-  const v = executedVariables.filter(v => Openlaw.getName(v) === name);
-  return Openlaw.checkValidity(v[0], value, executionResult);
-};
-let parameters;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
-let FakeOpenlawComponent;
-
-beforeEach(() => {
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-  FakeOpenlawComponent = props => (
-    <OpenLawForm
-      apiClient={apiClient}
-      executionResult={executionResult}
-      getValidity={getValidity}
-      parameters={parameters}
-      onChangeFunction={() => {}}
-      openLaw={Openlaw}
-      variables={executedVariables}
-
-      {...props}
-    />
-  );
-});
 
 afterEach(cleanup);
 
@@ -129,7 +103,7 @@ test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onChangeFunction={changeSpy}
     />
   );
@@ -150,7 +124,7 @@ test('Can call inputProps: onChange, onBlur', () => {
   const blurSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       inputProps={{
         'ExternalSignature': {
           onChange: changeSpy,
@@ -260,7 +234,7 @@ test('Can show generic, field-level error onChange with bad value', () => {
 
 test('Can show a user-provided, field-level error onChange with bad value', () => {
   const { getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={({ elementType, isError }) => {
         if (isError && elementType === 'ExternalSignature') {
           return {
@@ -278,7 +252,7 @@ test('Can show a user-provided, field-level error onChange with bad value', () =
 
 test('Should not clear previous error onChange, if value is bad', () => {
   const { getByDisplayValue, getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
@@ -294,7 +268,7 @@ test('Should not clear previous error onChange, if value is bad', () => {
 
 test('Should not show error message if user has set empty string for "errorMessage"', () => {
   const { getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={({ elementType, isError }) => {
         if (isError && elementType === 'ExternalSignature') {
           return {
@@ -313,7 +287,7 @@ test('Should not show error message if user has set empty string for "errorMessa
 
 test('Should not show error message onChange if user has set empty string for "errorMessage"', () => {
   const { getByDisplayValue, getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={(errorData) => {
         const { eventType, isError } = errorData;
         return {

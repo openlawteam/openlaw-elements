@@ -12,9 +12,7 @@ import '@testing-library/jest-dom/extend-expect';
 import { APIClient, Openlaw } from 'openlaw';
 
 import { Address } from '../Address';
-import { OpenLawForm } from '../OpenLawForm';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
 
 /**
  * Note about mock implementations in Jest:
@@ -24,6 +22,7 @@ import externalCallStructures from '../../example/externalCallStructuresHelper.j
  */
 
 const { Fragment } = React;
+const apiClient = new APIClient('');
 
 const FakeAddressComponent = (props) => {
   const [errorMessage, setErrorMessage] = useState('');
@@ -55,27 +54,6 @@ const FakeAddressComponent = (props) => {
   );
 };
 
-const FakeOpenlawComponent = props => {
-  const parameters = {};
-  const compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  const executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  const executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-
-  return (
-    <OpenLawForm
-      apiClient={apiClient}
-      executionResult={executionResult}
-      parameters={parameters}
-      onChangeFunction={() => {}}
-      openLaw={Openlaw}
-      variables={executedVariables}
-
-      {...props}
-    />
-  );
-};
-
-const apiClient = new APIClient('');
 const bogartSearchResult = {
   headers: { openlaw_jwt: '' },
   data: [{
@@ -128,7 +106,7 @@ test('Can call onChangeFunction', async () => {
     .mockImplementationOnce(() => Promise.resolve(bogartAddressResult));
 
   const { getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onChangeFunction={changeSpy}
     />
   );
@@ -175,7 +153,7 @@ test('Can call inputProps: onChange, onBlur', async () => {
   const blurSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       inputProps={{
         'Address': {
           onChange: changeSpy,

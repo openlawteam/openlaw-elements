@@ -9,17 +9,16 @@ import '@testing-library/jest-dom/extend-expect';
 import { APIClient, Openlaw } from 'openlaw';
 
 import { OpenLawForm } from '../OpenLawForm';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import SampleTemplate from '../../example/SAMPLE_TEMPLATE';
+import { getTemplateExecutionData } from '../__test_utils__/helpers';
 
 const FakeApp = () => {
-  const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
-  const { executionResult: initialExecutionResult } = Openlaw.execute(compiledTemplate, {}, {}, externalCallStructures);
+  const { executedVariables, executionResult: initialExecutionResult } = getTemplateExecutionData(SampleTemplate, {}, true);
 
   const [ result, setNewResult ] = useState({
     executionResult: initialExecutionResult,
     parameters: {},
-    variables: Openlaw.getExecutedVariables(initialExecutionResult, {}),
+    variables: executedVariables,
   });
 
   const onChange = (key, value, validationResult) => {
@@ -29,8 +28,7 @@ const FakeApp = () => {
     }
 
     const concatParameters = { ...result.parameters, [key]: value };
-    const { compiledTemplate } = Openlaw.compileTemplate(SampleTemplateText);
-    const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, concatParameters, externalCallStructures);
+    const { executedVariables, executionResult, errorMessage } = getTemplateExecutionData(SampleTemplate, concatParameters, true);
 
     if (errorMessage) {
       // eslint-disable-next-line no-undef
@@ -41,7 +39,7 @@ const FakeApp = () => {
     setNewResult({
       executionResult,
       parameters: concatParameters,
-      variables: Openlaw.getExecutedVariables(executionResult, {}),
+      variables: executedVariables,
     });
   };
 

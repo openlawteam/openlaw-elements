@@ -1,3 +1,5 @@
+// @flow
+
 /**
 * External Call Structure Helper
 *
@@ -27,7 +29,4 @@ const ABIString =
   + 'ull}},"names":["signerEmail","signature","recordLink"],"types":{"signerEmail":{"'
   + 'name":"Text"},"signature":{"name":"Text"},"recordLink":{"name":"Text"}}}}';
 
-export default {
-  // this could be any valid OpenLaw external service
-  DocuSign: ABIString,
-};
+export default (serviceName: string = 'DocuSign') => ({ [serviceName]: ABIString });

@@ -7,33 +7,19 @@ import {
   render,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { Openlaw } from 'openlaw';
 
 import { DatePicker } from '../DatePicker';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
+
+const template = 'D.O.B.: [[Contestant DOB: Date "Date of Birth"]]\
+  Signature: [[Contestant Signature Date Time: DateTime "Date & Time of Signature"]]';
+const getValidity = testGetValidity(
+  getTemplateExecutionData(template),
+);
 
 const genericDateErrorMessage = `${TYPE_TO_READABLE.Date}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 const genericDateTimeErrorMessage = `${TYPE_TO_READABLE.DateTime}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
-const getValidity = (name, value) => {
-  const v = executedVariables.filter(v =>
-    Openlaw.getName(v) === name
-  );
-  return Openlaw.checkValidity(v[0], value, executionResult);
-};
-
-let parameters;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
-
-beforeEach(() => {
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-});
 
 afterEach(cleanup);
 

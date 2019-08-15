@@ -7,51 +7,21 @@ import {
   render,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { APIClient, Openlaw } from 'openlaw';
+import { Openlaw } from 'openlaw';
 
 import { Text } from '../Text';
-import { OpenLawForm } from '../OpenLawForm';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
 
-const getValidity = (name, value) => {
-  const v = executedVariables.filter(v =>
-    Openlaw.getName(v) === name
-  );
+const template = 'Please, be a giver of ETH: [[Contestant ETH Address: EthAddress "Your ETH address for the registration fee ($200)"]]';
+const getValidity = testGetValidity(
+  getTemplateExecutionData(template),
+);
 
-  return Openlaw.checkValidity(v[0], value, executionResult);
-};
 const genericErrorMessage = `${TYPE_TO_READABLE.EthAddress}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 const ethPlaceholderTextRegex = /your eth address for the registration fee/i;
 const ethErrorTextRegex = /ethereum address: something looks incorrect/i;
-let apiClient;
-let parameters;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
-let FakeOpenlawComponent;
-
-beforeEach(() => {
-  apiClient = new APIClient('');
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-
-  FakeOpenlawComponent = props => (
-    <OpenLawForm
-      apiClient={apiClient}
-      executionResult={executionResult}
-      parameters={parameters}
-      onChangeFunction={() => {}}
-      openLaw={Openlaw}
-      variables={executedVariables}
-
-      {...props}
-    />
-  );
-});
 
 afterEach(cleanup);
 
@@ -117,7 +87,7 @@ test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onChangeFunction={changeSpy}
     />
   );
@@ -138,7 +108,7 @@ test('Can call inputProps: onChange, onBlur', () => {
   const blurSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       inputProps={{
         'EthAddress': {
           onChange: changeSpy,
@@ -160,7 +130,7 @@ test('Can call inputProps: onChange, onBlur', () => {
 
 test('Can validate EthAddress type', () => {
   const { getByDisplayValue, getByTestId, getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.change(
@@ -183,7 +153,7 @@ test('Can validate EthAddress type', () => {
 
 test('Can show field-level error onBlur', () => {
   const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '0x123' } });
@@ -195,7 +165,7 @@ test('Can show field-level error onBlur', () => {
 
 test('Can show field-level, user-provided error onValidate (blur)', () => {
   const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={({ errorMessage, eventType }) => {
         if (errorMessage && eventType === 'blur') {
           return {
@@ -215,7 +185,7 @@ test('Can show field-level, user-provided error onValidate (blur)', () => {
 
 test('Can clear previous field-level, user-provided error onValidate (blur) with valid entry', () => {
   const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={({ errorMessage }) => {
         if (errorMessage) {
           return {
@@ -243,7 +213,7 @@ test('Can clear previous field-level, user-provided error onValidate (blur) with
 
 test('Should not show error onBlur with no content', () => {
   const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.focus(getByPlaceholderText(ethPlaceholderTextRegex));
@@ -255,7 +225,7 @@ test('Should not show error onBlur with no content', () => {
 
 test('Should not show error onBlur with no content, after previous content typed', () => {
   const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '0x123' } });
@@ -277,7 +247,7 @@ test('Should not show error onBlur with no content, after previous content typed
 
 test('Can show error onChange', () => {
   const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '0x123' } });
@@ -288,7 +258,7 @@ test('Can show error onChange', () => {
 
 test('Can show field-level, user-provided error onValidate (change)', () => {
   const { getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={({ errorMessage, eventType }) => {
         if (errorMessage && eventType === 'change') {
           return {
@@ -307,7 +277,7 @@ test('Can show field-level, user-provided error onValidate (change)', () => {
 
 test('Should not clear previous error onChange, if value is bad', () => {
   const { getByDisplayValue, getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.change(getByPlaceholderText(ethPlaceholderTextRegex), { target: { value: '0x123' } });
@@ -323,7 +293,7 @@ test('Should not clear previous error onChange, if value is bad', () => {
 
 test('Should not show error message onBlur if user has set empty string for "errorMessage"', () => {
   const { getByDisplayValue, getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={({ elementType, isError }) => {
         if (isError && elementType === 'EthAddress') {
           return {
@@ -343,7 +313,7 @@ test('Should not show error message onBlur if user has set empty string for "err
 
 test('Should not show error message onChange if user has set empty string for "errorMessage"', () => {
   const { getByDisplayValue, getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={(errorData) => {
         const { eventType, isError } = errorData;
         return {

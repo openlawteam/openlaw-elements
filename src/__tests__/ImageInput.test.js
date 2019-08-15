@@ -6,35 +6,20 @@ import {
   render,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { APIClient, Openlaw } from 'openlaw';
+import { Openlaw } from 'openlaw';
 
 import { ImageInput } from '../ImageInput';
-import { OpenLawForm } from '../OpenLawForm';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
 import openlawLogoBase64 from '../__mocks__/testImage.js';
 import { CSS_CLASS_NAMES } from '../constants';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
 
-const apiClient = new APIClient('');
-const FakeOpenlawComponent = props => (
-  <OpenLawForm
-    apiClient={apiClient}
-    executionResult={executionResult}
-    parameters={parameters}
-    onChangeFunction={() => {}}
-    openLaw={Openlaw}
-    variables={executedVariables}
-
-    {...props}
-  />
+const template = 'Contestant Awesome Face:\
+  [[Contestant Picture: Image]]';
+const getValidity = testGetValidity(
+  getTemplateExecutionData(template),
 );
-const getValidity = (name, value) => {
-  const v = executedVariables.filter(v =>
-    Openlaw.getName(v) === name
-  );
 
-  return Openlaw.checkValidity(v[0], value, executionResult);
-};
 const base64ToArrayBuffer = base64 => {
   const binaryString =  window.atob(base64);
   const len = binaryString.length;
@@ -50,11 +35,6 @@ const tinyBase64ImgValue =
   'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNM' +
   's+9AAAAFUlEQVR42mNkYPhfz0AEYBxVSF+FAP5FDvcfRYWgAAAAAElFTkSuQmCC';
 
-let parameters;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
-
 beforeAll(() => {
   // this is so we can call onload, as it never gets fired in jsdom
   // see: https://github.com/jsdom/jsdom/issues/1816
@@ -63,13 +43,6 @@ beforeAll(() => {
       this.onload();
     },
   });
-});
-
-beforeEach(() => {
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
 });
 
 afterEach(cleanup);
@@ -547,7 +520,7 @@ test('Can call onChangeFunction', async () => {
   const changeSpy = jest.fn();
 
   const { getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onChangeFunction={changeSpy}
     />
   );
@@ -577,7 +550,7 @@ test('Can call inputProps: onChange, onBlur', async () => {
   const blurSpy = jest.fn();
 
   const { getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       inputProps={{
         'Image': {
           onBlur: blurSpy,

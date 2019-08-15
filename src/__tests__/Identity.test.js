@@ -7,48 +7,20 @@ import {
   render,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { APIClient, Openlaw } from 'openlaw';
+import { Openlaw } from 'openlaw';
 
 import { Identity } from '../Identity';
-import { OpenLawForm } from '../OpenLawForm';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
+
+const template = 'Please sign below: [[Contestant Email: Identity | Signature]]';
+const getValidity = testGetValidity(
+  getTemplateExecutionData(template),
+);
 
 const genericErrorMessage = `${TYPE_TO_READABLE.Identity}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 const placeholderTextRegex = /contestant email/i;
-const apiClient = new APIClient('');
-const getValidity = (name, value) => {
-  const v = executedVariables.filter(v =>
-    Openlaw.getName(v) === name
-  );
-
-  return Openlaw.checkValidity(v[0], value, executionResult);
-};
-let parameters;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
-let FakeOpenlawComponent;
-
-beforeEach(() => {
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-  FakeOpenlawComponent = props => (
-    <OpenLawForm
-      apiClient={apiClient}
-      executionResult={executionResult}
-      parameters={parameters}
-      onChangeFunction={() => {}}
-      openLaw={Openlaw}
-      variables={executedVariables}
-
-      {...props}
-    />
-  );
-});
 
 afterEach(cleanup);
 
@@ -155,7 +127,7 @@ test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onChangeFunction={changeSpy}
     />
   );
@@ -176,7 +148,7 @@ test('Can call inputProps: onChange, onBlur', () => {
   const blurSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       inputProps={{
         'Identity': {
           onChange: changeSpy,
@@ -313,7 +285,7 @@ test('Can show a user-provided, field-level error onChange with bad value', () =
 
 test('Should not clear previous error onChange, if value is bad', () => {
   const { getByDisplayValue, getByText, getByPlaceholderText } = render(
-    <FakeOpenlawComponent />
+    <TestOpenLawFormComponent />
   );
 
   fireEvent.change(getByPlaceholderText(placeholderTextRegex), { target: { value: 'morgan@' } });
@@ -329,7 +301,7 @@ test('Should not clear previous error onChange, if value is bad', () => {
 
 test('Should not show error message onBlur if user has set empty string for "errorMessage"', () => {
   const { getByDisplayValue, getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={({ elementType, isError }) => {
         if (isError && elementType === 'Identity') {
           return {
@@ -349,7 +321,7 @@ test('Should not show error message onBlur if user has set empty string for "err
 
 test('Should not show error message onChange if user has set empty string for "errorMessage"', () => {
   const { getByDisplayValue, getByPlaceholderText, getByText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onValidate={(errorData) => {
         const { eventType, isError } = errorData;
         return {

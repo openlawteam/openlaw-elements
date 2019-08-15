@@ -7,48 +7,19 @@ import {
   render,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { APIClient, Openlaw } from 'openlaw';
+import { Openlaw } from 'openlaw';
 
 import { LargeText } from '../LargeText';
-import { OpenLawForm } from '../OpenLawForm';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
 
-const apiClient = new APIClient('');
+const template = '[[Contestant Personal Statement: LargeText "Please write a brief personal statement"]]';
+const getValidity = testGetValidity(
+  getTemplateExecutionData(template),
+);
+
 const placeholderTextRegex = /contestant personal statement/i;
 const appPlaceholderTextRegex = /please write a brief personal statement/i;
-const getValidity = (name, value) => {
-  const v = executedVariables.filter(v =>
-    Openlaw.getName(v) === name
-  );
-
-  return Openlaw.checkValidity(v[0], value, executionResult);
-};
-
-let parameters;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
-let FakeOpenlawComponent;
-
-beforeEach(() => {
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-  FakeOpenlawComponent = props => (
-    <OpenLawForm
-      apiClient={apiClient}
-      executionResult={executionResult}
-      parameters={parameters}
-      onChangeFunction={() => {}}
-      openLaw={Openlaw}
-      variables={executedVariables}
-
-      {...props}
-    />
-  );
-});
 
 afterEach(cleanup);
 
@@ -166,7 +137,7 @@ test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onChangeFunction={changeSpy}
     />
   );
@@ -187,7 +158,7 @@ test('Can call inputProps: onChange, onBlur', () => {
   const blurSpy = jest.fn();
 
   const { getByPlaceholderText } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       inputProps={{
         'LargeText': {
           onChange: changeSpy,

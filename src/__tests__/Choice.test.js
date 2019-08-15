@@ -5,51 +5,22 @@ import {
   render,
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
-import { APIClient, Openlaw } from 'openlaw';
+import { Openlaw } from 'openlaw';
 
 import { Choice } from '../Choice';
-import { OpenLawForm } from '../OpenLawForm';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
-import externalCallStructures from '../../example/externalCallStructuresHelper.js';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
 
-const apiClient = new APIClient('');
-const FakeOpenlawComponent = props => (
-  <OpenLawForm
-    apiClient={apiClient}
-    executionResult={executionResult}
-    parameters={parameters}
-    onChangeFunction={() => {}}
-    openLaw={Openlaw}
-    variables={executedVariables}
-
-    {...props}
-  />
+const template = '[[Contestant Regional Style: Choice("Carolinas", "Hawaii", "Kansas City", "Memphis", "Texas")]]\
+  [[Contestant BBQ Region: Contestant Regional Style "Your Regional Style"]]';
+const executionData = getTemplateExecutionData(template);
+const getValidity = testGetValidity(executionData);
+const choiceValues = Openlaw.getChoiceValues(
+  executionData.executedVariables.filter(v =>
+    Openlaw.getName(v) === 'Contestant BBQ Region'
+  )[0],
+  executionData.executionResult
 );
-let choiceValues;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
-let getValidity;
-let parameters;
-
-beforeEach(() => {
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters, externalCallStructures).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-  choiceValues = Openlaw.getChoiceValues(
-    executedVariables.filter(v =>
-      Openlaw.getName(v) === 'Contestant BBQ Region'
-    )[0], executionResult
-  );
-  getValidity = (name, value) => {
-    const v = executedVariables.filter(v =>
-      Openlaw.getName(v) === name
-    );
-
-    return Openlaw.checkValidity(v[0], value, executionResult);
-  };
-});
 
 afterEach(cleanup);
 
@@ -280,7 +251,7 @@ test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 
   const { getByDisplayValue } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       onChangeFunction={changeSpy}
     />
   );
@@ -298,7 +269,7 @@ test('Can call inputProps: onChange, onBlur', () => {
   const blurSpy = jest.fn();
 
   const { getByDisplayValue } = render(
-    <FakeOpenlawComponent
+    <TestOpenLawFormComponent
       inputProps={{
         'Choice': {
           onChange: changeSpy,

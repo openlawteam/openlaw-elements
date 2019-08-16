@@ -43,7 +43,7 @@
     "build": "npm run clean && npm run build:cjs && npm run build:esm && npm run build:umd && npm run build:css",
     "build:cjs": "npm run clean:cjs && cross-env NODE_ENV=cjs rollup -c",
     "build:css": "npm run sass & npm run copy:css && npm run clean:css",
-    "build:esm": "npm run clean:esm && npm run build:types && cross-env NODE_ENV=esm rollup -c",
+    "build:esm": "npm run clean:esm && npm run build:types && cross-env NODE_ENV=esm rollup -c && rimraf dist/esm/__*",
     "build:example": "npm run build:esm && npm run build:css",
     "build:types": "flow-copy-source src dist/esm",
     "build:umd": "npm run clean:umd && cross-env NODE_ENV=umd rollup -c",

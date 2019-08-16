@@ -94,13 +94,67 @@ test('Can call onChangeFunction', () => {
 
   fireEvent.change(
     getByPlaceholderText(periodPlaceholderTextRegex),
-    { target: { value: '1 Week' } },
+    { target: { value: '1 week' } },
   );
   fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
 
   expect(changeSpy.mock.calls.length).toBe(1);
   expect(changeSpy.mock.calls[0][0]).toMatch(/contestant longest bbq/i);
   expect(changeSpy.mock.calls[0][1]).toMatch(/1 week/i);
+});
+
+test('Can call onChangeFunction: bad value should be undefined', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(periodPlaceholderTextRegex),
+    { target: { value: '1 we' } },
+  );
+  fireEvent.blur(getByPlaceholderText(periodPlaceholderTextRegex));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant longest bbq/i);
+  expect(changeSpy.mock.calls[0][1]).toBe(undefined);
+});
+
+test('Can convert case to lowercase (otherwise it will fail Core validation)', () => {
+  const changeSpy = jest.fn();
+
+  const { getByDisplayValue, getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(periodPlaceholderTextRegex),
+    { target: { value: '1 Week' } },
+  );
+  fireEvent.blur(getByDisplayValue('1 week'));
+
+  expect(changeSpy.mock.calls[0][1]).toBe('1 week');
+
+  fireEvent.change(
+    getByDisplayValue('1 week'),
+    { target: { value: '1 YEAR' } },
+  );
+  fireEvent.blur(getByDisplayValue('1 year'));
+
+  expect(changeSpy.mock.calls[1][1]).toBe('1 year');
+
+  fireEvent.change(
+    getByDisplayValue('1 year'),
+    { target: { value: '1 mOnTh' } },
+  );
+  fireEvent.blur(getByDisplayValue('1 month'));
+
+  expect(changeSpy.mock.calls[2][1]).toBe('1 month');
 });
 
 test('Can call inputProps: onChange, onBlur', () => {

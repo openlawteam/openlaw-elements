@@ -119,6 +119,26 @@ test('Can call onChangeFunction', () => {
   expect(changeSpy.mock.calls[0][1]).toBe('{"identity":{"email":"alex@openlaw.io"},"serviceName":""}');
 });
 
+test('Can call onChangeFunction: bad value should equal undefined', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(placeholderTextRegex),
+    { target: { value: 'alex@' } },
+  );
+  fireEvent.blur(getByPlaceholderText(placeholderTextRegex));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(placeholderTextRegex);
+  expect(changeSpy.mock.calls[0][1]).toBe(undefined);
+});
+
 test('Can call inputProps: onChange, onBlur', () => {
   const changeSpy = jest.fn();
   const blurSpy = jest.fn();

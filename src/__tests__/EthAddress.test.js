@@ -94,13 +94,33 @@ test('Can call onChangeFunction', () => {
 
   fireEvent.change(
     getByPlaceholderText(ethPlaceholderTextRegex),
-    { target: { value: '1 Week' } },
+    { target: { value: '0xc0ffee254729296a45a3885639AC7E10F9d54979' } },
   );
   fireEvent.blur(getByPlaceholderText(ethPlaceholderTextRegex));
 
   expect(changeSpy.mock.calls.length).toBe(1);
   expect(changeSpy.mock.calls[0][0]).toMatch(/contestant eth address/i);
-  expect(changeSpy.mock.calls[0][1]).toMatch(/1 week/i);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/0xc0ffee254729296a45a3885639AC7E10F9d54979/i);
+});
+
+test('Can call onChangeFunction: bad value should equal undefined', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(ethPlaceholderTextRegex),
+    { target: { value: '0xc0ffee254' } },
+  );
+  fireEvent.blur(getByPlaceholderText(ethPlaceholderTextRegex));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant eth address/i);
+  expect(changeSpy.mock.calls[0][1]).toBe(undefined);
 });
 
 test('Can call inputProps: onChange, onBlur', () => {

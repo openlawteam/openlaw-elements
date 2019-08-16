@@ -88,10 +88,20 @@ class Form extends Component<Props, State> {
   }
 
   onElementChange = (key: string, value: string, validationResult: FieldErrorType) => {
-    if (validationResult && validationResult.isError) return;
+    const { parameters } = this.state;
+    // value needs to be unset, and the current paramter value is not already unset
+    const shouldSetNewValue = 
+      (value === undefined && parameters[key] !== undefined)
+        ? true
+        // things are looking reallllly good
+        : (!validationResult.isError && value !== parameters[key])
+        ? true
+        // default
+        : false;
+
+    if (!shouldSetNewValue) return;
 
     const { stateLifter } = this.props;
-    const { parameters } = this.state;
 
     const mergedParameters = { ...parameters, [key]: value };
     const { executionResult, errorMessage } = Openlaw.execute(this.compiledTemplate, {}, mergedParameters, getExternalCallStructures());

@@ -53,11 +53,12 @@ export const onBlurValidation = (value: string | ImageValueType, props: ObjectAn
   // call user's onValidate function
   const returnedValidationData = onValidate && onValidate(errorDataToSend);
 
-  // determine error message & visibility
+  // determine error message
   const errorMessage = (returnedValidationData && typeof returnedValidationData.errorMessage === 'string')
     ? returnedValidationData.errorMessage
     : errorDataToSend.errorMessage;
 
+  // determine error message visibility
   const shouldShowError =
     (returnedValidationData && returnedValidationData.errorMessage)
       ? true
@@ -101,11 +102,12 @@ export const onChangeValidation = (value: string | ImageValueType, props: Object
   // call user's onValidate function
   const returnedValidationData = onValidate && onValidate(errorDataToSend);
 
-  // determine error message & visibility
+  // determine error message
   const errorMessage = (returnedValidationData && typeof returnedValidationData.errorMessage === 'string')
     ? returnedValidationData.errorMessage
     : state.errorMessage || errorDataToSend.errorMessage;
 
+  // determine error message visibility
   const shouldShowError =
     (returnedValidationData && returnedValidationData.errorMessage)
       ? true

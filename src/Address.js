@@ -113,8 +113,16 @@ export class Address extends React.PureComponent<Props, State> {
     self.onSuggestionSelected = this.onSuggestionSelected.bind(this);
   }
 
+  callOnValidateAndGetErrorMessage(validationData: FieldErrorType): string {
+    const { onValidate } = this.props;
+    const userReturnedValidationData = onValidate && onValidate(validationData);
+    const { errorMessage = '' } = userReturnedValidationData || {};
+    
+    return errorMessage;
+  }
+
   // Causes input to lose focus only. Does not call onBlur() handler, as I don't believe we
-  // have control over it any more.
+  // have control over the way it's called - Autosuggest does.
   blurInput() {
     const { cleanName } = this.props;
     const inputElement = this.ref.current && this.ref.current.querySelector(`input.${cleanName}`);
@@ -144,7 +152,7 @@ export class Address extends React.PureComponent<Props, State> {
       ? errorMessage
       : '';
 
-    const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+    const userErrorMessage = this.callOnValidateAndGetErrorMessage({
       ...this.baseErrorData,
 
       errorMessage: updatedErrorMessage,
@@ -152,6 +160,8 @@ export class Address extends React.PureComponent<Props, State> {
       isError: updatedErrorMessage.length > 0,
       value: currentValue,
     });
+
+    const errorMessageToSet = (userErrorMessage || updatedErrorMessage);
 
     // persist event outside of this handler to a parent component
     if (event) event.persist();
@@ -171,15 +181,17 @@ export class Address extends React.PureComponent<Props, State> {
   // Set current value of autosuggest box (onChange method required)
   onChange(event: SyntheticInputEvent<HTMLInputElement>, autosuggestEvent: ObjectAnyType) {
     const { newValue } = autosuggestEvent;
-    const { inputProps } = this.props;
-    const errorMessage = this.callOnValidateAndGetErrorMessage({
+    const { inputProps, name, onChange } = this.props;
+    const errorData = {
       ...this.baseErrorData,
 
       eventType: 'change',
       value: newValue,
-    });
+    };
 
-    const shouldShowError = errorMessage.length > 0
+    const userErrorMessage = this.callOnValidateAndGetErrorMessage(errorData);
+    const errorMessageToSet = (userErrorMessage || 'Please choose a valid address from the options.');
+    const shouldShowError = userErrorMessage.length > 0
       ? { shouldShowError: true } : null;
 
     // persist event outside of this handler to a parent component
@@ -187,10 +199,16 @@ export class Address extends React.PureComponent<Props, State> {
 
     this.setState({
       currentValue: newValue,
-      errorMessage: errorMessage || 'Please choose a valid address from the options.',
+      errorMessage: errorMessageToSet,
 
       ...shouldShowError,
     }, () => {
+      onChange(
+        name,
+        undefined,
+        errorData,
+      );
+
       if (event && inputProps && inputProps.onChange) {
         inputProps.onChange(event);
       }
@@ -247,14 +265,15 @@ export class Address extends React.PureComponent<Props, State> {
         }],
       });
     } catch (error) {
-      const errorMessageToSet = this.callOnValidateAndGetErrorMessage({
+      const userErrorMessage = this.callOnValidateAndGetErrorMessage({
         ...this.baseErrorData,
 
-        errorMessage: 'Something went wrong while searching for an address.',
         eventType: 'change',
         isError: true,
         value,
       });
+
+      const errorMessageToSet = (userErrorMessage || 'Something went wrong while searching for an address.');
 
       this.setState({
         errorMessage: errorMessageToSet,
@@ -295,11 +314,13 @@ export class Address extends React.PureComponent<Props, State> {
             eventType: 'blur',
             value: addressData.address,
           };
-          const errorMessageToSet = this.callOnValidateAndGetErrorMessage(errorData);
+
+          const userErrorMessage = this.callOnValidateAndGetErrorMessage(errorData);
 
           this.setState({
             currentValue: addressData.address,
-            errorMessage: errorMessageToSet,
+            errorMessage: userErrorMessage,
+            shouldShowError: userErrorMessage.length > 0,
           }, () => {
             this.isCreatingAddress = false;
 
@@ -309,7 +330,7 @@ export class Address extends React.PureComponent<Props, State> {
               {
                 ...errorData,
 
-                errorMessage: errorMessageToSet,
+                errorMessage: userErrorMessage,
               },
             );
 
@@ -323,12 +344,13 @@ export class Address extends React.PureComponent<Props, State> {
           const errorData = {
             ...this.baseErrorData,
 
-            errorMessage: 'Something went wrong while creating an address.',
             eventType: 'blur',
             isError: true,
             value: suggestion.address,
           };
-          const errorMessageToSet = this.callOnValidateAndGetErrorMessage(errorData);
+
+          const userErrorMessage = this.callOnValidateAndGetErrorMessage(errorData);
+          const errorMessageToSet = userErrorMessage || 'Something went wrong while creating an address.';
 
           this.setState({
             currentValue: suggestion.address,
@@ -350,14 +372,6 @@ export class Address extends React.PureComponent<Props, State> {
         }
       }
     }
-  }
-
-  callOnValidateAndGetErrorMessage(validationData: FieldErrorType): string {
-    const { onValidate } = this.props;
-    const userReturnedValidationData = onValidate && onValidate(validationData);
-    const { errorMessage } = userReturnedValidationData || {};
-    
-    return errorMessage || validationData.errorMessage;
   }
 
   render() {

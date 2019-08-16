@@ -131,9 +131,19 @@ test('Can call onChangeFunction', async () => {
 
   // value is set
   await wait(() => {
-    expect(changeSpy.mock.calls.length).toBe(1);
+    expect(changeSpy.mock.calls.length).toBe(3);
+
+    // value is changed, but OpenLaw Address is not yet created
     expect(changeSpy.mock.calls[0][0]).toMatch(/contestant address/i);
-    expect(changeSpy.mock.calls[0][1]).toMatch(
+    expect(changeSpy.mock.calls[0][1]).toBe(undefined);
+
+    // drop-down value is selected, and input value is changed, but OpenLaw Address is not yet created
+    expect(changeSpy.mock.calls[1][0]).toMatch(/contestant address/i);
+    expect(changeSpy.mock.calls[1][1]).toBe(undefined);
+
+    // Openlaw Address is created
+    expect(changeSpy.mock.calls[2][0]).toMatch(/contestant address/i);
+    expect(changeSpy.mock.calls[2][1]).toMatch(
       JSON.stringify({
         placeId: '123xyz',
         streetName: 'Bogart St.',

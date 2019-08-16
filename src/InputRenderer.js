@@ -13,7 +13,7 @@ import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { ExternalSignature } from './ExternalSignature';
-import { ELEMENT_TYPES } from './constants';
+import { ELEMENT_INPUT_TYPES } from './constants';
 import { cacheValue } from './utils';
 import type {
   FieldEnumType,
@@ -84,7 +84,7 @@ export const InputRenderer = (props: RendererProps) => {
 
   // merge "all" `inputProps` ("*") with a specific type's props (e.g. "Address")
   const inputPropsMerged = inputProps && (
-    ELEMENT_TYPES.reduce((result, key) => {
+    ELEMENT_INPUT_TYPES.reduce((result, key) => {
       return { ...result, [key]: { ...inputProps['*'], ...inputProps[key] } };
     }, {})
   );

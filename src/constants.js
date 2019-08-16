@@ -49,6 +49,23 @@ type TypeToReadableType = {
 
 const CSS_CLASS_NAMESPACE = 'openlaw-el';
 
+
+export const ADDRESS = 'Address';
+export const CHOICE = 'Choice';
+export const COLLECTION = 'Collection';
+export const DATE = 'Date';
+export const DATE_TIME = 'DateTime';
+export const ETH_ADDRESS = 'EthAddress';
+export const EXTERNAL_SIGNATURE = 'ExternalSignature';
+export const IDENTITY = 'Identity';
+export const IMAGE = 'Image';
+export const LARGE_TEXT = 'LargeText';
+export const NUMBER = 'Number';
+export const PERIOD = 'Period';
+export const STRUCTURE = 'Structure';
+export const TEXT = 'Text';
+export const YES_NO = 'YesNo';
+
 export const CSS_CLASS_NAMES: CSSClassNamesType = {
   button: `${CSS_CLASS_NAMESPACE}-button`,
   buttonDisabled: `${CSS_CLASS_NAMESPACE}-button--disabled`,
@@ -78,37 +95,39 @@ export const CSS_CLASS_NAMES: CSSClassNamesType = {
   structureRow: `${CSS_CLASS_NAMESPACE}-structure__row`,
 };
 
-export const ELEMENT_TYPES: Array<FieldEnumType> = [
-  'Address',
-  'Choice',
-  'Date',
-  'DateTime',
-  'EthAddress',
-  'ExternalSignature',
-  'Identity',
-  'Image',
-  'LargeText',
-  'Number',
-  'Period',
-  'Text',
-  'YesNo',
+// Field inputs
+// Not including Collection or Structure.
+export const ELEMENT_INPUT_TYPES: Array<FieldEnumType> = [
+  ADDRESS,
+  CHOICE,
+  DATE,
+  DATE_TIME,
+  ETH_ADDRESS,
+  EXTERNAL_SIGNATURE,
+  IDENTITY,
+  IMAGE,
+  LARGE_TEXT,
+  NUMBER,
+  PERIOD,
+  TEXT,
+  YES_NO,
 ];
 
 export const FIELD_DEFAULT_ERROR_MESSAGE = 'Something looks incorrect.';
 
 export const TYPE_TO_READABLE: TypeToReadableType = {
-  Address: 'Address',
-  Choice: 'Choice',
-  Collection: 'Collection',
-  Date: 'Date',
-  DateTime: 'Date \u0026 Time', /* Date & Time */
-  EthAddress: 'Ethereum Address',
-  ExternalSignature: 'Email',
-  Identity: 'Email',
-  Image: 'Image',
-  LargeText: 'Text box',
-  Number: 'Number',
-  Period: 'Period of time',
-  Text: 'Text',
-  YesNo: 'Yes or No',
+  [ADDRESS]: 'Address',
+  [CHOICE]: 'Choice',
+  [COLLECTION]: 'Collection',
+  [DATE]: 'Date',
+  [DATE_TIME]: 'Date \u0026 Time', /* Date & Time */
+  [ETH_ADDRESS]: 'Ethereum Address',
+  [EXTERNAL_SIGNATURE]: 'Email',
+  [IDENTITY]: 'Email',
+  [IMAGE]: 'Image',
+  [LARGE_TEXT]: 'Text box',
+  [NUMBER]: 'Number',
+  [PERIOD]: 'Period of time',
+  [TEXT]: 'Text',
+  [YES_NO]: 'Yes or No',
 };

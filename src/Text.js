@@ -4,7 +4,7 @@ import * as React from 'react';
 
 import { FieldError } from './FieldError';
 import { onBlurValidation, onChangeValidation } from './validation';
-import { CSS_CLASS_NAMES as css } from './constants';
+import { CSS_CLASS_NAMES as css, PERIOD, TEXT } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
@@ -81,21 +81,24 @@ export class Text extends React.PureComponent<Props, State> {
   }
 
   onChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const { inputProps, name, onChange, variableType } = this.props;
     const eventValue = event.currentTarget.value;
-    const { inputProps, name, onChange } = this.props;
-    const { errorData, shouldShowError } = onChangeValidation(eventValue, this.props, this.state);
+    const possiblyFormattedValue = variableType === PERIOD ? eventValue.toLowerCase() : eventValue;
+    const { errorData, shouldShowError } = onChangeValidation(possiblyFormattedValue, this.props, this.state);
 
     // persist event outside of this handler to a parent component
     event.persist();
-    
+
     this.setState({
-      currentValue: eventValue,
+      currentValue: possiblyFormattedValue,
       errorMessage: errorData.errorMessage,
       shouldShowError,
     }, () => {
+      const shouldValueBeUndefined = variableType !== TEXT && (errorData.isError || eventValue === '');
+
       onChange(
         name,
-        this.state.currentValue || undefined,
+        (shouldValueBeUndefined ? undefined : this.state.currentValue),
         errorData,
       );
 

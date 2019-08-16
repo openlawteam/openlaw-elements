@@ -156,15 +156,14 @@ $text-input-height: 2.25rem;
 
 // clean labels
 // hide all label text, except yesno
-.#{$NAMESPACE}-field:not(.#{$NAMESPACE}-field-yesno) .#{$NAMESPACE}-field__label-text {
+.#{$NAMESPACE}-field:not(.#{$NAMESPACE}-field-choice):not(.#{$NAMESPACE}-field-yesno) .#{$NAMESPACE}-field__label-text {
   @extend %visually-hidden;
 }
 
-.#{$NAMESPACE}-field-yesno {
-  .#{$NAMESPACE}-field__label-text {
-    display: inline-block;
-    margin-bottom: .75rem;
-  }
+.#{$NAMESPACE}-field__label-text {    
+  display: inline-block;
+  font-weight: bold;
+  margin-bottom: .75rem;
 }
 
 .#{$NAMESPACE}-field__input,

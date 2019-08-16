@@ -61,21 +61,23 @@
 
       .paneLeft {
         width: 48%;
-        overflow-y: auto;
+        overflow-y: scroll;
         position: fixed;
         height: calc(100% - 10rem);
         margin: 2rem 1%;
         padding: 0 1%;
+        -webkit-overflow-scrolling: touch;
       }
       
       .paneRight {
         width: 48%;
         position: fixed;
         right: 0;
-        overflow-y: auto;
+        overflow-y: scroll;
         height: calc(100% - 10rem);
         margin: 2rem 1%;
         padding: 0 1%;
+        -webkit-overflow-scrolling: touch;
       }
 
       .previewEye {

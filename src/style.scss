@@ -155,7 +155,7 @@ $text-input-height: 2.25rem;
 }
 
 // clean labels
-// hide all label text, except yesno
+// hide all label text, except yesno and choice
 .#{$NAMESPACE}-field:not(.#{$NAMESPACE}-field-choice):not(.#{$NAMESPACE}-field-yesno) .#{$NAMESPACE}-field__label-text {
   @extend %visually-hidden;
 }

@@ -18,7 +18,7 @@ import '../src/style.scss';
 import { apiClientSingleton } from './auth';
 import SectionsRenderer from './SectionsRenderer';
 import SampleTemplateText from './SAMPLE_TEMPLATE';
-import externalCallStructures from './externalCallStructuresHelper.js';
+import getExternalCallStructures from './externalCallStructuresHelper.js';
 import type { FieldErrorType } from '../src/flowTypes';
 
 type Props = {
@@ -74,7 +74,7 @@ const onValidate = (validationResult) => {
 class Form extends Component<Props, State> {
   // set some initial state values
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  initialExecutionResult = Openlaw.execute(this.compiledTemplate, {}, {}, externalCallStructures).executionResult;
+  initialExecutionResult = Openlaw.execute(this.compiledTemplate, {}, {}, getExternalCallStructures()).executionResult;
   initialVariables = Openlaw.getExecutedVariables(this.initialExecutionResult, {});
 
   state = {
@@ -94,7 +94,7 @@ class Form extends Component<Props, State> {
     const { parameters } = this.state;
 
     const mergedParameters = { ...parameters, [key]: value };
-    const { executionResult, errorMessage } = Openlaw.execute(this.compiledTemplate, {}, mergedParameters, externalCallStructures);
+    const { executionResult, errorMessage } = Openlaw.execute(this.compiledTemplate, {}, mergedParameters, getExternalCallStructures());
 
     if (errorMessage) {
       // eslint-disable-next-line no-undef

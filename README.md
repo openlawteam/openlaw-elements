@@ -1,20 +1,17 @@
 # OpenLaw Elements
 
-![Jest Coverage Badge](./src/__tests__/coverge-badge.svg)
+![Jest Coverage Badge](https://github.com/openlawteam/openlaw-elements/raw/master/src/__tests__/coverge-badge.svg?sanitize=true)
 
-Dynamically render React form components from an OpenLaw template.
-
-## ⚠️ Production-ready status
-
-Currently, OpenLaw is making use of this library in our internal projects, but our aim is to make it as easy to use as possible for others. While the library can be used today (and will likely work as-is), we kindly ask that you help us by reporting any bugs - and do ask us any questions - if you decide to use it.
-
-We appreciate your patience as we make improvements in our forthcoming releases.
+Dynamically render React form components and sections from an OpenLaw template.
 
 ## Install
 
 ```
-npm install --save openlaw-elements@beta
+npm install openlaw-elements
 ```
+
+## Docs
+https://docs.openlaw.io/openlaw-elements/
 
 ## Usage
 
@@ -32,13 +29,14 @@ import 'openlaw-elements/dist/openlaw-elements.min.css';
 //  - used to fetch geo data in our `Address` field type
 //  - to run against your own private OpenLaw instance: 'https://[YOUR.INSTANCE.URL]';
 const apiClient = new APIClient('https://app.openlaw.io');
-// we strongly recommend using environment variables, not hard-coded strings
+// You can login from a Node server (e.g. Express), and be sure to pass the `OPENLAW_JWT`  on to the client.
+// If you require your users to have an account on your instance, create a login page on the client.
 apiClient.login('[YOUR_OPENLAW_EMAIL]', '[YOUR_OPENLAW_PASSWORD]');
 
 // https://docs.openlaw.io/openlaw-object/#compiletemplate
 const { compiledTemplate } = Openlaw.compileTemplate('**Name**: [[First Name]] [[Last Name]]');
 // https://docs.openlaw.io/openlaw-object/#execute
-const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, {});
+const { executionResult, errorMessage } = Openlaw.execute(compiledTemplate, {}, {}, {});
 // https://docs.openlaw.io/openlaw-object/#getexecutedvariables
 const variables = Openlaw.getExecutedVariables(executionResult, {});
 // typically the parameters object will be updated in state via 
@@ -55,11 +53,11 @@ const onChange = (key, value) => console.log('KEY:', key, 'VALUE:', value);
 
 const App = () => (
   <OpenLawForm
+    // https://docs.openlaw.io/openlaw-elements/#required-parameters
     apiClient={apiClient}
     executionResult={executionResult}
     parameters={parameters}
     onChangeFunction={onChange}
-    // https://docs.openlaw.io/openlaw-object/
     openLaw={Openlaw}
     variables={variables}
   />
@@ -122,7 +120,7 @@ OPENLAW_EMAIL=alex@email.com OPENLAW_PASSWORD=password npm start
 
 The example app (`openlaw-elements/example`) can help you gain ideas and understanding to build your own OpenLaw app in JavaScript and React. In contrast to the example app, the "Usage" section above intentionally leaves out more complex behavior to simply illustrate the required dependencies in order to use `<OpenLawForm />` correctly.
 
-We use Webpack to bundle a small app that changes the app's state tree every time an edit is made to the rendered `<OpenLawForm />`. Additionally, each time you click the `Preview` button, it will generate a preview of what the final document will look like at the top of the webpage.
+We use Webpack to bundle a small app that changes the app's state tree every time an edit is made to the rendered `<OpenLawForm />`. Additionally, each time you click the "Run preview" or "Auto run" button, it will generate a preview of what the final document will look like at the top of the webpage.
 
 ### Run
 
@@ -135,13 +133,9 @@ npm start
 // Now you can visit http://localhost:3001 and see the app running.
 ```
 
-## Roadmap (subject to change)
+## Current Roadmap (subject to change)
 
-- [ ] User can override individual input components
-- [ ] Style classNames can be namespaced to your provided namespace key (e.g. `my-app`)
-- [ ] Style configuration prop to override certain element classes (e.g. `{ error: 'my-error-class' }`)
 - [ ] Address input type will be able to be used without the `APIClient`
-- [ ] Ability to choose text and toggle visibility of input labels. A current workaround is to hide them with your own CSS.
 
 ## Contributing 
 

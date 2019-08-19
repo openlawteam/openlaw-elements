@@ -293,7 +293,7 @@ export class Address extends React.PureComponent<Props, State> {
     // cause the element to lose focus on 'enter'
     // this is already handled for click via `focusInputOnSuggestionClick={false}`
     if (method === 'enter' || method === 'click') {
-      // schedule after Autosuggest's events, but before our async calls below
+      // schedule after Autosuggest's events, but (most likely) before our async calls below
       setTimeout(this.blurInput);
 
       const { apiClient, inputProps, name, onChange } = this.props;

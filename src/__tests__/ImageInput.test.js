@@ -223,7 +223,7 @@ test('Can save an image', async () => {
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   fireEvent.click(getByText(/save/i));
 
@@ -295,7 +295,7 @@ test('Can call onValidate onChange', async () => {
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   const call = onValidateSpy.mock.calls[0];
   expect(call.length).toBe(1);
@@ -337,7 +337,7 @@ test('Can show user-provided error message onValidate (change)', async () => {
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   getByText(/this is a custom image error/i);
 });
@@ -382,7 +382,7 @@ test('Can show user-provided error message on save', async () => {
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   fireEvent.click(getByText(/save/i));
 
@@ -423,7 +423,7 @@ test('Can show user-provided error message on cancel', async () => {
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   fireEvent.click(getByText(/cancel/i));
 
@@ -470,7 +470,7 @@ test('Can hide error message on save via user-provided empty string', async () =
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   fireEvent.click(getByText(/save/i));
 
@@ -511,7 +511,7 @@ test('Can hide error message on change via user-provided empty string', async ()
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   fireEvent.click(getByText(/cancel/i));
 
@@ -654,7 +654,7 @@ test('Can call inputProps: onChange, onBlur', async () => {
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   fireEvent.click(getByText(/save/i));
 

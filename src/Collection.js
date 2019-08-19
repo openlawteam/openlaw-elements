@@ -43,6 +43,7 @@ export class Collection extends React.Component<Props, State> {
 
     const self: any = this;
     self.add = this.add.bind(this);
+    self.isCollectionDisabled = this.isCollectionDisabled.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
   }
 
@@ -100,6 +101,15 @@ export class Collection extends React.Component<Props, State> {
 
     // reset
     this.focusIndex = null;
+  }
+
+  isCollectionDisabled(): boolean {
+    const { inputProps } = this.props;
+    return (inputProps && inputProps.Collection && inputProps.Collection.disabled)
+      ? true
+      : (inputProps && inputProps['*'] && inputProps['*'].disabled)
+      ? true
+      : false;
   }
 
   onChange: OnChangeFuncType = (key, value, errorData) => {
@@ -247,7 +257,8 @@ export class Collection extends React.Component<Props, State> {
         <button
           aria-hidden="true"
           className={css.collectionButtonRemove}
-          onClick={() => this.remove(index)}
+          disabled={this.isCollectionDisabled()}
+          onClick={() => !this.isCollectionDisabled() && this.remove(index)}
           title={assistiveTextRemoveButton}
           type="button">
           <TimesSVG />
@@ -268,6 +279,7 @@ export class Collection extends React.Component<Props, State> {
       savedValue,
       executionResult,
     );
+
     const fields = [];
 
     for (let index = 0; index < collectionSize; index++) {      
@@ -284,8 +296,10 @@ export class Collection extends React.Component<Props, State> {
 
         <button
           className={`${css.button}`}
-          onClick={this.add}
+          disabled={this.isCollectionDisabled()}
+          onClick={this.isCollectionDisabled() ? null : this.add}
           onKeyDown={event => {
+            if (this.isCollectionDisabled()) return;
             // no collisions with onKeyUp event
             // on input (after focus)
             if (event.key === 'Enter') {
@@ -294,6 +308,7 @@ export class Collection extends React.Component<Props, State> {
           }}
           onKeyUp={(event) => {
             if (event.key === 'Enter') {
+              if (this.isCollectionDisabled()) return;
               // no collisions with onKeyUp event
               // on input (after focus)
               event.preventDefault();

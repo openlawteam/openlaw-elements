@@ -12,7 +12,7 @@ import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplate from '../../example/SAMPLE_TEMPLATE';
 import { getTemplateExecutionData } from '../__test_utils__/helpers';
 
-const FakeApp = () => {
+const FakeApp = (props) => {
   const { executedVariables, executionResult: initialExecutionResult } = getTemplateExecutionData(SampleTemplate, {}, true);
 
   const [ result, setNewResult ] = useState({
@@ -52,6 +52,8 @@ const FakeApp = () => {
       )}
       openLaw={Openlaw}
       variables={variables}
+
+      {...props}
     />
   );
 };
@@ -264,5 +266,89 @@ describe('Collection', () => {
     getByDisplayValue(/master of bbq/i);
     getByDisplayValue(/-649062000000/i);
     getByDisplayValue(/0xc0ffee254729296a45a3885639AC7E10F9d54979/i);
+  });
+
+  test('Can disable Collection add button if inputProps.Collection contains "disabled"', () => {
+    const { getAllByPlaceholderText } = render(
+      <FakeApp
+        inputProps={{
+          Collection: {
+            disabled: true,
+          },
+        }}
+      />
+    );
+
+    const addButton = document.querySelector('.openlaw-el-collection.Favorite-Meats .openlaw-el-button');
+
+    expect(addButton.disabled).toBe(true);
+
+    // attempt to add a new empty Collection item
+    fireEvent.click(addButton);
+
+    expect(getAllByPlaceholderText(/favorite meats/i).length).toBe(1);
+  });
+
+  test('Can disable Collection add button if inputProps["*"] contains "disabled"', () => {
+    const { getAllByPlaceholderText } = render(
+      <FakeApp
+        inputProps={{
+          '*': {
+            disabled: true,
+          },
+        }}
+      />
+    );
+
+    const addButton = document.querySelector('.openlaw-el-collection.Favorite-Meats .openlaw-el-button');
+
+    expect(addButton.disabled).toBe(true);
+
+    // attempt to add a new empty Collection item
+    fireEvent.click(addButton);
+
+    expect(getAllByPlaceholderText(/favorite meats/i).length).toBe(1);
+  });
+
+  test('Can disable Collection remove button if inputProps.Collection contains "disabled"', () => {
+    const { getAllByPlaceholderText } = render(
+      <FakeApp
+        inputProps={{
+          Collection: {
+            disabled: true,
+          },
+        }}
+      />
+    );
+
+    const removeButton = document.querySelector('.Favorite-Meats .openlaw-el-collection__button-remove');
+
+    expect(removeButton.disabled).toBe(true);
+
+    // attempt to add a new empty Collection item
+    fireEvent.click(removeButton);
+
+    expect(getAllByPlaceholderText(/favorite meats/i).length).toBe(1);
+  });
+
+  test('Can disable Collection remove button if inputProps["*"] contains "disabled"', () => {
+    const { getAllByPlaceholderText } = render(
+      <FakeApp
+        inputProps={{
+          '*': {
+            disabled: true,
+          },
+        }}
+      />
+    );
+
+    const removeButton = document.querySelector('.Favorite-Meats .openlaw-el-collection__button-remove');
+
+    expect(removeButton.disabled).toBe(true);
+
+    // attempt to add a new empty Collection item
+    fireEvent.click(removeButton);
+
+    expect(getAllByPlaceholderText(/favorite meats/i).length).toBe(1);
   });
 });

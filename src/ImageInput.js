@@ -357,9 +357,12 @@ export class ImageInput extends React.PureComponent<Props, State> {
           ? (
             <Fragment>
               <button
-                className={css.button}
-                onClick={this.handleToggleEditor}
-                disabled={disableEditRemoteImage}
+                className={singleSpaceString(
+                  `${css.button}
+                  ${isInputDisabled ? css.buttonDisabled : ''}`
+                )}
+                onClick={(disableEditRemoteImage || isInputDisabled) ? null : this.handleToggleEditor}
+                disabled={disableEditRemoteImage || isInputDisabled}
               >
                 {`Edit ${description}`}
               </button>
@@ -394,7 +397,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
                     `${css.button}
                     ${isInputDisabled ? css.buttonDisabled : ''}`
                   )}
-                  onClick={this.handleFileDialogOpenClick}>
+                  onClick={isInputDisabled ? null : this.handleFileDialogOpenClick}>
                   {`Select ${description}`}
                 </button>
 

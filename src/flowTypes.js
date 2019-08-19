@@ -12,7 +12,7 @@ export type FieldEnumType =
 	| "Date"
 	| "DateTime" // renders to <DatePicker />
 	| "EthAddress" // renders to <Text />
-	| "ExternalSignature"
+	| "ExternalSignature" // renders to <Text />
 	| "Identity"
 	| "Image"
 	| "LargeText"

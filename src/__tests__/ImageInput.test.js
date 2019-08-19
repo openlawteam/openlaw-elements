@@ -81,6 +81,90 @@ test('Can render with savedValue', () => {
   expect(getByText(/edit contestant picture/i).disabled).toBeFalsy();
 });
 
+test('Can disable edit button if input is disabled via inputProps', () => {
+  const { getByText } = render(
+    <ImageInput
+      cleanName="Contestant-Picture"
+      description="Contestant Picture"
+      getValidity={getValidity}
+      inputProps={{
+        disabled: true,
+      }}
+      name="Contestant Picture"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue={tinyBase64ImgValue}
+    />
+  );
+
+  getByText(/edit contestant picture/i);
+  expect(getByText(/edit contestant picture/i).disabled).toBe(true);
+});
+
+test('Can disable edit handler if input is disabled', () => {
+  // disabled via inputProps
+  const { getByText } = render(
+    <ImageInput
+      cleanName="Contestant-Picture"
+      description="Contestant Picture"
+      getValidity={getValidity}
+      inputProps={{
+        disabled: true,
+      }}
+      name="Contestant Picture"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue={tinyBase64ImgValue}
+    />
+  );
+
+  fireEvent.click(getByText(/edit contestant picture/i));
+
+  // should not show modal
+  expect(() => getByText(/save/i)).toThrow();
+
+  cleanup();
+
+  // disabled via remote image
+  const secondRender = render(
+    <ImageInput
+      cleanName="Contestant-Picture"
+      description="Contestant Picture"
+      getValidity={getValidity}
+      name="Contestant Picture"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue="https://openlaw-website.netlify.com/ol-logo-full.png"
+    />
+  );
+
+  fireEvent.click(secondRender.getByText(/edit contestant picture/i));
+
+  // should not show modal
+  expect(() => secondRender.getByText(/save/i)).toThrow();
+});
+
+test('Can render with savedValue which is a remote image and disable edit button', () => {
+  const { getByText } = render(
+    <ImageInput
+      cleanName="Contestant-Picture"
+      description="Contestant Picture"
+      getValidity={getValidity}
+      name="Contestant Picture"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue="https://openlaw-website.netlify.com/ol-logo-full.png"
+    />
+  );
+
+  getByText(/edit contestant picture/i);
+  expect(getByText(/edit contestant picture/i).disabled).toBe(true);
+});
+
 test('Can render with savedValue and open edit dialog', () => {
   const { getByText } = render(
     <ImageInput

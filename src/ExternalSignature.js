@@ -2,45 +2,63 @@
 
 import * as React from 'react';
 
-import type { ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
+import { FieldError } from './FieldError';
+import { onBlurValidation, onChangeValidation } from './validation';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
+import type {
+  FieldEnumType,
+  FieldPropsValueType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+  ValidityFuncType,
+  ValidateOnKeyUpFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
   description: string,
   getValidity: ValidityFuncType,
-  inputProps: ?{
-    className?: string,
-    onKeyUp?: (SyntheticKeyboardEvent<HTMLInputElement>) => mixed
-  },
+  inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
+  onValidate: ?OnValidateFuncType,
   openLaw: Object,
   savedValue: string,
-  textLikeInputClass: string,
+  variableType: FieldEnumType,
 };
 
 type State = {
-  email: string,
+  currentValue: string,
+  errorMessage: string,
+  externalSignatureIdentity: string,
   serviceName: string,
-  validationError: boolean,
+  shouldShowError: boolean,
 };
 
 export class ExternalSignature extends React.PureComponent<Props, State> {
-  // currently used as a helper to send the parent's "on[Event]" props
-  // e.g. if it wants to be sure to do a Collection addition on enter press
-  isDataValid = false;
+  baseErrorData = {
+    elementName: this.props.cleanName,
+    elementType: this.props.variableType,
+    errorMessage: '',
+    isError: false,
+    value: (this.props.savedValue || ''),
+  };
 
   state = {
-    email: '',
+    currentValue: '',
+    errorMessage: '',
+    externalSignatureIdentity: '',
     serviceName: '',
-    validationError: false,
+    shouldShowError: false,
   };
 
   constructor(props: Props) {
     super(props);
 
     const self: any = this;
+    self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
   }
@@ -51,71 +69,94 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
     if (savedValue) {
       const { isError } = getValidity(name, savedValue);
       const { identity, serviceName } = JSON.parse(savedValue);
+
       this.setState({
-        email: (!isError && identity && identity.email ? identity.email: ''),
-        serviceName: serviceName ? serviceName : '',
+        currentValue: (!isError && identity && identity.email ? identity.email : ''),
+        serviceName: (!isError && serviceName) ? serviceName : '',
       });
     }
   }
 
-  onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const eventValue = event.currentTarget.value;
-    const { name, openLaw } = this.props;
-
+  createExternalSignatureValue(value: string, serviceName: string): string {
     try {
-      if (!eventValue) {
-        this.setState({
-          email: '',
-          validationError: false,
-        }, () => {
-          this.props.onChange(name, undefined);
-
-          this.isDataValid = false;
-        });
-      } else {
-        this.setState({
-          email: eventValue,
-          validationError: false,
-        });
-
-        this.props.onChange(
-          name,
-          openLaw.createExternalSignatureValue('', eventValue, this.state.serviceName),
-        );
-
-        this.isDataValid = true;
-      }
+      return this.props.openLaw.createExternalSignatureValue('', value, serviceName);
     } catch (error) {
-      this.isDataValid = false;
-
-      this.setState({
-        email: eventValue,
-        validationError: true,
-      });
+      return '';
     }
+  }
+
+  onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
+    const { inputProps } = this.props;
+    const { externalSignatureIdentity } = this.state;
+    
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(externalSignatureIdentity, this.props, this.state);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    this.setState({
+      errorMessage,
+      shouldShowError,
+    }, () => {
+      if (event && inputProps && inputProps.onBlur) {
+        inputProps.onBlur(event);
+      }
+    });
+  }
+
+  onChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const eventValue = event.currentTarget.value;
+    const { inputProps, name, onChange } = this.props;
+    const { serviceName } = this.state;
+    const externalSignatureIdentity = this.createExternalSignatureValue(eventValue, serviceName);
+
+    const { errorData, shouldShowError } = onChangeValidation(externalSignatureIdentity, this.props, this.state);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    this.setState({
+      currentValue: eventValue,
+      errorMessage: errorData.errorMessage,
+      externalSignatureIdentity,
+      shouldShowError,
+    }, () => {
+      onChange(
+        name,
+        externalSignatureIdentity || undefined,
+        errorData,
+      );
+
+      if (event && inputProps && inputProps.onChange) {
+        inputProps.onChange(event);
+      }
+    });
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    if (this.props.onKeyUp) {
-      this.props.onKeyUp(event, this.isDataValid);
-    }
+    const { inputProps, onKeyUp } = this.props;
 
-    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
-      this.props.inputProps.onKeyUp(event);
+    if (onKeyUp) onKeyUp(event);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    if (inputProps && inputProps.onKeyUp) {
+      inputProps.onKeyUp(event);
     }
   }
 
   render() {
-    const { cleanName, description, inputProps, textLikeInputClass } = this.props;
-    const { serviceName, validationError } = this.state;
-    const additionalClassName = validationError ? ' is-error' : '';
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
-    const signatureServiceDesc = serviceName ? `Sign with ${serviceName}` : '';
+    const { cleanName, description, inputProps, variableType } = this.props;
+    const { currentValue, errorMessage, serviceName, shouldShowError } = this.state;
+    const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
+    const signatureServiceDescription = serviceName ? `Sign with ${serviceName}` : '';
 
     return (
-      <div className="contract-variable external-signature">
-        <label>
-          <span>{description}</span>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           <input
             placeholder={description}
@@ -123,15 +164,24 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
 
             {...inputProps}
 
-            className={`${textLikeInputClass}${cleanName} ${cleanName}-email${additionalClassName}${inputPropsClassName}`}
+            className={singleSpaceString(
+              `${css.fieldInput} ${cleanName} ${inputPropsClassName} ${errorClassName}`
+            )}
+            onBlur={this.onBlur}
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}
             type="email"
-            value={this.state.email}
+            value={currentValue}
           />
 
-          {signatureServiceDesc && (
-            <small>{signatureServiceDesc}</small>
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
+          />
+
+          {signatureServiceDescription && (
+            <small>{signatureServiceDescription}</small>
           )}
         </label>
       </div>

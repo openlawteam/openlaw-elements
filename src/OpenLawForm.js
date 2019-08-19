@@ -6,13 +6,19 @@ import { Collection } from './Collection';
 import { GetSections } from './sectionUtil';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
-import type { InputPropsType } from './types';
+import { CSS_CLASS_NAMES as css } from './constants';
+import type {
+  OnValidateFuncType,
+  FieldPropsType,
+  OnChangeFuncType,
+} from './flowTypes';
 
-type Props = {
+type Props = {|
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
   executionResult: {},
-  inputProps?: InputPropsType,
-  onChangeFunction: (any) => mixed,
+  inputProps?: FieldPropsType,
+  onChangeFunction: OnChangeFuncType,
+  onValidate?: OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   parameters: {[string]: any},
   renderSections?: ({
@@ -22,10 +28,9 @@ type Props = {
   sections: Array<any>,
   sectionTransform?: (any, number) => {},
   sectionVariablesMap: (any, number) => { [string]: Array<string> },
-  textLikeInputClass?: string,
   unsectionedTitle?: string,
   variables: Array<{}>,
-};
+|};
 
 type RendererInputProps = {
   ...Props,
@@ -42,17 +47,17 @@ type RendererSectionProps = {
 const renderInputs = (props: RendererInputProps) => {
   const {
     apiClient, // for API call to Google for geo data (if generating an Address)
-    executionResult = {},
+    executionResult,
     inputProps,
-    onChangeFunction = () => {},
-    openLaw = {},
-    parameters = {},
-    variable = {},
+    onChangeFunction,
+    onValidate,
+    openLaw,
+    parameters,
+    variable,
   } = props;
 
   const savedValue = parameters[openLaw.getName(variable)] || '';
   const cleanName = openLaw.getCleanName(variable);
-  const textLikeInputClass = props.textLikeInputClass ? `${props.textLikeInputClass} ` : '';
 
   // Structure: can contain all types of inputs in <InputRenderer />
   if (openLaw.isStructuredType(variable, executionResult)) {
@@ -63,9 +68,9 @@ const renderInputs = (props: RendererInputProps) => {
         inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
+        onValidate={onValidate}
         openLaw={openLaw}
         savedValue={savedValue}
-        textLikeInputClass={textLikeInputClass}
         variable={variable}
       />
     );
@@ -80,11 +85,11 @@ const renderInputs = (props: RendererInputProps) => {
         inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
+        onValidate={onValidate}
         openLaw={openLaw}
         savedValue={
           savedValue || openLaw.getCollectionValue(variable, executionResult, '')
         }
-        textLikeInputClass={textLikeInputClass}
         variable={variable}
       />
     );
@@ -97,9 +102,9 @@ const renderInputs = (props: RendererInputProps) => {
       inputProps={inputProps}
       key={`${cleanName}-input`}
       onChangeFunction={onChangeFunction}
+      onValidate={onValidate}
       openLaw={openLaw}
       savedValue={savedValue}
-      textLikeInputClass={textLikeInputClass}
       variable={variable}
     />
   );
@@ -142,8 +147,8 @@ const renderSectionsAndInputs = (props: RendererSectionProps) => {
       }
 
       return (
-        <div className="contract-section" key={`${sectionData.section}-${index}`}>
-          <span>{sectionData.section}</span>
+        <div className={css.section} key={`${sectionData.section}-${index}`}>
+          <span className={css.sectionTitle}>{sectionData.section}</span>
 
           {variables
             .map(name => variablesMap[name])
@@ -194,7 +199,7 @@ export const OpenLawForm = (props: Props): React.Node | Array<React.Node> => {
   }
 
   return (
-    <div className="openlaw-form">
+    <div className={css.form}>
       {formContent}
     </div>
   );

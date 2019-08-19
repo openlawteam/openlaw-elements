@@ -1,34 +1,74 @@
+// Constants
+$NAMESPACE: 'openlaw-el';
+
 // Fonts
-$sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+$system-sans: -apple-system,
+  BlinkMacSystemFont,
+  Segoe UI,
+  Helvetica,
+  Arial,
+  sans-serif,
+  Apple Color Emoji,
+  Segoe UI Emoji,
+  Segoe UI Symbol;
 
 // Colors
-$black: #000;
-$blue: #d7f9fd;
-$dark-grey: #333;
+$black: #000000;
+$blue--aqua-lite: #d7f9fd;
+$blue--aqua: #37c3dc;
+$dark-grey: #333333;
 $grey: #7e7e7e;
-$light-blue: #37c3dc;
-$mid-grey: #aaa;
+$light-grey: #d8d8d8;
+$mid-grey: #aaaaaa;
 $off-white: #f2f2f2;
 $purple-grey: #828092;
-$red: #ec4c64;
-$very-light-grey: #eee;
+$red-error__bg: #fef6f7;
+$red-error: #ff7070;
+$very-light-grey: #eeeeee;
 $white-smoke: #f5f5f5;
-$white: #fff;
+$white: #ffffff;
 
-// We should find descriptive names, or unify to other greys
-$button-text: #363636;
+// Measurements
+$text-input-height: 2.25rem;
+
+/* SHARED */
+
+%button-reset {
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  background: none;
+  border-radius: 0;
+  border: none;
+  box-sizing: border-box;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+
+%flex-row-split {
+  display: flex;
+  justify-content: space-between;
+}
+
+%input-disabled {
+  background: $very-light-grey;
+  color: $grey;
+
+  &:hover {
+    background: $very-light-grey;
+    cursor: not-allowed;
+  }
+}
 
 %text-input {
   -webkit-appearance: none;
   align-items: center;
-  background: $white;
   border-radius: 0;
   box-sizing: border-box;
-  color: $black;
+  color: $dark-grey;
   display: inline-flex;
   font-family: inherit;
   font-size: 1rem;
-  font-weight: 300;
   justify-content: flex-start;
   line-height: 1.5;
   outline: none;
@@ -38,228 +78,391 @@ $button-text: #363636;
   width: 100%;
 }
 
-.flatpickr-calendar {
-  font-family: $sans;
+%visually-hidden {
+  position: absolute !important;
+  height: 1px; 
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
 }
 
-.openlaw-form {
-  font-family: $sans;
+/* FORM */
 
-  .contract-section {
-    padding-bottom: 1rem;
+.#{$NAMESPACE}-form {
+  font-family: $system-sans;
+}
 
-    > span:first-of-type {
-      display: block;
-      font-size: 1.375rem;
-      font-weight: 400;
-      margin-bottom: 1rem;
-      word-break: break-word;
+/* COLLECTION */
+
+.#{$NAMESPACE}-collection__description {
+  font-weight: 600;
+  margin-bottom: .75rem;
+}
+
+.#{$NAMESPACE}-collection__row {
+  display: flex;
+}
+
+.#{$NAMESPACE}-collection__button-remove {
+  @extend %button-reset;
+
+  display: flex;
+  height: $text-input-height;
+  justify-content: center;
+  margin-left: .5rem;
+  transition: color .25s ease, box-shadow .25s ease, border-radius .25s ease;
+  width: $text-input-height;
+
+  svg {
+    height: 1.1rem;
+    width: 1.1rem;
+  }
+
+  span {
+    @extend %visually-hidden;
+  }
+
+  &:hover,
+  &:focus {
+    border-radius: .5rem;
+    box-shadow: 0 0 0 2px currentColor inset;
+    color: $red-error;
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:disabled {
+    border-radius: .5rem;
+  }
+}
+
+/* STRUCTURE */
+
+.#{$NAMESPACE}-structure {
+  width: 100%;
+}
+
+.#{$NAMESPACE}-collection__row .#{$NAMESPACE}-structure {
+  margin-bottom: 1.5rem;
+}
+
+/* FIELDS */
+
+.#{$NAMESPACE}-field {
+  color: $dark-grey;
+  margin: 0 0 1.2rem;
+  position: relative;
+  width: 100%;
+}
+
+// clean labels
+// hide all label text, except yesno and choice
+.#{$NAMESPACE}-field:not(.#{$NAMESPACE}-field-choice):not(.#{$NAMESPACE}-field-yesno) .#{$NAMESPACE}-field__label-text {
+  @extend %visually-hidden;
+}
+
+.#{$NAMESPACE}-field__label-text {    
+  display: inline-block;
+  font-weight: bold;
+  margin-bottom: .75rem;
+}
+
+.#{$NAMESPACE}-field__input,
+.#{$NAMESPACE}-field__input,
+.#{$NAMESPACE}-field__input,
+.#{$NAMESPACE}-field__select {
+  @extend %text-input;
+
+  border: 0;
+  box-shadow: 0 -0.109rem 0 0 $grey inset;
+  height: $text-input-height;
+  transition: box-shadow .25s ease;
+
+  &:focus {
+    box-shadow: 0 -0.1875rem 0 0 $blue--aqua inset;
+  }
+}
+
+.#{$NAMESPACE}-field__radio {
+  margin: 0 1.125rem;
+}
+
+.#{$NAMESPACE}-field__select {
+  background-color: $white;
+}
+
+.#{$NAMESPACE}-field__select {
+  background-color: $white;
+  color: $dark-grey;
+}
+
+.#{$NAMESPACE}-field__textarea {
+  @extend %text-input;
+
+  border: none;
+  border-radius: .375rem;
+  box-shadow: 0 0 0 0.109rem $grey inset;
+  height: 9rem;
+  transition: box-shadow .25s ease;
+
+  &:focus {
+    box-shadow: 0 0 0 0.1875rem $blue--aqua inset;
+  }
+}
+
+.#{$NAMESPACE}-field__input[type="file"] {
+  height: .1px;
+  opacity: 0;
+  overflow: hidden;
+  position: absolute;
+  width: .1px;
+  z-index: -1;
+}
+
+.#{$NAMESPACE}-collection button:disabled,
+.#{$NAMESPACE}-field__input:disabled,
+.#{$NAMESPACE}-field__select:disabled,
+.#{$NAMESPACE}-field__textarea:disabled {
+  @extend %input-disabled;
+}
+
+.#{$NAMESPACE}-field__radio:disabled {
+  ~ span {
+    color: $grey;
+    
+    &:hover { 
+      cursor: not-allowed;
     }
   }
 
-  .contract-variable {
+  &:hover {
+    cursor: not-allowed;
+  }
+}
+
+.#{$NAMESPACE}-field-image__editor {
+  align-items: center;
+  border-radius: .375rem;
+  border: 1px solid #d8d8d8;
+  display: flex;
+  flex-direction: column;
+  margin: .375rem 0;
+  padding: 1.2rem;
+}
+
+.#{$NAMESPACE}-field-image__editor-actions {
+  @extend %flex-row-split;
+  align-items: center;
+  flex-direction: row-reverse;
+  margin-top: .375rem;
+  width: 10rem;
+}
+
+.#{$NAMESPACE}-field-image__editor-actions--stacked {
+  flex-direction: column;
+
+  > .#{$NAMESPACE}-button ~ div {
+    @extend %flex-row-split;
+  }
+
+  .#{$NAMESPACE}-button-secondary {
+    display: inline-block;
+    margin-top: .625rem;
+
+    &:first-child {
+      margin-right: 3rem;
+    }
+  }
+}
+
+.#{$NAMESPACE}-field-date,
+.#{$NAMESPACE}-field-datetime {
+  // https://flatpickr.js.org/mobile-support/
+  input[type="date"],
+  input[type="datetime-local"] {
     display: flex;
-    flex-direction: column;
-    margin: 0 0 1.2rem;
-    position: relative;
-    width: 100%;
-
-    label > span {
-      display: none;
-    }
-
-    [type="email"],
-    [type="number"],
-    [type="text"],
-    select {
-      @extend %text-input;
-
-      // Must procede border-bottom line
-      border: 0;
-      border-bottom: 1px solid $grey;
-
-      height: 2.25rem;
-
-      &:focus {
-        border-bottom-color: $light-blue;
-        background: $blue;
-      }
-
-      &::placeholder {
-        color: $mid-grey;
-      }
-
-      .ios-label {
-        color: $mid-grey;
-        font-size: 1rem;
-        position: absolute;
-        top: .3125rem;
-        left: .5625rem;
-      }
-    }
-
-    textarea {
-      @extend %text-input;
-
-      border: 1px solid $grey;
-      height: 9rem;
-    }
-
-    &.file {
-      label span,
-      button {
-        border-radius: 6px;
-        border: 1px solid $purple-grey;
-        display: block;
-        color: #333;
-        cursor: pointer;
-        display: inline-block;
-        font-size: 1rem;
-        padding: .1875rem 1.5rem;
-        text-align: center;
-      }
-
-      label span {
-        &:focus,
-        &:hover {
-          background-color: $off-white;
-        }
-      }
-    }
-
-    [type="date"]:focus ~ .ios-label,
-    [type="date"]:active ~ .ios-label {
-      display: none;
-    }
-
-    button.image {
-      border: none;
-      font-family: inherit;
-
-      &:disabled {
-        opacity: .5;
-        cursor: not-allowed;
-      }
-    }
-
-    > .button {
-      width: fit-content;
-    }
-
-    &.choice label {
-      font-weight: 300;
-
-      > span {
-        display: block;
-        margin-bottom: .5rem;
-      }
-    }
-
-    &.contract-question {
-      label {
-        font-weight: 300;
-        margin: 0 0 .6rem;
-
-        > span {
-          display: inline;
-        }
-      }
-    }
-
-    &.external-signature small {
-      margin: 6px 10px 0;
-      display: inline-block;
-      color: #7e7e7e;
-    }
-
-    input:disabled,
-    select:disabled,
-    textarea:disabled,
-    label span.ole-image__span--disabled {
-      background: #e8e8e8;
-      color: #6d6d6d;
-
-      &:hover {
-        background: #e8e8e8;
-        cursor: not-allowed;
-      }
-    }
-  }
-
-  [type="file"] {
-    &.image {
-      height: .1px;
-      opacity: 0;
-      overflow: hidden;
-      position: absolute;
-      width: .1px;
-      z-index: -1;
-    }
-  }
-
-  [type="radio"]  {
-    margin: 0 1.125rem;
-  }
-
-  .Collapsible__trigger {
-    color: $dark-grey;
-    cursor: pointer;
-    display: block;
-    font-family: $sans;
-    font-size: 1.375rem;
-    margin: 1.5rem 0 1rem;
-    word-break: break-word;
-  }
-
-  .collection-variable-description {
-    font-weight: bold;
-    margin-bottom: .9rem;
-  }
-
-  .collection-variable-remove {
-    color: $red;
-    cursor: pointer;
-    margin-left: .3rem;
-    padding: 0 .6rem;
-
-     svg {
-       height: 1.1rem;
-       width: 1.1rem;
-     }
-  }
-
-  .collection-variable-row {
-    display: flex;
-  }
-
-  .contract-description-draft {
-    background-color: paleturquoise !important;
-  }
-
-  .button {
-    -moz-appearance: none;
-    -webkit-appearance: none;
-    align-items: center;
-    background-color: $white-smoke;
-    border-radius: .1875rem;
-    border: 0;
-    box-sizing: border-box;
-    color: $button-text;
-    cursor: pointer;
-    display: inline-flex;
     font-size: 1rem;
-    height: 2.25rem;
-    justify-content: flex-start;
-    line-height: 1.5;
-    padding: .375rem .75rem;
-    position: relative;
-    text-align: center;
-    user-select: none;
-    vertical-align: top;
-    white-space: nowrap;
+    margin-bottom: 1.2rem;
+    width: 100%;
+  }
+
+  .#{$NAMESPACE}-field__label--ios {
+    display: block;
+    font-size: 1rem;
+    font-weight: bold;
+    margin: .375rem 0;
+    padding: 0;
+  }
+}
+
+.#{$NAMESPACE}-field-externalsignature .#{$NAMESPACE}-field__input ~ small {
+  display: inline-block;
+  font-size: .6875rem;
+  font-weight: bold;
+  margin-top: .375rem;
+  padding: 0 .625rem;
+}
+
+/* BUTTONS */
+
+.#{$NAMESPACE}-button {
+  @extend %button-reset;
+
+  align-items: center;
+  background-color: $very-light-grey;
+  border-radius: .375rem;
+  color: $dark-grey;
+  display: inline-flex;
+  font-size: 1rem;
+  font-weight: 500;
+  height: $text-input-height;
+  justify-content: flex-start;
+  line-height: 1.5;
+  padding: .375rem 0.625rem;
+  text-align: center;
+  vertical-align: top;
+  transition: background-color ease .25s, box-shadow ease .25s;
+
+  &:hover {
+    background-color: darken($very-light-grey, 7%);
+  }
+  
+  &:active {
+    background-color: lighten($very-light-grey, 7%);
+    box-shadow: none;
+  }
+
+  &:focus {
+    box-shadow: 0 0 0 2px darken($very-light-grey, 50%) inset;
+    outline: none;
+  }
+
+  &.#{$NAMESPACE}-button--disabled {
+    @extend %input-disabled;
+  }
+}
+
+
+.#{$NAMESPACE}-button-secondary {
+  @extend %button-reset;
+
+  color: $grey;
+  font-size: 1rem;
+  font-weight: bold;
+  transition: color ease .25s;
+
+  &:hover,
+  &:focus {
+    color: darken($grey, 25%);
+    outline: none;
+    text-decoration: underline;
+  }
+
+  &:active {
+    color: darken($grey, 100%);
+    outline: none;
+    text-decoration: none;
+  }
+}
+
+/* ERRORS */
+
+.#{$NAMESPACE}-field__input--error {
+  box-shadow: 0 -0.1875rem 0 0 $red-error inset;
+}
+
+.#{$NAMESPACE}-field__error-message span {
+  background-color: $red-error__bg;
+  border-radius: .375rem;
+  color: $red-error;
+  display: inline-block;
+  font-size: .875em;
+  font-weight: bold;
+  line-height: 1.5;
+  margin-top: .375rem;
+  padding: .1875em .625em;
+}
+
+/* OVERRIDES: REACT AUTOSUGGEST */
+
+.react-autosuggest__section-title {
+  font-weight: 500;
+  padding: .625rem;
+}
+
+.react-autosuggest__suggestion {
+  background-color: $white; 
+  font-weight: 600;
+  transition: background .1s ease;
+
+  &:hover,
+  &[aria-selected="true"] {
+    background-color: $blue--aqua;
+    color: $white;
+  }
+
+  &-default {
+    cursor: initial;
+    pointer-events: none;
+
+    &:hover,
+    &[aria-selected="true"] {
+      background-color: currentColor;
+      color: currentColor;
+    }
+  }
+}
+
+.react-autosuggest__suggestions-container--open {
+  background-color: $white;
+  box-shadow: 0 0 0 2px;
+  border-radius: 0 0 .375rem .375rem;
+  margin-top: -.0625rem;
+  position: absolute;
+  width: 100%;
+  z-index: 10;
+
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: .625rem;
+  }
+
+  li {
+    cursor: pointer;
+    margin: 0 -.625rem;
+    padding: .625rem;
+  }
+}
+
+/* OVERRIDES: FLATPICKR CAL */
+
+.flatpickr-calendar {
+  font-family: $system-sans;
+}
+
+.flatpickr-day {
+  &:hover {
+    background: $blue--aqua-lite;
+    border-color: transparent;
+  }
+  
+  &.selected,
+  &.nextMonthDay.selected {
+    background: $blue--aqua;
+    border-color: transparent;
 
     &:hover {
-      background-color: $very-light-grey;
+      background: $blue--aqua;
+      border-color: transparent;
+    }
+
+    &:focus {
+      background: darken($blue--aqua, 10%);
+      border-color: transparent;
     }
   }
 }

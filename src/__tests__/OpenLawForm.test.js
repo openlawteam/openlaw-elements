@@ -1,41 +1,85 @@
 import React, { useState } from 'react';
+import { act } from 'react-dom/test-utils';
 import {
   cleanup,
   fireEvent,
   render,
-  waitForDomChange,
+  wait,
 } from '@testing-library/react';
-import 'jest-dom/extend-expect';
-import { apiClient, Openlaw } from 'openlaw';
+import '@testing-library/jest-dom/extend-expect';
+import { APIClient, Openlaw } from 'openlaw';
 
 import { OpenLawForm } from '../OpenLawForm';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import SampleTemplate from '../../example/SAMPLE_TEMPLATE';
+import { getTemplateExecutionData } from '../__test_utils__/helpers';
 
 const { Fragment } = React;
 
 const isEveryInputDisabled = () => Array.from(
-  document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
+  document.querySelector('.openlaw-el-form').querySelectorAll('input, select, textarea')
 ).every(el => {
   return el.disabled;
 });
 
 const isEveryInputEnabled = () => Array.from(
-  document.querySelector('.openlaw-form').querySelectorAll('input, select, textarea')
+  document.querySelector('.openlaw-el-form').querySelectorAll('input, select, textarea')
 ).every(el => {
   return (!el.disabled || el.disabled === false);
 });
 
-let parameters;
-let compiledTemplate;
-let executionResult;
+const FakeApp = () => {
+  const { executedVariables, executionResult: initialExecutionResult } = getTemplateExecutionData(SampleTemplate, {}, true);
+
+  const [ result, setNewResult ] = useState({
+    executionResult: initialExecutionResult,
+    parameters: {},
+    variables: executedVariables,
+  });
+
+  const onChange = (key, value, validationResult) => {
+    if (validationResult && validationResult.isError) return;
+
+    const concatParameters = { ...result.parameters, [key]: value };
+    const { executedVariables, executionResult, errorMessage } = getTemplateExecutionData(SampleTemplate, concatParameters, true);
+
+    if (errorMessage) {
+      // eslint-disable-next-line no-undef
+      console.error('Openlaw Execution Error:', errorMessage);
+      return;
+    }
+
+    setNewResult({
+      executionResult,
+      parameters: concatParameters,
+      variables: executedVariables,
+    });
+  };
+
+  const { executionResult, parameters, variables } = result;
+
+  return (
+    <OpenLawForm
+      apiClient={new APIClient('')}
+      executionResult={executionResult}
+      parameters={parameters}
+      onChangeFunction={(key, value, validationResult) => (
+        act(() => onChange(key, value, validationResult))
+      )}
+      openLaw={Openlaw}
+      variables={variables}
+    />
+  );
+};
+
+const apiClient = new APIClient('');
 let executedVariables;
+let executionResult;
 let onChange;
+let parameters;
 
 beforeEach(() => {
   parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
+  ({ executedVariables, executionResult } = getTemplateExecutionData(SampleTemplate, {}, true));
   onChange = () => {};
 });
 
@@ -61,7 +105,7 @@ test('Can render (simple test)', () => {
   getByText(/miscellaneous/i);
 });
 
-test('Can render all types of inputs', () => {
+test('Can render all _types_ of inputs', () => {
   const { getByText } = render(
     <OpenLawForm
       apiClient={apiClient}
@@ -106,6 +150,15 @@ test('Can render with passed inputProps (separate types, e.g. "Address")', () =>
     Date: {
       disabled: true,
     },
+    DateTime: {
+      disabled: true,
+    },
+    EthAddress: {
+      disabled: true,
+    },
+    ExternalSignature: {
+      disabled: true,
+    },
     Identity: {
       disabled: true,
     },
@@ -118,13 +171,13 @@ test('Can render with passed inputProps (separate types, e.g. "Address")', () =>
     Number: {
       disabled: true,
     },
+    Period: {
+      disabled: true,
+    },
     Text: {
       disabled: true,
     },
     YesNo: {
-      disabled: true,
-    },
-    ExternalSignature: {
       disabled: true,
     },
   };
@@ -189,7 +242,7 @@ test('Can render with passed inputProps (merged: all + specific types)', () => {
   );
 
   const addressElement = document
-    .querySelector('.openlaw-form')
+    .querySelector('.openlaw-el-form')
     .querySelector('input[placeholder="Is this thing on?"]');
 
   expect(isEveryInputDisabled()).toBe(true);
@@ -202,12 +255,13 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
   * HTML input, select, textarea can be toggled to `disabled={false}`.
   */
 
+  const initialInputProps = {
+    '*': {
+      disabled: true,
+    },
+  };
+
   function FakeComponent() {
-    const initialInputProps = {
-      '*': {
-        disabled: true,
-      },
-    };
     const [inputProps, setInputProps] = useState(initialInputProps);
 
     return (
@@ -239,7 +293,7 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
   }
 
   // render with initial props
-  const { container, getByText } = render(<FakeComponent />);
+  const { getByText } = render(<FakeComponent />);
 
   // every element should be disabled
   expect(isEveryInputDisabled()).toBe(true);
@@ -248,8 +302,75 @@ test('Can toggle passed inputProps (all types, e.g. "*") and expect opposite sta
   // to trigger a props change
   fireEvent.click(getByText(/start/i));
 
-  await waitForDomChange({ container });
-
   // every element should be enabled
-  expect(isEveryInputEnabled()).toBe(true);
+  await wait(() => expect(isEveryInputEnabled()).toBe(true));
+});
+
+test('Can surface error through onValidate (Period)', () => {
+  /**
+  * In this test we want to make sure onValidate can be called
+  * with an error object when an input data validation
+  * error (or other input-level `Error`) occurs.
+  */
+
+  function FakeComponent() {
+    const [notification, setNotification] = useState('');
+    
+    const onValidate = ({ errorMessage }) => {
+      if (errorMessage) {
+        setNotification('Please correct the form errors.');
+      }
+    };
+
+    return (
+      <Fragment>
+        <div data-testid="notification">{notification}</div>
+
+        <OpenLawForm
+          apiClient={apiClient}
+          executionResult={executionResult}
+          onValidate={onValidate}
+          parameters={parameters}
+          onChangeFunction={onChange}
+          openLaw={Openlaw}
+          variables={executedVariables}
+        />
+      </Fragment>
+    );
+  }
+
+  // render with initial props
+  const { getByText, getByLabelText, getByTestId } = render(<FakeComponent />);
+
+  expect(getByTestId('notification').textContent).toBe('');
+
+  fireEvent.change(getByLabelText(/what is the longest bbq you ever conducted/i), { target: { value: '1 wee' } });
+  fireEvent.blur(getByLabelText(/what is the longest bbq you ever conducted/i));
+
+  // general form error should be shown
+  getByText(/please correct the form errors\./i);
+  // specific, internal form error should be shown
+  getByText(/period of time: something looks incorrect\./i);
+});
+
+test('Can render & toggle conditional field', () => {
+  const { getByPlaceholderText } = render(
+    <FakeApp />
+  );
+
+  expect(() => getByPlaceholderText(/please explain your bbq sauce medical history/i)).toThrow();
+
+  const yes = document.querySelector('.Contestant-BBQ-Medical[value="true"]');
+  const no = document.querySelector('.Contestant-BBQ-Medical[value="false"]');
+
+  // show conditional field
+  fireEvent.click(yes);
+
+  getByPlaceholderText(/please explain your bbq sauce medical history/i);
+
+  // hide conditional field
+  fireEvent.click(no);
+  
+  // field should not show
+  expect(() => getByPlaceholderText(/please explain your bbq sauce medical history/i)).toThrow();
 });

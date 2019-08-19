@@ -4,23 +4,22 @@ import {
   fireEvent,
   render,
 } from '@testing-library/react';
-import 'jest-dom/extend-expect';
+import '@testing-library/jest-dom/extend-expect';
 import { Openlaw } from 'openlaw';
 
 import { NumberInput } from '../NumberInput';
-import SampleTemplateText from '../../example/SAMPLE_TEMPLATE';
+import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
 
-let parameters;
-let compiledTemplate;
-let executionResult;
-let executedVariables;
+const template = '[[Contestant BBQ Experience Years: Number "How many years of BBQ experience do you have?"]]';
+const getValidity = testGetValidity(
+  getTemplateExecutionData(template),
+);
 
-beforeEach(() => {
-  parameters = {};
-  compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
-  executionResult = Openlaw.execute(compiledTemplate, {}, parameters).executionResult;
-  executedVariables = Openlaw.getExecutedVariables(executionResult, {});
-});
+const numberPlaceholderTextRegex = /contestant bbq experience years/i;
+const numberTemplatePlaceholderTextRegex = /how many years of bbq experience do you have\?/i;
+const numberErrorTextRegex = `${TYPE_TO_READABLE.Number}: ${FIELD_DEFAULT_ERROR_MESSAGE}`;
 
 afterEach(cleanup);
 
@@ -29,7 +28,7 @@ test('Can render Number', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => Openlaw.checkValidity(executedVariables[name], value, executionResult)}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -38,7 +37,7 @@ test('Can render Number', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
 });
 
 test('Can render with savedValue', () => {
@@ -46,13 +45,7 @@ test('Can render with savedValue', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -61,7 +54,7 @@ test('Can render with savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1200000000/i);
 });
 
@@ -70,13 +63,7 @@ test('Can render with savedValue and type another value', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -85,7 +72,7 @@ test('Can render with savedValue and type another value', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1200000000/i);
 
   fireEvent.change(getByDisplayValue(/1200000000/i), { target: { value: '12' } });
@@ -98,13 +85,7 @@ test('Can render without bad savedValue', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -113,7 +94,7 @@ test('Can render without bad savedValue', () => {
     />
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   expect(() => getByDisplayValue(/-1f/i)).toThrow();
 });
 
@@ -122,13 +103,7 @@ test('Can insert "1e19"', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -137,9 +112,9 @@ test('Can insert "1e19"', () => {
     />
   );
 
-  fireEvent.change(getByPlaceholderText(/contestant bbq experience years/i), { target: { value: '1e19' } });
+  fireEvent.change(getByPlaceholderText(numberPlaceholderTextRegex), { target: { value: '1e19' } });
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1e19/i);
 });
 
@@ -148,13 +123,7 @@ test('Can insert "1,000,000,000,000,000,000"', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -165,12 +134,12 @@ test('Can insert "1,000,000,000,000,000,000"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '1000000000000000000' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1000000000000000000/i);
 });
 
@@ -179,13 +148,7 @@ test('Can insert "-1,000,000,000,000,000,000"', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -196,12 +159,12 @@ test('Can insert "-1,000,000,000,000,000,000"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '-1000000000000000000' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/-1000000000000000000/i);
 });
 
@@ -210,13 +173,7 @@ test('Can insert "-0.000000009"', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -227,12 +184,12 @@ test('Can insert "-0.000000009"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '-0.000000009' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/-0\.000000009/i);
 });
 
@@ -241,13 +198,7 @@ test('Can insert "0.000000009"', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -258,12 +209,12 @@ test('Can insert "0.000000009"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '0.000000009' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/0\.000000009/i);
 });
 
@@ -272,13 +223,7 @@ test('Can insert "1.09"', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -289,12 +234,12 @@ test('Can insert "1.09"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '1.09' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   getByDisplayValue(/1\.09/i);
 });
 
@@ -303,13 +248,7 @@ test('Cannot insert "1sdfsdf.09"', () => {
     <NumberInput
       cleanName="Contestant-BBQ-Experience-Years"
       description="Contestant BBQ Experience Years"
-      getValidity={(name, value) => {
-        const v = executedVariables.filter(v =>
-          Openlaw.getName(v) === name
-        );
-
-        return Openlaw.checkValidity(v[0], value, executionResult);
-      }}
+      getValidity={getValidity}
       name="Contestant BBQ Experience Years"
       onChange={() => {}}
       onKeyUp={() => {}}
@@ -320,11 +259,145 @@ test('Cannot insert "1sdfsdf.09"', () => {
 
   fireEvent.change(
     getByPlaceholderText(
-      /contestant bbq experience years/i
+      numberPlaceholderTextRegex
     ),
     { target: { value: '1sdfsdf.09' } },
   );
 
-  getByPlaceholderText(/contestant bbq experience years/i);
+  getByPlaceholderText(numberPlaceholderTextRegex);
   expect(() => getByDisplayValue(/1sdfsdf\.09/i)).toThrow();
+});
+
+test('Can call onChangeFunction', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(numberTemplatePlaceholderTextRegex),
+    { target: { value: '1.09' } },
+  );
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(numberPlaceholderTextRegex);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/1\.09/i);
+});
+
+test('Can call inputProps: onChange, onBlur', () => {
+  const changeSpy = jest.fn();
+  const blurSpy = jest.fn();
+
+  const { getByDisplayValue, getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      inputProps={{
+        'Number': {
+          onChange: changeSpy,
+          onBlur: blurSpy,
+        },
+      }}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(numberTemplatePlaceholderTextRegex),
+    { target: { value: '1.09' } },
+  );
+  fireEvent.blur(getByDisplayValue(/1\.09/i));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(blurSpy.mock.calls.length).toBe(1);
+});
+
+/**
+ * onBlur
+ */
+
+test('Can show field-level, user-provided error onValidate (blur)', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onValidate={({ eventType }) => {
+        if (eventType === 'blur') {
+          return {
+            errorMessage: 'This is a custom Number error',
+          };
+        }
+      }}
+    />
+  );
+
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  // error message field
+  getByText(/this is a custom number error/i);
+});
+
+test('Should not show error onBlur with no content', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <TestOpenLawFormComponent />
+  );
+
+  fireEvent.focus(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  // error message field should not show
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
+});
+
+test('Should not show error onBlur with valid value', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <TestOpenLawFormComponent />
+  );
+
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
+  fireEvent.blur(getByPlaceholderText(numberTemplatePlaceholderTextRegex));
+
+  // error message field should not show
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
+});
+
+/**
+ * onChange
+ */
+
+test('Can show field-level, user-provided error onValidate (change)', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onValidate={({ eventType }) => {
+        if (eventType === 'change') {
+          return {
+            errorMessage: 'This is a custom number error',
+          };
+        }
+      }}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
+
+  // error message field
+  getByText(/this is a custom number error/i);
+});
+
+test('Should not show error onChange with valid value', () => {
+  const { getByText, getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onValidate={({ eventType }) => {
+        if (eventType === 'change') {
+          return {
+            errorMessage: 'This is a custom number error',
+          };
+        }
+      }}
+    />
+  );
+
+  fireEvent.change(getByPlaceholderText(numberTemplatePlaceholderTextRegex), { target: { value: '123' } });
+
+  // error message field should not show
+  expect(() => getByText(numberErrorTextRegex)).toThrow();
 });

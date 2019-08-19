@@ -4,75 +4,129 @@ import * as React from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 
-import type { InputPropsValueType } from './types';
+import { FieldError } from './FieldError';
+import { onChangeValidation, onBlurValidation } from './validation';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
+import type {
+  FieldEnumType,
+  FieldPropsValueType,
+  OnChangeFuncType,
+  ValidityFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
   description: string,
-  enableTime: boolean,
-  inputProps: ?InputPropsValueType,
+  getValidity: ValidityFuncType,
+  inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   savedValue: string,
-  textLikeInputClass: string,
+  variableType: FieldEnumType,
 };
 
 type State = {
   enableTime: boolean,
+  errorMessage: string,
+  shouldShowError: boolean,
 };
 
 export class DatePicker extends React.PureComponent<Props, State> {
-  id: string;
+  flatpickrInstance: any; 
   flatpickrRef: {current: null | HTMLInputElement} = React.createRef(); 
 
   state = {
-    enableTime: this.props.enableTime,
+    enableTime: this.props.variableType === 'DateTime',
+    errorMessage: '',
+    shouldShowError: false,
   };
 
   constructor(props: Props) {
     super(props);
 
-    const { cleanName } = this.props;
-    const timestamp = new Date().getTime().toString();
-    this.id = `date_${cleanName}_${timestamp}`;
-
     const self: any = this;
-    self.onFlatpickrClose = this.onFlatpickrClose.bind(this);
     self.getFlatpickrOptions = this.getFlatpickrOptions.bind(this);
+    self.onFlatpickrChange = this.onFlatpickrChange.bind(this);
+    self.onFlatpickrClose = this.onFlatpickrClose.bind(this);
   }
 
   componentDidMount() {
     // start new Flatpickr instance
-    flatpickr(this.flatpickrRef.current, this.getFlatpickrOptions());
+    this.flatpickrInstance = flatpickr(this.flatpickrRef.current, this.getFlatpickrOptions());
   }
 
-  componentDidUpdate() {
-    // Pick up new props by re-instantiating Flatpickr after ref has updated.
-    // The visible flatpickr `input` (via React <input />) will not
-    // update its props after instantiation. Using `react-flatpickr doesn't really help, either.
-    setTimeout(() => flatpickr([this.flatpickrRef.current], this.getFlatpickrOptions()), 0);
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps !== this.props) {
+      // Pick up new props by re-instantiating Flatpickr after ref's DOM node has updated.
+      // The visible flatpickr `input` (via React <input /> below) will not
+      // update its props after instantiation. Using `react-flatpickr doesn't really help, either.
+      setTimeout(() => {
+        // destroy old flatpickr instance
+        this.flatpickrInstance.destroy();
+        // start a new flatpickr instance
+        flatpickr([this.flatpickrRef.current], this.getFlatpickrOptions());
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    // destroy flatpickr instance
+    this.flatpickrInstance.destroy();
   }
 
   getFlatpickrOptions() {
-    const { cleanName, textLikeInputClass, savedValue } = this.props;
+    const { savedValue, variableType } = this.props;
+    const { enableTime } = this.state;
+    // this is so change and blur are fired in the correct order for validation
+    // for different flatpickr input types
+    const changeFunction = (variableType === 'DateTime')
+      ? { onChange: this.onFlatpickrChange }
+      : { onValueUpdate: this.onFlatpickrChange };
 
     return {
-      // display in a friendly format (e.g. January, 1, 1971)
-      altInput: true,
-      altInputClass: `${textLikeInputClass || ''} ${cleanName}`,
-      dateFormat: 'Z',
+      dateFormat: enableTime ? 'F j, Y h:i K' : 'F j, Y',
       defaultDate: savedValue ? new Date(parseInt(savedValue)) : '',
       // allow time selection 00:00, AM/PM
-      enableTime: this.state.enableTime,
+      enableTime,
       onClose: this.onFlatpickrClose,
+
+      ...changeFunction,
     };
   }
   
-  onFlatpickrClose(selectedDates: Array<Date>) {
-    const { name } = this.props;
-    const epochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : undefined);
+  // We don't use this for OpenLawForm onChangeFunction
+  // This is only for the user's onValidate callback.
+  onFlatpickrChange(selectedDates: Array<Date>) {
+    const { errorData: { errorMessage }, shouldShowError } = onChangeValidation(
+      selectedDates.length ? selectedDates[0].getTime().toString() : '',
+      this.props,
+      this.state,
+    );
 
-    this.props.onChange(name, epochUTCString);
+    this.setState({
+      errorMessage,
+      shouldShowError,
+    });
+  }
+
+  // essentially onBlur
+  onFlatpickrClose(selectedDates: Array<Date>) {
+    const { name, onChange } = this.props;
+    const epochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : undefined);
+    const onValidateEpochUTCString = (selectedDates.length ? selectedDates[0].getTime().toString() : '');
+    const { errorData, shouldShowError } = onBlurValidation(
+      onValidateEpochUTCString,
+      this.props,
+      this.state,
+    );
+
+    this.setState({
+      errorMessage: errorData.errorMessage,
+      shouldShowError,
+    }, () => {
+      onChange(name, epochUTCString, errorData);
+    });
   }
 
   shouldShowIOSLabel() {
@@ -81,12 +135,21 @@ export class DatePicker extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { description, inputProps } = this.props;
+    const { cleanName, description, inputProps, variableType } = this.props;
+    const { errorMessage, shouldShowError } = this.state;
+    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
     return (
-      <div className="contract-variable">
-        <label>
-          <span>{description}</span>
+      <div className={singleSpaceString(
+        `${css.field} ${css.fieldTypeToLower(variableType)}
+      `)}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
+          
+          {this.shouldShowIOSLabel() && (
+            // https://flatpickr.js.org/mobile-support/
+            <span className={css.fieldLabelIos}>{description}</span>
+          )}
 
           {/* flatpickr-enabled input */}
           {/* options are handled in this.getFlatpickrOptions */}
@@ -95,14 +158,18 @@ export class DatePicker extends React.PureComponent<Props, State> {
             
             {...inputProps}
 
-            id={this.id}
+            className={singleSpaceString(
+              `${css.fieldInput} ${cleanName} ${inputPropsClassName}`,
+            )}
             ref={this.flatpickrRef}
           />
-        </label>
 
-        {this.shouldShowIOSLabel() &&
-          <span className="ios-label">{description}</span>
-        }
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
+          />
+        </label>
       </div>
     );
   }

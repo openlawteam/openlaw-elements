@@ -2,37 +2,50 @@
 
 import * as React from 'react';
 
-import type { InputPropsValueType, ValidityFuncType, ValidateOnKeyUpFuncType } from './types';
+import { FieldError } from './FieldError';
+import { onBlurValidation, onChangeValidation } from './validation';
+import { CSS_CLASS_NAMES as css, PERIOD, TEXT } from './constants';
+import { singleSpaceString } from './utils';
+import type {
+  FieldEnumType,
+  FieldPropsValueType,
+  ValidateOnKeyUpFuncType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+  ValidityFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
   description: string,
   getValidity: ValidityFuncType,
-  inputProps: ?InputPropsValueType,
+  inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
   onKeyUp?: ValidateOnKeyUpFuncType,
+  onValidate: ?OnValidateFuncType,
   savedValue: string,
-  textLikeInputClass: string,
+  variableType: FieldEnumType,
 };
 
 type State = {
   currentValue: string,
-  validationError: boolean,
+  errorMessage: string,
+  shouldShowError: boolean,
 };
 
 export class Text extends React.PureComponent<Props, State> {
-  isDataValid = true;
-
   state = {
     currentValue: this.props.savedValue || '',
-    validationError: false,
+    errorMessage: '',
+    shouldShowError: false,
   };
 
   constructor(props: Props) {
     super(props);
 
     const self: any = this;
+    self.onBlur = this.onBlur.bind(this);
     self.onChange = this.onChange.bind(this);
     self.onKeyUp = this.onKeyUp.bind(this);
   }
@@ -49,61 +62,75 @@ export class Text extends React.PureComponent<Props, State> {
     }
   }
 
-  onChange(event: SyntheticEvent<HTMLInputElement>) {
-    const eventValue = event.currentTarget.value;
-    const { getValidity, name } = this.props;
+  onBlur(event: SyntheticFocusEvent<HTMLInputElement>) {
+    const { inputProps } = this.props;
+    const { currentValue } = this.state;
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(currentValue, this.props, this.state); 
 
-    if (!eventValue) {
-      if (this.state.currentValue) {
-        this.setState({
-          currentValue: '',
-          validationError: false,
-        }, () => {
-          this.isDataValid = true;
-
-          this.props.onChange(name);
-        });
-      }
-
-      // exit
-      return;
-    }
-
-    const { isError } = getValidity(name, eventValue);
+    // persist event outside of this handler to a parent component
+    event.persist();
 
     this.setState({
-      currentValue: eventValue,
-      validationError: isError,
+      errorMessage,
+      shouldShowError,
     }, () => {
-      if (isError) {
-        this.isDataValid = false;
+      if (event && inputProps && inputProps.onBlur) {
+        inputProps.onBlur(event);
       }
-      
-      if (!isError) {
-        this.isDataValid = true;
+    });
+  }
 
-        this.props.onChange(name, eventValue);
+  onChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const { inputProps, name, onChange, variableType } = this.props;
+    const eventValue = event.currentTarget.value;
+    const possiblyFormattedValue = variableType === PERIOD ? eventValue.toLowerCase() : eventValue;
+    const { errorData, shouldShowError } = onChangeValidation(possiblyFormattedValue, this.props, this.state);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    this.setState({
+      currentValue: possiblyFormattedValue,
+      errorMessage: errorData.errorMessage,
+      shouldShowError,
+    }, () => {
+      const shouldValueBeUndefined = variableType !== TEXT && (errorData.isError || eventValue === '');
+
+      onChange(
+        name,
+        (shouldValueBeUndefined ? undefined : this.state.currentValue),
+        errorData,
+      );
+
+      if (event && inputProps && inputProps.onChange) {
+        inputProps.onChange(event);
       }
     });
   }
 
   onKeyUp(event: SyntheticKeyboardEvent<HTMLInputElement>) {
-    if (this.props.onKeyUp) this.props.onKeyUp(event, this.isDataValid);
+    const { inputProps, onKeyUp } = this.props;
 
-    if (this.props.inputProps && this.props.inputProps.onKeyUp) {
-      this.props.inputProps.onKeyUp(event);
+    if (onKeyUp) onKeyUp(event);
+
+    // persist event outside of this handler to a parent component
+    event.persist();
+
+    if (inputProps && inputProps.onKeyUp) {
+      inputProps.onKeyUp(event);
     }
   }
 
   render() {
-    const { cleanName, description, inputProps } = this.props;
-    const additionalClassName = this.state.validationError ? ' is-error' : '';
-    const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
+    const { cleanName, description, inputProps, variableType } = this.props;
+    const { currentValue, errorMessage, shouldShowError } = this.state;
+    const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
+    const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
 
     return (
-      <div className="contract-variable">
-        <label>
-          <span>{description}</span>
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        <label className={`${css.fieldLabel}`}>
+          <span className={`${css.fieldLabelText}`}>{description}</span>
 
           <input
             placeholder={description}
@@ -111,11 +138,20 @@ export class Text extends React.PureComponent<Props, State> {
 
             {...inputProps}
 
-            className={`${this.props.textLikeInputClass}${cleanName}${additionalClassName}${inputPropsClassName}`}
+            className={singleSpaceString(
+              `${css.fieldInput} ${cleanName} ${inputPropsClassName} ${errorClassName}`
+            )}
+            onBlur={this.onBlur}
             onChange={this.onChange}
             onKeyUp={this.onKeyUp}
             type="text"
-            value={this.state.currentValue}
+            value={currentValue}
+          />
+
+          <FieldError
+            cleanName={cleanName}
+            errorMessage={errorMessage}
+            shouldShowError={shouldShowError}
           />
         </label>
       </div>

@@ -3,25 +3,38 @@
 import * as React from 'react';
 
 import ImageCrop from './ImageCrop';
-import type { InputPropsValueType, ValidityFuncType } from './types';
+import { FieldError } from './FieldError';
+import { onBlurValidation, onChangeValidation } from './validation';
+import { CSS_CLASS_NAMES as css } from './constants';
+import { singleSpaceString } from './utils';
+import type {
+  FieldEnumType,
+  FieldPropsValueType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+  ValidityFuncType,
+} from './flowTypes';
 
 type Props = {
   cleanName: string,
   description: string,
   getValidity: ValidityFuncType,
-  inputProps: ?InputPropsValueType,
+  inputProps: ?FieldPropsValueType,
   name: string,
-  onChange: (string, ?string) => mixed,
+  onChange: OnChangeFuncType,
+  onValidate: ?OnValidateFuncType,
   savedValue: string,
+  variableType: FieldEnumType,
 };
 
 type State = {
   currentValue: string,
   croppedValue: string,
   disableEditRemoteImage: boolean,
+  errorMessage: string,
+  shouldShowError: boolean,
   showCropper: boolean,
   showModal: boolean,
-  validationError: boolean
 };
 
 type DrawImageType = {
@@ -38,30 +51,35 @@ type DimensionsType = {
 };
 
 const { Fragment } = React;
+// 600: good for document width and preview rendering
 const IMG_MAX_WIDTH = 600;
 
 export class ImageInput extends React.PureComponent<Props, State> {
+  currentFile: File | void;
   fileRef: {current: null | HTMLInputElement} = React.createRef();
+  labelRef: {current: null | HTMLLabelElement} = React.createRef();
 
   state = {
     currentValue: this.props.savedValue,
     croppedValue: '',
     disableEditRemoteImage: false,
+    errorMessage: '',
+    shouldShowError: false,
     showCropper: false,
     showModal: false,
-    validationError: false
   };
 
   constructor(props: Props) {
     super(props);
 
     const self: any = this;
+    self.handleFileDialogOpenClick = this.handleFileDialogOpenClick.bind(this);
     self.handleFileChange = this.handleFileChange.bind(this);
-    self.handleImageCancel = this.handleImageCancel.bind(this);
+    self.handleImageCancelCreate = this.handleImageCancelCreate.bind(this);
+    self.handleImageCancelEdit = this.handleImageCancelEdit.bind(this);
     self.handleImageCrop = this.handleImageCrop.bind(this);
     self.handleImageDelete = this.handleImageDelete.bind(this);
-    self.handleShowCropper = this.handleShowCropper.bind(this);
-    self.handleToggleModal = this.handleToggleModal.bind(this);
+    self.handleToggleEditor = this.handleToggleEditor.bind(this);
     self.updateImage = this.updateImage.bind(this);
   }
 
@@ -74,10 +92,7 @@ export class ImageInput extends React.PureComponent<Props, State> {
   }
 
   componentDidUpdate({ savedValue: prevSavedValue }: {savedValue: string}) {
-    if (
-      !this.state.validationError &&
-      (this.props.savedValue !== prevSavedValue)
-    ) {
+    if (this.props.savedValue !== prevSavedValue) {
       this.setState({
         currentValue: this.props.savedValue,
       });
@@ -110,7 +125,6 @@ export class ImageInput extends React.PureComponent<Props, State> {
 
     // draw source image into the off-screen canvas:
     context.drawImage(image, 0, 0, width, height);
-
     // encode image to data-uri with base64 version of compressed image
     return canvas.toDataURL();
   }
@@ -151,26 +165,44 @@ export class ImageInput extends React.PureComponent<Props, State> {
     };
   }
 
-  getModalDisplayStyle() {
-    return {
-      display: this.state.showModal ? 'block' : 'none',
-    };
+  handleFileDialogOpenClick() {
+    this.labelRef.current && this.labelRef.current.click();
   }
 
-  handleFileChange(event: SyntheticEvent<HTMLInputElement>) {
+  handleFileChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    const { inputProps } = this.props;
     const file = event.currentTarget.files[0];
     const reader = new window.FileReader();
+
+    // persist event outside of this handler to a parent component
+    event.persist();
 
     reader.onload = () => {
       const url = (typeof reader.result === 'string') ? reader.result : reader.result.toString();
 
+      const { errorData: { errorMessage }, shouldShowError } = onChangeValidation(
+        { file, value: url },
+        this.props,
+        this.state,
+      );
+
       this.setState({
         currentValue: url,
+        errorMessage,
+        shouldShowError,
         showModal: true,
+      }, () => {
+        if (event && inputProps && inputProps.onChange) {
+          inputProps.onChange(event);
+        }
       });
     };
 
-    if (file) reader.readAsDataURL(file);
+    if (file) {
+      reader.readAsDataURL(file);
+
+      this.currentFile = file;
+    }
 
     if (!file) {
       this.setState({
@@ -179,13 +211,50 @@ export class ImageInput extends React.PureComponent<Props, State> {
     }
   }
 
-  handleImageCancel(event: SyntheticEvent<HTMLAnchorElement>) {
+  handleImageCancelCreate(event: SyntheticEvent<HTMLAnchorElement>) {
     event.preventDefault();
 
     const fileInputRef = this.fileRef.current;
     if (fileInputRef) fileInputRef.value = '';
 
-    this.handleToggleModal();
+    this.currentFile = undefined;
+
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(
+      { file: this.currentFile, value: '' },
+      this.props,
+      this.state,
+    );
+
+    this.setState({
+      croppedValue: '',
+      currentValue: '',
+      errorMessage,
+      shouldShowError
+    }, () => {
+      this.handleToggleEditor();
+    });
+  }
+
+  handleImageCancelEdit(event: SyntheticEvent<HTMLAnchorElement>) {
+    event.preventDefault();
+
+    const fileInputRef = this.fileRef.current;
+    if (fileInputRef) fileInputRef.value = '';
+
+    const { errorData: { errorMessage }, shouldShowError } = onBlurValidation(
+      '',
+      this.props,
+      this.state,
+    );
+
+    if (shouldShowError && errorMessage) {
+      this.setState({
+        errorMessage,
+        shouldShowError,
+      });
+    }
+
+    this.handleToggleEditor();
   }
 
   handleImageCrop(croppedValue: string) {
@@ -201,15 +270,13 @@ export class ImageInput extends React.PureComponent<Props, State> {
       const fileInputRef = this.fileRef.current;
       if (fileInputRef) fileInputRef.value = '';
 
+      this.currentFile = undefined;
+
       this.updateImage();
     });
   }
 
-  handleShowCropper() {
-    this.setState({ showCropper: true });
-  }
-
-  handleToggleModal() {
+  handleToggleEditor() {
     this.setState({ showModal: !(this.state.showModal) });
   }
 
@@ -222,9 +289,8 @@ export class ImageInput extends React.PureComponent<Props, State> {
 
       const image = new Image();
 
-      image.addEventListener('load', () => {
+      image.onload = () => {
         const { height: imageHeight, width: imageWidth } = image;
-
         const { height, width } = this.getDimensions({
           height: imageHeight,
           width: imageWidth,
@@ -238,17 +304,16 @@ export class ImageInput extends React.PureComponent<Props, State> {
         });
 
         src ? resolve(src) : reject(src);
-      });
+      };
 
       image.src = dataURL;
     });
   }
 
   async updateImage() {
-    const { getValidity, name } = this.props;
+    const { name, onChange } = this.props;
     const { croppedValue, currentValue } = this.state;
     const imageDataURL = croppedValue || currentValue;
-
     let resizedImageDataURL;
 
     try {
@@ -257,117 +322,141 @@ export class ImageInput extends React.PureComponent<Props, State> {
       resizedImageDataURL = '';
     }
 
-    // if the valid string either has length, or is empty, it will be valid
-    const { isError } = getValidity(name, resizedImageDataURL);
-    const isImageDataValid = !isError && typeof resizedImageDataURL === 'string';
+    // const { errorData, shouldShowError } = onBlurValidation(resizedImageDataURL, this.props, this.state);
+    const { errorData, shouldShowError } = onBlurValidation(
+      { file: this.currentFile, value: this.state.currentValue },
+      this.props,
+      this.state,
+    );
+    // const { errorData, shouldShowError } = onChangeValidation(resizedImageDataURL, this.props, this.state);
 
-    if (isImageDataValid) {
-      if (resizedImageDataURL) {
-        this.setState({
-          croppedValue: '',
-          showModal: false,
-          validationError: false,
-        }, () => {
-          this.props.onChange(name, resizedImageDataURL);
-        });
-      } else {
-        this.props.onChange(name);
-      }
-    } else {
-      this.setState({
-        validationError: true,
-      });
-    }
+    this.setState({
+      croppedValue: '',
+      errorMessage: errorData.errorMessage,
+      shouldShowError,
+      showModal: false,
+    }, () => {
+
+      onChange(
+        name,
+        resizedImageDataURL || undefined,
+        errorData,
+      );
+    });
   }
 
   render() {
-    const { cleanName, description, inputProps } = this.props;
-    const { disableEditRemoteImage } = this.state;
+    const { cleanName, description, inputProps, savedValue, variableType } = this.props;
+    const { currentValue, disableEditRemoteImage, errorMessage, shouldShowError, showModal } = this.state;
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
     const isInputDisabled = (inputProps && inputProps.disabled);
 
     return (
-      <div className="contract-variable file">
-        {this.props.savedValue
+      <div className={`${css.field} ${css.fieldTypeToLower(variableType)}`}>
+        {savedValue
           ? (
-            <button
-              className="image"
-              onClick={this.handleToggleModal}
-              disabled={disableEditRemoteImage}
-            >
-              {`Edit ${description}`}
-            </button>
+            <Fragment>
+              <button
+                className={singleSpaceString(
+                  `${css.button}
+                  ${isInputDisabled ? css.buttonDisabled : ''}`
+                )}
+                onClick={(disableEditRemoteImage || isInputDisabled) ? null : this.handleToggleEditor}
+                disabled={disableEditRemoteImage || isInputDisabled}
+              >
+                {`Edit ${description}`}
+              </button>
+
+              <FieldError
+                cleanName={cleanName}
+                errorMessage={errorMessage}
+                shouldShowError={shouldShowError}
+              />
+            </Fragment>
           ) : (
             <Fragment>
               <label
-                htmlFor={`image-${cleanName}`}
+                htmlFor={`openlaw-el-image-${cleanName}`}
+                ref={this.labelRef}
               >
-                <span className={isInputDisabled ? 'ole-image__span--disabled' : ''}>{`Select ${description}`}</span>
-
                 <input
                   accept="image/png, image/jpeg, image/svg+xml, image/tiff, image/bmp, image/gif"
-
+                  tabIndex={-1}
+                  
                   {...inputProps}
 
-                  className={`image${inputPropsClassName}`}
-                  id={`image-${cleanName}`}
+                  className={singleSpaceString(`${css.fieldInput} ${cleanName} ${inputPropsClassName}`)}
+                  id={`openlaw-el-image-${cleanName}`}
                   onChange={this.handleFileChange}
                   ref={this.fileRef}
                   type="file"
+                />
+                
+                <button
+                  className={singleSpaceString(
+                    `${css.button}
+                    ${isInputDisabled ? css.buttonDisabled : ''}`
+                  )}
+                  onClick={isInputDisabled ? null : this.handleFileDialogOpenClick}>
+                  {`Select ${description}`}
+                </button>
+
+                <FieldError
+                  cleanName={cleanName}
+                  errorMessage={errorMessage}
+                  shouldShowError={shouldShowError}
                 />
               </label>
             </Fragment>
           )
         }
 
-        {
-          (this.state.showModal && this.state.currentValue) && (
-            <div className="modal" style={this.getModalDisplayStyle()}>
-              <div className="modal-form">
-                <Fragment>
-                  <ImageCrop
-                    crop={{
-                      x: 0,
-                      y: 0,
-                      width: 100,
-                      height: 100,
-                    }}
-                    dataURL={this.state.currentValue}
-                    onImageCrop={this.handleImageCrop}
-                    showDeleteButton={false}
-                  />
+        {(showModal && currentValue) && (
+          <div className={css.fieldImageEditor}>
+            <ImageCrop
+              crop={{
+                x: 0,
+                y: 0,
+                width: 100,
+                height: 100,
+              }}
+              dataURL={currentValue}
+              onImageCrop={this.handleImageCrop}
+              showDeleteButton={false}
+            />
 
-                  <div className="ol-modalconfirm-buttons">
-                    <button
-                      className="ol-modalconfirm-primary button is-info-new"
-                      onClick={this.updateImage}
-                    >
-                      Save
-                    </button>
-                    <div className="ol-modalconfirm-buttons">
-                      {this.props.savedValue && (
-                        <a
-                          className="ol-modalconfirm-secondary"
-                          onClick={this.handleImageDelete}
-                          style={{ marginRight: 24 }}
-                        >
-                          Delete
-                        </a>
-                      )}
-                      <a
-                        className="ol-modalconfirm-secondary"
-                        href=""
-                        onClick={this.handleImageCancel}
-                      >
-                        Cancel
-                      </a>
-                    </div>
-                  </div>
-                </Fragment>
+            <div className={
+              singleSpaceString(
+                `${css.fieldImageEditorActions}
+                ${savedValue && css.fieldImageEditorActionsStacked}`
+              )}>
+              <button
+                className={`${css.button}`}
+                onClick={this.updateImage}
+              >
+                Save
+              </button>
+
+              <div>
+                <button
+                  className={css.buttonSecondary}
+                  onClick={savedValue ? this.handleImageCancelEdit : this.handleImageCancelCreate}
+                >
+                  Cancel
+                </button>
+                
+                {savedValue && (
+                  <button
+                    className={css.buttonSecondary}
+                    onClick={this.handleImageDelete}
+                  >
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
-          )
-        }
+          </div>
+        )}
       </div>
     );
   }

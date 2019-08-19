@@ -13,33 +13,28 @@ import { NumberInput } from './NumberInput';
 import { Text } from './Text';
 import { YesNo } from './YesNo';
 import { ExternalSignature } from './ExternalSignature';
+import { ELEMENT_INPUT_TYPES } from './constants';
 import { cacheValue } from './utils';
-import type { InputPropsType, ValidateOnKeyUpFuncType } from './types';
+import type {
+  FieldEnumType,
+  FieldPropsType,
+  OnChangeFuncType,
+  OnValidateFuncType,
+  ValidateOnKeyUpFuncType,
+  ValidityErrorObjectType,
+} from './flowTypes';
 
-type RendererProps = {
+type RendererProps = {|
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
-  inputProps?: InputPropsType,
-  onChangeFunction: (string, ?string, ?boolean) => mixed,
+  inputProps?: FieldPropsType,
   onKeyUp?: ValidateOnKeyUpFuncType,
+  onChangeFunction: OnChangeFuncType,
+  onValidate: ?OnValidateFuncType,
   openLaw: Object, // opt-out of type checker
   savedValue: string,
-  textLikeInputClass: string,
   variable: {},
-};
-
-const ELEMENT_TYPES = [
-  'Address',
-  'Choice',
-  'Date',
-  'Identity',
-  'Image',
-  'LargeText',
-  'Number',
-  'Text',
-  'YesNo',
-  'ExternalSignature',
-];
+|};
 
 // keep React rendering happy with the same Array reference, if not changed.
 const getChoiceValuesCached = cacheValue(deepEqual);
@@ -49,7 +44,7 @@ const variableCache = {};
 let executionResultCurrent;
 let openLawCached;
 
-const getValidity = (name: string, value: string) => {
+const getValidity = (name: string, value: string): ValidityErrorObjectType => {
   return openLawCached.checkValidity(variableCache[name], value, executionResultCurrent);
 };
 
@@ -65,10 +60,10 @@ export const InputRenderer = (props: RendererProps) => {
     executionResult,
     inputProps,
     onChangeFunction,
+    onValidate,
     onKeyUp,
     openLaw,
     savedValue,
-    textLikeInputClass,
     variable,
   } = props;
   
@@ -78,6 +73,8 @@ export const InputRenderer = (props: RendererProps) => {
     name,
   } = getVariableData(variable, openLaw);
 
+  const variableType: FieldEnumType = openLaw.getType(variable);
+
   // store latest executionResult for access outside React
   executionResultCurrent = executionResult;
   // store openLaw for access outside React
@@ -85,9 +82,9 @@ export const InputRenderer = (props: RendererProps) => {
   // store { [name]: variable } for access outside React
   variableCache[name] = variable;
 
-  // merge all `inputProps` ("*") with a specific type's props (e.g. "Address")
+  // merge "all" `inputProps` ("*") with a specific type's props (e.g. "Address")
   const inputPropsMerged = inputProps && (
-    ELEMENT_TYPES.reduce((result, key) => {
+    ELEMENT_INPUT_TYPES.reduce((result, key) => {
       return { ...result, [key]: { ...inputProps['*'], ...inputProps[key] } };
     }, {})
   );
@@ -107,13 +104,14 @@ export const InputRenderer = (props: RendererProps) => {
         inputProps={inputPropsCached && inputPropsCached.Choice}
         name={name}
         onChange={onChangeFunction}
+        onValidate={onValidate}
         savedValue={savedValue}
-        textLikeInputClass={textLikeInputClass}
+        variableType="Choice"
       />
     );
   }
 
-  switch (openLaw.getType(variable)) {
+  switch (variableType) {
     case 'Address':
       return (
         <Address
@@ -124,13 +122,14 @@ export const InputRenderer = (props: RendererProps) => {
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           openLaw={openLaw}
           savedValue={
             savedValue
               ? openLaw.getFormattedAddress(openLaw.getAddress(savedValue))
               : ''
           }
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -139,12 +138,13 @@ export const InputRenderer = (props: RendererProps) => {
         <DatePicker
           cleanName={cleanName}
           description={description}
-          enableTime={false}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.Date}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -153,28 +153,29 @@ export const InputRenderer = (props: RendererProps) => {
         <DatePicker
           cleanName={cleanName}
           description={description}
-          enableTime
-          inputProps={inputPropsCached && inputPropsCached.Date}
+          getValidity={getValidity}
+          inputProps={inputPropsCached && inputPropsCached.DateTime}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
-    case 'Identity':
+    case 'EthAddress':
       return (
-        <Identity
+        <Text
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputProps={inputPropsCached && inputPropsCached.Identity}
+          inputProps={inputPropsCached && inputPropsCached.EthAddress}
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
-          openLaw={openLaw}
+          onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -188,9 +189,27 @@ export const InputRenderer = (props: RendererProps) => {
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           openLaw={openLaw}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
+        />
+      );
+
+    case 'Identity':
+      return (
+        <Identity
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity}
+          inputProps={inputPropsCached && inputPropsCached.Identity}
+          name={name}
+          onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
+          onValidate={onValidate}
+          openLaw={openLaw}
+          savedValue={savedValue}
+          variableType={variableType}
         />
       );
 
@@ -203,7 +222,9 @@ export const InputRenderer = (props: RendererProps) => {
           inputProps={inputPropsCached && inputPropsCached.Image}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
+          variableType={variableType}
         />
       );
 
@@ -212,11 +233,13 @@ export const InputRenderer = (props: RendererProps) => {
         <LargeText
           cleanName={cleanName}
           description={description}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.LargeText}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
 
@@ -230,8 +253,25 @@ export const InputRenderer = (props: RendererProps) => {
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
+        />
+      );
+
+    case 'Period':
+      return (
+        <Text
+          cleanName={cleanName}
+          description={description}
+          getValidity={getValidity}
+          inputProps={inputPropsCached && inputPropsCached.Period}
+          name={name}
+          onChange={onChangeFunction}
+          onKeyUp={onKeyUp}
+          onValidate={onValidate}
+          savedValue={savedValue}
+          variableType={variableType}
         />
       );
 
@@ -240,10 +280,13 @@ export const InputRenderer = (props: RendererProps) => {
         <YesNo
           cleanName={cleanName}
           description={description}
+          getValidity={getValidity}
           inputProps={inputPropsCached && inputPropsCached.YesNo}
           name={name}
           onChange={onChangeFunction}
+          onValidate={onValidate}
           savedValue={savedValue}
+          variableType={variableType}
         />
       );
 
@@ -257,8 +300,9 @@ export const InputRenderer = (props: RendererProps) => {
           name={name}
           onChange={onChangeFunction}
           onKeyUp={onKeyUp}
+          onValidate={onValidate}
           savedValue={savedValue}
-          textLikeInputClass={textLikeInputClass}
+          variableType={variableType}
         />
       );
   }

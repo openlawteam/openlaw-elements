@@ -5,11 +5,17 @@
     "plugin:react/recommended"
   ],
   "globals": {
+    "afterAll": true,
     "afterEach": true,
+    "beforeAll": true,
     "beforeEach": true,
+    "describe": true,
     "document": true,
     "expect": true,
+    "global": true,
+    "jest": true,
     "module": true,
+    "MouseEvent": true,
     "Promise": true,
     "require": true,
     "setTimeout": true,
@@ -31,7 +37,10 @@
     "indent": [
       "error",
       2,
-      {"SwitchCase": 1}
+      {
+        "SwitchCase": 1,
+        "ignoredNodes": ["ConditionalExpression"] // ternary expression
+      }
     ],
     "linebreak-style": [
       "error",

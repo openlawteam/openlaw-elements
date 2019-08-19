@@ -5,11 +5,108 @@
     <meta charset="utf-8">
     <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
   	<style type="text/css">
+      * {
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+
+      hr {
+        margin: 3rem 0;
+        border: 1px solid #eee;
+      }
+
+      pre {
+        word-break: break-all;
+        white-space: pre-wrap;
+      }
+
   		.banner {
 		    color: grey;
 		    font-family: sans-serif;
-		    padding: 16px 0;
+		    padding: 1rem .75rem;
+        text-align: center;
   		}
+
+      .button {
+        background: none;
+        border-radius: .625rem;
+        border: none;
+        box-shadow: 0 0 0 0.1875rem inset;
+        cursor: pointer;
+        display: inline-block;
+        font-size: 1.25rem;
+        font-weight: bold;
+        line-height: 1.5;
+        margin: 0 1rem 0; 
+        outline: none;
+        padding: .1875em .75rem;
+        transition: box-shadow .25s ease, color .25s ease;
+      }
+      .button:active {
+        color: #37c3dc;
+      }
+      .button:hover, .button:focus {
+        box-shadow: 0 0 0 0.1875rem #37c3dc inset;
+      }
+
+      .buttonsWrap {
+        display: flex;
+        justify-content: center;
+      }
+
+      .paneLeft {
+        width: 48%;
+        overflow-y: scroll;
+        position: fixed;
+        height: calc(100% - 10rem);
+        margin: 2rem 1%;
+        padding: 0 1%;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .paneRight {
+        width: 48%;
+        position: fixed;
+        right: 0;
+        overflow-y: scroll;
+        height: calc(100% - 10rem);
+        margin: 2rem 1%;
+        padding: 0 1%;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .previewEye {
+        display: inline-block;
+        transform: rotate(180deg);
+      }
+
+      .sectionTrigger {
+        cursor: pointer;
+        margin-top: 2.25rem;
+        transition: box-shadow .1s ease;
+      }
+      .sectionTrigger:hover, .sectionTrigger:focus {
+        outline: none;
+        text-decoration: underline;
+      }
+
+      .unsectionedTitle {
+        margin-top: 2.25em;
+      }
+
+      .wrap {
+        width: 100%;
+      }
+
+      .wrapApp {
+        display: flex;
+        justify-content: space-between;
+      }
   	</style>
   </head>
   <body>

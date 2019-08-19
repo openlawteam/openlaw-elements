@@ -133,6 +133,10 @@ $text-input-height: 2.25rem;
   &:focus {
     outline: none;
   }
+
+  &:disabled {
+    border-radius: .5rem;
+  }
 }
 
 /* STRUCTURE */
@@ -218,6 +222,7 @@ $text-input-height: 2.25rem;
   z-index: -1;
 }
 
+.#{$NAMESPACE}-collection button:disabled,
 .#{$NAMESPACE}-field__input:disabled,
 .#{$NAMESPACE}-field__select:disabled,
 .#{$NAMESPACE}-field__textarea:disabled {

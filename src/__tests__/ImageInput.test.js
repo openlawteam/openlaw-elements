@@ -619,7 +619,7 @@ test('Can call onChangeFunction', async () => {
     },
   );
   
-  await new Promise(r => { setTimeout(r, 10); });
+  await new Promise(r => { setTimeout(r, 50); });
 
   fireEvent.click(getByText(/save/i));
 

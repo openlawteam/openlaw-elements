@@ -2,7 +2,7 @@
 
 ![Jest Coverage Badge](https://github.com/openlawteam/openlaw-elements/raw/master/src/__tests__/coverge-badge.svg?sanitize=true)
 
-Render React form components and sections from an OpenLaw template. This library uses a single component which decides what to render based on the OpenLaw data type and current values, and handles validation. Used internally across OpenLaw projects, it's great for getting a React app up and running quickly on the client with OpenLaw templates.
+Render React form components and sections from an OpenLaw template. This library provides a single component which decides what to render based on the OpenLaw data type and current values, and handles validation. Used internally across OpenLaw projects, it's great for getting a React app up and running quickly on the client with OpenLaw templates.
 
 You're welcome to be creative and roll your own set of components, or submit a feature request!
 

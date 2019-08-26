@@ -68,6 +68,15 @@ const App = () => (
 ReactDOM.render(<App />, document.getElementById('your-id-here'));
 ```
 
+
+### Available Props
+
+You can check out our [OpenLaw Elements docs](https://docs.openlaw.io/openlaw-elements/) for more details.
+
+### OpenLaw library dependency
+
+As OpenLaw Elements depends on the [openlaw](https://www.npmjs.com/package/openlaw) package, we recommend always using the [latest](https://www.npmjs.com/package/openlaw/v/latest) version.
+
 ### Using our default styles
 
 Our component comes with a separate file of base styles which you can include in your app JS (via an `import`) or HTML. If you decide to import the styles into your JS, be sure to add a way to import CSS into your bundle. As an example, using Webpack's [css-loader](https://github.com/webpack-contrib/css-loader) + [style-loader](https://github.com/webpack-contrib/style-loader). If you are using [create-react-app](https://github.com/facebook/create-react-app) this is already done for you.
@@ -94,14 +103,6 @@ If you'd like to load the styles via an HTML file, you can copy the path (or fil
 #### Overriding our styles
 
 If you want to leave out our styles, that's completely OK. We've set up our components with simple classnames so you can target what you need to, easily. Just add your own stylesheet and take a look at what classes and elements you can style. We find the simplest way to prototype can be using browser developer tools.
-
-### Optional Parameters
-
-In addition to the required parameters, we offer support for additional parameters that will give you more flexibility to apply styles and render custom form sections. You can check out our [OpenLaw Elements docs](https://docs.openlaw.io/openlaw-elements/) for more details.
-
-### OpenLaw dependency
-
-As OpenLaw Elements depends on the [openlaw](https://www.npmjs.com/package/openlaw) package, we recommend always using the [latest](https://www.npmjs.com/package/openlaw/v/latest) version.
 
 ## Running the example app
 

@@ -150,6 +150,36 @@ test('Can call onChangeFunction', () => {
   expect(changeSpy.mock.calls[0][1]).toMatch(/morgan smith/i);
 });
 
+test('Can call onChangeFunction with `undefined` value if empty string', () => {
+  const changeSpy = jest.fn();
+
+  const { getByPlaceholderText } = render(
+    <TestOpenLawFormComponent
+      onChangeFunction={changeSpy}
+    />
+  );
+
+  fireEvent.change(
+    getByPlaceholderText(/contestant name/i),
+    { target: { value: 'Morgan Smith' } },
+  );
+  fireEvent.blur(getByPlaceholderText(/contestant name/i));
+
+  expect(changeSpy.mock.calls.length).toBe(1);
+  expect(changeSpy.mock.calls[0][0]).toMatch(/contestant name/i);
+  expect(changeSpy.mock.calls[0][1]).toMatch(/morgan smith/i);
+
+  fireEvent.change(
+    getByPlaceholderText(/contestant name/i),
+    { target: { value: '' } },
+  );
+  fireEvent.blur(getByPlaceholderText(/contestant name/i));
+
+  expect(changeSpy.mock.calls.length).toBe(2);
+  expect(changeSpy.mock.calls[1][0]).toMatch(/contestant name/i);
+  expect(changeSpy.mock.calls[1][1]).toBeUndefined();
+});
+
 test('Can call inputProps: onChange, onBlur', () => {
   const changeSpy = jest.fn();
   const blurSpy = jest.fn();

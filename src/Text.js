@@ -94,7 +94,9 @@ export class Text extends React.PureComponent<Props, State> {
       errorMessage: errorData.errorMessage,
       shouldShowError,
     }, () => {
-      const shouldValueBeUndefined = variableType !== TEXT && (errorData.isError || eventValue === '');
+      const shouldValueBeUndefined = variableType !== TEXT && (errorData.isError || eventValue === '')
+        ? true
+        : variableType === TEXT && eventValue === '';
 
       onChange(
         name,

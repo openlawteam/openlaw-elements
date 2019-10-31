@@ -144,11 +144,11 @@ describe('Date type', () => {
     );
 
     // otherwise tests will only pass in the offset written
-    const millisecondsToNodeTZ = new Date(flatpickrEnabledInput.value).getTime().toString();
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
 
     expect(changeSpy.mock.calls.length).toBe(1);
     expect(changeSpy.mock.calls[0][0]).toMatch(/Contestant DOB/i);
-    expect(changeSpy.mock.calls[0][1]).toBe(millisecondsToNodeTZ);  
+    expect(changeSpy.mock.calls[0][1]).toBe(millisecondsToSystemOffset);  
     expect(changeSpy.mock.calls[0][2].errorMessage).toBe('');  
     expect(changeSpy.mock.calls[0][2].isError).toBe(false);
   });
@@ -246,7 +246,7 @@ describe('Date type', () => {
     );
 
     // otherwise tests will only pass in the offset written
-    const millisecondsToNodeTZ = new Date(flatpickrEnabledInput.value).getTime().toString();
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
 
     expect(validateSpy.mock.calls[0][0]).toStrictEqual({
       elementName: 'Contestant-DOB',
@@ -254,7 +254,7 @@ describe('Date type', () => {
       errorMessage: '',
       eventType: 'change',
       isError: false,
-      value: millisecondsToNodeTZ,
+      value: millisecondsToSystemOffset,
     });
 
     expect(validateSpy.mock.calls[1][0]).toStrictEqual({
@@ -263,7 +263,7 @@ describe('Date type', () => {
       errorMessage: '',
       eventType: 'blur',
       isError: false,
-      value: millisecondsToNodeTZ,
+      value: millisecondsToSystemOffset,
     });
   });
 });
@@ -399,10 +399,10 @@ describe('DateTime type', () => {
     fireEvent.focus(document.body);
 
     // otherwise tests will only pass in the offset written
-    const millisecondsToNodeTZ = new Date(flatpickrEnabledInput.value).getTime().toString();
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
 
     expect(changeSpy.mock.calls[0][0]).toMatch(/Contestant Signature Date Time/i);
-    expect(changeSpy.mock.calls[0][1]).toBe(millisecondsToNodeTZ);  
+    expect(changeSpy.mock.calls[0][1]).toBe(millisecondsToSystemOffset);  
     expect(changeSpy.mock.calls[0][2].errorMessage).toBe('');  
     expect(changeSpy.mock.calls[0][2].isError).toBe(false);  
   });
@@ -506,7 +506,7 @@ describe('DateTime type', () => {
     fireEvent.focus(document.body);
 
     // otherwise tests will only pass in the offset written
-    const millisecondsToNodeTZ = new Date(flatpickrEnabledInput.value).getTime().toString();
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
 
     expect(validateSpy.mock.calls[0][0]).toStrictEqual({
       elementName: 'Contestant-Signature-Date-Time',
@@ -514,7 +514,7 @@ describe('DateTime type', () => {
       errorMessage: '',
       eventType: 'change',
       isError: false,
-      value: millisecondsToNodeTZ,
+      value: millisecondsToSystemOffset,
     });
 
     expect(validateSpy.mock.calls[1][0]).toStrictEqual({
@@ -523,7 +523,7 @@ describe('DateTime type', () => {
       errorMessage: '',
       eventType: 'blur',
       isError: false,
-      value: millisecondsToNodeTZ,
+      value: millisecondsToSystemOffset,
     });
   });
 });

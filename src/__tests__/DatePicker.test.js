@@ -54,13 +54,14 @@ describe('Date type', () => {
         name="Contestant DOB"
         onChange={() => {}}
         onKeyUp={() => {}}
-        savedValue="441738000000"
+        // otherwise tests will only pass in the offset written
+        savedValue={new Date('January 1, 1984').getTime()}
         variableType="Date"
       />
     );
 
     getByLabelText(/date of birth/i);
-    getByDisplayValue(/january 1, 1984/i);
+    getByDisplayValue(/January 1, 1984/i);
   });
 
   test('Can select a date', () => {
@@ -142,9 +143,12 @@ describe('Date type', () => {
       },
     );
 
+    // otherwise tests will only pass in the offset written
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
+
     expect(changeSpy.mock.calls.length).toBe(1);
     expect(changeSpy.mock.calls[0][0]).toMatch(/Contestant DOB/i);
-    expect(changeSpy.mock.calls[0][1]).toBe('441910800000');  
+    expect(changeSpy.mock.calls[0][1]).toBe(millisecondsToSystemOffset);  
     expect(changeSpy.mock.calls[0][2].errorMessage).toBe('');  
     expect(changeSpy.mock.calls[0][2].isError).toBe(false);
   });
@@ -241,13 +245,16 @@ describe('Date type', () => {
       },
     );
 
+    // otherwise tests will only pass in the offset written
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
+
     expect(validateSpy.mock.calls[0][0]).toStrictEqual({
       elementName: 'Contestant-DOB',
       elementType: 'Date',
       errorMessage: '',
       eventType: 'change',
       isError: false,
-      value: '441910800000',
+      value: millisecondsToSystemOffset,
     });
 
     expect(validateSpy.mock.calls[1][0]).toStrictEqual({
@@ -256,7 +263,7 @@ describe('Date type', () => {
       errorMessage: '',
       eventType: 'blur',
       isError: false,
-      value: '441910800000',
+      value: millisecondsToSystemOffset,
     });
   });
 });
@@ -292,14 +299,15 @@ describe('DateTime type', () => {
         name="Contestant Signature Date Time"
         onChange={() => {}}
         onKeyUp={() => {}}
-        savedValue="441738000000"
+        // otherwise tests will only pass in the offset written
+        savedValue={new Date('January 1, 1984').getTime()}
         variableType="DateTime"
       />
     );
 
     getByLabelText(/date & time of signature/i);
     
-    getByDisplayValue(/january 1, 1984/i);
+    getByDisplayValue(/January 1, 1984/i);
   });
 
   test('Can select a date with time', () => {
@@ -311,7 +319,7 @@ describe('DateTime type', () => {
         name="Contestant Signature Date Time"
         onChange={() => {}}
         onKeyUp={() => {}}
-        savedValue="441738000000"
+        savedValue={new Date('January 3, 1984').getTime()}
         variableType="DateTime"
       />
     );
@@ -390,8 +398,11 @@ describe('DateTime type', () => {
     // take focus away
     fireEvent.focus(document.body);
 
+    // otherwise tests will only pass in the offset written
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
+
     expect(changeSpy.mock.calls[0][0]).toMatch(/Contestant Signature Date Time/i);
-    expect(changeSpy.mock.calls[0][1]).toBe('441910800000');  
+    expect(changeSpy.mock.calls[0][1]).toBe(millisecondsToSystemOffset);  
     expect(changeSpy.mock.calls[0][2].errorMessage).toBe('');  
     expect(changeSpy.mock.calls[0][2].isError).toBe(false);  
   });
@@ -494,13 +505,16 @@ describe('DateTime type', () => {
     // take focus away
     fireEvent.focus(document.body);
 
+    // otherwise tests will only pass in the offset written
+    const millisecondsToSystemOffset = new Date(flatpickrEnabledInput.value).getTime().toString();
+
     expect(validateSpy.mock.calls[0][0]).toStrictEqual({
       elementName: 'Contestant-Signature-Date-Time',
       elementType: 'DateTime',
       errorMessage: '',
       eventType: 'change',
       isError: false,
-      value: '441910800000',
+      value: millisecondsToSystemOffset,
     });
 
     expect(validateSpy.mock.calls[1][0]).toStrictEqual({
@@ -509,7 +523,7 @@ describe('DateTime type', () => {
       errorMessage: '',
       eventType: 'blur',
       isError: false,
-      value: '441910800000',
+      value: millisecondsToSystemOffset,
     });
   });
 });

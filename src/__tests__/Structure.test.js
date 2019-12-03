@@ -12,7 +12,7 @@ import { OpenLawForm } from '../OpenLawForm';
 import SampleTemplate from '../../example/SAMPLE_TEMPLATE';
 import { getTemplateExecutionData } from '../__test_utils__/helpers';
 
-const FakeApp = () => {
+const FakeApp = (props) => {
   const { executedVariables, executionResult: initialExecutionResult } = getTemplateExecutionData(SampleTemplate, {}, true);
 
   const [ result, setNewResult ] = useState({
@@ -55,6 +55,8 @@ const FakeApp = () => {
       )}
       openLaw={Openlaw}
       variables={variables}
+
+      {...props}
     />
   );
 };
@@ -86,5 +88,29 @@ describe('Structure', () => {
     getByPlaceholderText(/certification title/i);
     expect(certificationDate).not.toBeNull();
     getByPlaceholderText(/certifier eth address/i);
+  });
+
+  test('Can render extra text for structure variable', () => {
+    const { getByText } = render(
+      <FakeApp
+        inputExtraTextMap = {{
+          'MedicalContact': 'MedicalContact extra text'
+        }}
+      />
+    );
+
+    getByText(/medicalcontact extra text/i);
+  });
+
+  test('Can render extra text for variables', () => {
+    const { getByText } = render(
+      <FakeApp
+        inputExtraTextMap = {{
+          'Emergency Contact Name': 'Emergency Contact Name extra text'
+        }}
+      />
+    );
+
+    getByText(/emergency contact name extra text/i);
   });
 });

@@ -374,3 +374,52 @@ test('Can render & toggle conditional field', () => {
   // field should not show
   expect(() => getByPlaceholderText(/please explain your bbq sauce medical history/i)).toThrow();
 });
+
+test('Can render extra text string for any input type via `[Variable Name] => value` mapping', () => {
+  const variables = [
+    // Address
+    'Contestant Address',
+    // Choice
+    'Contestant BBQ Region',
+    // Date
+    'Contestant DOB',
+    // EthAddress
+    'Contestant ETH Address',
+    // ExternalSignature
+    'DocuSign Signatory',
+    // Identity
+    'Contestant Email',
+    // Image
+    'Contestant Picture',
+    // LargeText
+    'Contestant Personal Statement',
+    // Number
+    'Contestant BBQ Experience Years',
+    // Period
+    'Contestant Longest BBQ',
+    // Text
+    'Contestant Name',
+    // YesNo
+    'BBQ Love Limit'
+  ];
+  const extraTextMap = variables.reduce((acc, next) => {
+    acc[next] = `${next} extra text`;
+    return acc;
+  }, {});
+
+  const { getByText } = render(
+    <OpenLawForm
+      apiClient={apiClient}
+      executionResult={executionResult}
+      inputExtraTextMap={extraTextMap}
+      parameters={parameters}
+      onChangeFunction={onChange}
+      openLaw={Openlaw}
+      variables={executedVariables}
+    />
+  );
+
+  for (const v of variables) { // eslint-disable-line
+    getByText(new RegExp(`${v.toLowerCase()} extra text`, 'i'));
+  }
+});

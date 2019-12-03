@@ -28,7 +28,7 @@ import type {
 type RendererProps = {|
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
-  inputExtraText?: FieldExtraTextType,
+  inputExtraText: ?FieldExtraTextType,
   inputProps?: FieldPropsType,
   onKeyUp?: ValidateOnKeyUpFuncType,
   onChangeFunction: OnChangeFuncType,
@@ -42,8 +42,6 @@ type RendererProps = {|
 const getChoiceValuesCached = cacheValue(deepEqual);
 // keep React rendering happy with the same Object reference, if not changed.
 const getInputPropsCached = cacheValue(deepEqual);
-// keep React rendering happy with the same Object reference, if not changed.
-const getInputExtraTextCached = cacheValue(deepEqual);
 const variableCache = {};
 let executionResultCurrent;
 let openLawCached;
@@ -95,8 +93,6 @@ export const InputRenderer = (props: RendererProps) => {
   );
   // cache the inputProps
   const inputPropsCached = getInputPropsCached(inputPropsMerged);
-  // cache the inputExtraText
-  const inputExtraTextCached = getInputExtraTextCached(inputExtraText);
 
   // Choice type detection is different
   if (openLaw.isChoiceType(variable, executionResult)) {
@@ -108,7 +104,7 @@ export const InputRenderer = (props: RendererProps) => {
         cleanName={cleanName}
         description={description}
         getValidity={getValidity}
-        inputExtraText={inputExtraTextCached}
+        inputExtraText={inputExtraText}
         inputProps={inputPropsCached && inputPropsCached.Choice}
         name={name}
         onChange={onChangeFunction}
@@ -126,7 +122,7 @@ export const InputRenderer = (props: RendererProps) => {
           apiClient={apiClient} // for API call to Google for geo data
           cleanName={cleanName}
           description={description}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.Address}
           name={name}
           onChange={onChangeFunction}
@@ -148,7 +144,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.Date}
           name={name}
           onChange={onChangeFunction}
@@ -164,7 +160,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.DateTime}
           name={name}
           onChange={onChangeFunction}
@@ -180,7 +176,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.EthAddress}
           name={name}
           onChange={onChangeFunction}
@@ -197,7 +193,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.ExternalSignature}
           name={name}
           onChange={onChangeFunction}
@@ -215,7 +211,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.Identity}
           name={name}
           onChange={onChangeFunction}
@@ -233,7 +229,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.Image}
           name={name}
           onChange={onChangeFunction}
@@ -249,7 +245,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.LargeText}
           name={name}
           onChange={onChangeFunction}
@@ -265,7 +261,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.Number}
           name={name}
           onChange={onChangeFunction}
@@ -282,7 +278,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.Period}
           name={name}
           onChange={onChangeFunction}
@@ -299,7 +295,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.YesNo}
           name={name}
           onChange={onChangeFunction}
@@ -315,7 +311,7 @@ export const InputRenderer = (props: RendererProps) => {
           cleanName={cleanName}
           description={description}
           getValidity={getValidity}
-          inputExtraText={inputExtraTextCached}
+          inputExtraText={inputExtraText}
           inputProps={inputPropsCached && inputPropsCached.Text}
           name={name}
           onChange={onChangeFunction}

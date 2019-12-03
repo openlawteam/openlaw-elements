@@ -323,7 +323,13 @@ $text-input-height: 2.25rem;
 
 /* FIELD: EXTRA TEXT */
 
-.#{$NAMESPACE}-field__extra-text {
+.#{$NAMESPACE}-collection > .#{$NAMESPACE}-field__extra-text,
+.#{$NAMESPACE}-structure > .#{$NAMESPACE}-field__extra-text {
+  margin: .5rem 0 1rem;
+}
+
+.#{$NAMESPACE}-field__extra-text,
+.#{$NAMESPACE}-collection .#{$NAMESPACE}-structure .#{$NAMESPACE}-field__extra-text {
   color: $grey;
   margin-top: .5rem;
   margin-left: .625rem;

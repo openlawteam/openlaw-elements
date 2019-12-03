@@ -61,6 +61,7 @@ const renderInputs = (props: RendererInputProps) => {
 
   const savedValue = parameters[openLaw.getName(variable)] || '';
   const cleanName = openLaw.getCleanName(variable);
+  const extraText = inputExtraTextMap && inputExtraTextMap[openLaw.getName(variable)];
 
   // Structure: can contain all types of inputs in <InputRenderer />
   if (openLaw.isStructuredType(variable, executionResult)) {
@@ -68,6 +69,7 @@ const renderInputs = (props: RendererInputProps) => {
       <Structure
         apiClient={apiClient}
         executionResult={executionResult}
+        inputExtraTextMap={inputExtraTextMap}
         inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
@@ -85,6 +87,7 @@ const renderInputs = (props: RendererInputProps) => {
       <Collection
         apiClient={apiClient}
         executionResult={executionResult}
+        inputExtraTextMap={inputExtraTextMap}
         inputProps={inputProps}
         key={`${cleanName}-collection`}
         onChange={onChangeFunction}
@@ -102,7 +105,7 @@ const renderInputs = (props: RendererInputProps) => {
     <InputRenderer
       apiClient={apiClient}
       executionResult={executionResult}
-      inputExtraText={inputExtraTextMap && inputExtraTextMap[openLaw.getName(variable)]}
+      inputExtraText={extraText}
       inputProps={inputProps}
       key={`${cleanName}-input`}
       onChangeFunction={onChangeFunction}

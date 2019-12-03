@@ -244,11 +244,8 @@ $text-input-height: 2.25rem;
 }
 
 .#{$NAMESPACE}-field-image__editor {
-  align-items: center;
   border-radius: .375rem;
   border: 1px solid #d8d8d8;
-  display: flex;
-  flex-direction: column;
   margin: .375rem 0;
   padding: 1.2rem;
 }
@@ -257,7 +254,7 @@ $text-input-height: 2.25rem;
   @extend %flex-row-split;
   align-items: center;
   flex-direction: row-reverse;
-  margin-top: .375rem;
+  margin: 1rem auto .375rem;
   width: 10rem;
 }
 

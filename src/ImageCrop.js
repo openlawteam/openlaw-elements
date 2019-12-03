@@ -52,7 +52,7 @@ type StateTypes = {
   src: string,
 };
 
-const { Component } = React;
+const { Component, Fragment } = React;
 
 const styles = {
   cropWrap: {
@@ -321,7 +321,7 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
 
   render() {
     return (
-      <div>
+      <Fragment>
         {this.props.children ? (
           this.props.children({
             Crop: this.renderReactComp,
@@ -332,7 +332,7 @@ export default class ImageCrop extends Component<PropTypes, StateTypes> {
         ) : (
           this.renderReactComp(this.getReactCropProps())
         )}
-      </div>
+      </Fragment>
     );
   }
 }

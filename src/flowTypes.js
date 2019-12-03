@@ -1,8 +1,14 @@
 // @flow
 
+import * as React from 'react';
+
 export type ObjectAnyType = { [string]: any };
 
 export type ImageValueType = { file: File | void, value: string };
+
+export type FieldExtraTextType = string | () => React.Node;
+
+export type FieldExtraTextMapType = {[string]: FieldExtraTextType};
 
 // All OpenLaw types which have representation in the Elements library
 export type FieldEnumType =

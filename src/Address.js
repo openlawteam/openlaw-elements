@@ -3,12 +3,14 @@
 import * as React from 'react';
 import Autosuggest from 'react-autosuggest';
 
+import ExtraText from './ExtraText';
 import { FieldError } from './FieldError';
 import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
   FieldErrorType,
+  FieldExtraTextType,
   FieldPropsValueType,
   ObjectAnyType,
   OnChangeFuncType,
@@ -20,6 +22,7 @@ type Props = {
   apiClient: Object, // opt-out of type checker until we export APIClient flow types
   cleanName: string,
   description: string,
+  inputExtraText: ?FieldExtraTextType,
   inputProps: ?FieldPropsValueType,
   name: string,
   onChange: OnChangeFuncType,
@@ -375,7 +378,7 @@ export class Address extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { description, cleanName, inputProps, variableType } = this.props;
+    const { description, cleanName, inputExtraText, inputProps, variableType } = this.props;
     const { currentValue, errorMessage, shouldShowError, suggestions } = this.state;
     const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
@@ -421,6 +424,8 @@ export class Address extends React.PureComponent<Props, State> {
             shouldShowError={shouldShowError}
           />
         </label>
+        
+        {inputExtraText && <ExtraText text={inputExtraText} />}
       </div>
     );
   }

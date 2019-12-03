@@ -99,6 +99,24 @@ test('Can render', () => {
   getByPlaceholderText(/mailing address/i);
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <Address
+      apiClient={apiClient}
+      cleanName="Mailing-Address"
+      description="Mailing address"
+      inputExtraText="Mailing Address extra text"
+      name="Mailing Address"
+      onChange={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+      variableType="Address"
+    />
+  );
+  
+  getByText(/mailing address extra text/i);
+});
+
 test('Can call onChangeFunction', async () => {
   const changeSpy = jest.fn();
   mockAxios.get

@@ -8,6 +8,7 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
+import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
 import { DatePicker } from '../DatePicker';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
@@ -62,6 +63,24 @@ describe('Date type', () => {
 
     getByLabelText(/date of birth/i);
     getByDisplayValue(/January 1, 1984/i);
+  });
+
+  test('Can render user-provided extra text string', () => {
+    const { getByText } = render(
+      <DatePicker
+        cleanName="Contestant-DOB"
+        description="Date of Birth"
+        getValidity={getValidity}
+        inputExtraText="Contestant DOB extra text"
+        name="Contestant DOB"
+        onChange={() => {}}
+        onKeyUp={() => {}}
+        savedValue=""
+        variableType="Date"
+      />
+    );
+    
+    getByText(/contestant dob extra text/i);
   });
 
   test('Can select a date', () => {

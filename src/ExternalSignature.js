@@ -2,12 +2,14 @@
 
 import * as React from 'react';
 
+import ExtraText from './ExtraText';
 import { FieldError } from './FieldError';
 import { onBlurValidation, onChangeValidation } from './validation';
 import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
+  FieldExtraTextType,
   FieldPropsValueType,
   OnChangeFuncType,
   OnValidateFuncType,
@@ -19,6 +21,7 @@ type Props = {
   cleanName: string,
   description: string,
   getValidity: ValidityFuncType,
+  inputExtraText: ?FieldExtraTextType,
   inputProps: ?FieldPropsValueType,
   name: string,
   onChange: OnChangeFuncType,
@@ -147,7 +150,7 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description, inputProps, variableType } = this.props;
+    const { cleanName, description, inputExtraText, inputProps, variableType } = this.props;
     const { currentValue, errorMessage, serviceName, shouldShowError } = this.state;
     const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
@@ -184,6 +187,8 @@ export class ExternalSignature extends React.PureComponent<Props, State> {
             <small>{signatureServiceDescription}</small>
           )}
         </label>
+
+        {inputExtraText && <ExtraText text={inputExtraText} />}
       </div>
     );
   }

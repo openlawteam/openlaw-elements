@@ -4,12 +4,14 @@ import * as React from 'react';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.css';
 
+import ExtraText from './ExtraText';
+import { CSS_CLASS_NAMES as css } from './constants';
 import { FieldError } from './FieldError';
 import { onChangeValidation, onBlurValidation } from './validation';
-import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldEnumType,
+  FieldExtraTextType,
   FieldPropsValueType,
   OnChangeFuncType,
   ValidityFuncType,
@@ -19,6 +21,7 @@ type Props = {
   cleanName: string,
   description: string,
   getValidity: ValidityFuncType,
+  inputExtraText: ?FieldExtraTextType,
   inputProps: ?FieldPropsValueType,
   name: string,
   onChange: OnChangeFuncType,
@@ -135,7 +138,7 @@ export class DatePicker extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description, inputProps, variableType } = this.props;
+    const { cleanName, description, inputExtraText, inputProps, variableType } = this.props;
     const { errorMessage, shouldShowError } = this.state;
     const inputPropsClassName = (inputProps && inputProps.className) ? ` ${inputProps.className}` : '';
 
@@ -169,6 +172,8 @@ export class DatePicker extends React.PureComponent<Props, State> {
             errorMessage={errorMessage}
             shouldShowError={shouldShowError}
           />
+
+          {inputExtraText && <ExtraText text={inputExtraText} />}
         </label>
       </div>
     );

@@ -130,6 +130,24 @@ test('Can render with field-level, user-provided error onValidate (blur)', () =>
   getByText(/this is a custom blur error/i);
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <Text
+      cleanName="Contestant-Name"
+      description="Contestant Name"
+      getValidity={getValidity}
+      inputExtraText="Contestant Name extra text"
+      name="Contestant Name"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+    />
+  );
+  
+  getByText(/contestant name extra text/i);
+});
+
 test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 

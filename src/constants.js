@@ -15,12 +15,13 @@ type CSSClassNamesEnumType =
   | 'collectionButtonRemove'
   | 'collectionRow'
   | 'field'
+  | 'fieldErrorMessage'
+  | 'fieldExtraText'
   | 'fieldImageEditor'
   | 'fieldImageEditorActions'
   | 'fieldImageEditorActionsStacked'
   | 'fieldInputError'
   | 'fieldInput'
-  | 'fieldErrorMessage'
   | 'fieldLabel'
   | 'fieldLabelIos'
   | 'fieldLabelText'
@@ -76,6 +77,7 @@ export const CSS_CLASS_NAMES: CSSClassNamesType = {
   collectionRow: `${CSS_CLASS_NAMESPACE}-collection__row`,
   field: `${CSS_CLASS_NAMESPACE}-field`,
   fieldErrorMessage: `${CSS_CLASS_NAMESPACE}-field__error-message`,
+  fieldExtraText: `${CSS_CLASS_NAMESPACE}-field__extra-text`,
   fieldImageEditor: `${CSS_CLASS_NAMESPACE}-field-image__editor`,
   fieldImageEditorActions: `${CSS_CLASS_NAMESPACE}-field-image__editor-actions`,
   fieldImageEditorActionsStacked: `${CSS_CLASS_NAMESPACE}-field-image__editor-actions--stacked`,

@@ -58,6 +58,24 @@ test('Can render with savedValue', () => {
   getByDisplayValue(/this is my personal statement/i);
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <LargeText
+      cleanName="Contestant-Personal-Statement"
+      description="Contestant Personal Statement"
+      getValidity={getValidity}
+      inputExtraText="Contestant Personal Statement extra text"
+      name="Contestant Personal Statement"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+    />
+  );
+  
+  getByText(/contestant personal statement extra text/i);
+});
+
 test('Can render with savedValue and type another value', () => {
   const { getByDisplayValue, getByPlaceholderText } = render(
     <LargeText

@@ -76,6 +76,14 @@ class Form extends Component<Props, State> {
   compiledTemplate = Openlaw.compileTemplate(SampleTemplateText).compiledTemplate;
   initialExecutionResult = Openlaw.execute(this.compiledTemplate, {}, {}, getExternalCallStructures()).executionResult;
   initialVariables = Openlaw.getExecutedVariables(this.initialExecutionResult, {});
+  inputExtraTextMap = {
+    'Contestant Name': () =>
+      <small>Only contestants with the name &ldquo;Smoky&rdquo; can enter.</small>,
+    'Contestant BBQ Region': () =>
+      <small>Moon, ISS and Mars coming soon! 🛰</small>,
+    'Contestant Address': () =>
+      <small>We still spam the old-fashioned, American way.</small>
+  };
 
   state = {
     executionResult: this.initialExecutionResult,
@@ -130,6 +138,7 @@ class Form extends Component<Props, State> {
           <OpenLawForm
             apiClient={apiClientSingleton}
             executionResult={executionResult}
+            inputExtraTextMap={this.inputExtraTextMap}
             parameters={parameters}
             onChangeFunction={this.onElementChange}
             onValidate={onValidate}

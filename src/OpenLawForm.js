@@ -9,6 +9,7 @@ import { Structure } from './Structure';
 import { CSS_CLASS_NAMES as css } from './constants';
 import type {
   OnValidateFuncType,
+  FieldExtraTextMapType,
   FieldPropsType,
   OnChangeFuncType,
 } from './flowTypes';
@@ -16,6 +17,7 @@ import type {
 type Props = {|
   apiClient: Object, // opt-out of type checker until we export flow types for APIClient
   executionResult: {},
+  inputExtraTextMap?: FieldExtraTextMapType,
   inputProps?: FieldPropsType,
   onChangeFunction: OnChangeFuncType,
   onValidate?: OnValidateFuncType,
@@ -48,6 +50,7 @@ const renderInputs = (props: RendererInputProps) => {
   const {
     apiClient, // for API call to Google for geo data (if generating an Address)
     executionResult,
+    inputExtraTextMap,
     inputProps,
     onChangeFunction,
     onValidate,
@@ -99,6 +102,7 @@ const renderInputs = (props: RendererInputProps) => {
     <InputRenderer
       apiClient={apiClient}
       executionResult={executionResult}
+      inputExtraText={inputExtraTextMap && inputExtraTextMap[openLaw.getName(variable)]}
       inputProps={inputProps}
       key={`${cleanName}-input`}
       onChangeFunction={onChangeFunction}

@@ -123,6 +123,25 @@ test('Can render without bad savedValue', () => {
   expect(() => getByDisplayValue(/alex\.bad@/i)).toThrow();
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <Identity
+      cleanName="Contestant-Email"
+      description="Contestant Email"
+      getValidity={getValidity}
+      inputExtraText="Contestant Email extra text"
+      name="Contestant Email"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+      variableType="Identity"
+    />
+  );
+
+  getByText(/contestant email extra text/i);
+});
+
 test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 

@@ -95,7 +95,7 @@
     "jest-canvas-mock": "^2.1.1",
     "node-sass": "^4.12.0",
     "np": "^5.0.3",
-    "openlaw": "^0.2.16",
+    "openlaw": "^0.2.20",
     "react": "^16.8.1",
     "react-dom": "^16.8.1",
     "rimraf": "^3.0.0",

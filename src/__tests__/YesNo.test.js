@@ -270,6 +270,25 @@ test('Should hide error if blank, user-provided error message onValidate (blur)'
   expect(document.querySelector(`.${CSS_CLASS_NAMES.fieldErrorMessage}`)).toBeNull();
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <YesNo
+      cleanName="BBQ-Love-Limit"
+      description="BBQ Love Limit"
+      getValidity={getValidity}
+      inputExtraText="BBQ Love Limit extra text"
+      name="BBQ Love Limit"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+      variableType="YesNo"
+    />
+  );
+  
+  getByText(/bbq love limit extra text/i);
+});
+
 test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 

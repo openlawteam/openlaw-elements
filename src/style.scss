@@ -303,6 +303,38 @@ $text-input-height: 2.25rem;
   padding: 0 .625rem;
 }
 
+/* FIELD: ERRORS */
+
+.#{$NAMESPACE}-field__input--error {
+  box-shadow: 0 -0.1875rem 0 0 $red-error inset;
+}
+
+.#{$NAMESPACE}-field__error-message span {
+  background-color: $red-error__bg;
+  border-radius: .375rem;
+  color: $red-error;
+  display: inline-block;
+  font-size: .875em;
+  font-weight: bold;
+  line-height: 1.5;
+  margin-top: .375rem;
+  padding: .1875em .625em;
+}
+
+/* FIELD: EXTRA TEXT */
+
+.#{$NAMESPACE}-collection > .#{$NAMESPACE}-field__extra-text,
+.#{$NAMESPACE}-structure > .#{$NAMESPACE}-field__extra-text {
+  margin: .5rem 0 1rem;
+}
+
+.#{$NAMESPACE}-field__extra-text,
+.#{$NAMESPACE}-collection .#{$NAMESPACE}-structure .#{$NAMESPACE}-field__extra-text {
+  color: $grey;
+  margin-top: .5rem;
+  margin-left: .625rem;
+}
+
 /* BUTTONS */
 
 .#{$NAMESPACE}-button {
@@ -363,24 +395,6 @@ $text-input-height: 2.25rem;
     outline: none;
     text-decoration: none;
   }
-}
-
-/* ERRORS */
-
-.#{$NAMESPACE}-field__input--error {
-  box-shadow: 0 -0.1875rem 0 0 $red-error inset;
-}
-
-.#{$NAMESPACE}-field__error-message span {
-  background-color: $red-error__bg;
-  border-radius: .375rem;
-  color: $red-error;
-  display: inline-block;
-  font-size: .875em;
-  font-weight: bold;
-  line-height: 1.5;
-  margin-top: .375rem;
-  padding: .1875em .625em;
 }
 
 /* OVERRIDES: REACT AUTOSUGGEST */

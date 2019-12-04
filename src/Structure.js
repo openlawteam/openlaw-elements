@@ -2,10 +2,12 @@
 
 import * as React from 'react';
 
+import ExtraText from './ExtraText';
 import { InputRenderer } from './InputRenderer';
 import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
+  FieldExtraTextMapType,
   FieldPropsType,
   ObjectAnyType,
   OnChangeFuncType,
@@ -15,6 +17,7 @@ import type {
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
+  inputExtraTextMap: ?FieldExtraTextMapType,
   inputProps?: FieldPropsType,
   onChange: OnChangeFuncType,
   onValidate: ?OnValidateFuncType,
@@ -68,7 +71,7 @@ export class Structure extends React.Component<Props, State> {
   }
 
   renderFields(subVariable: ObjectAnyType) {
-    const { apiClient, executionResult, inputProps, onValidate, variable } = this.props;
+    const { apiClient, executionResult, inputExtraTextMap, inputProps, onValidate, variable } = this.props;
     const savedValueProp = this.props.savedValue === '' ? undefined : this.props.savedValue;
     const structureFieldValue = this.openLaw.getStructureFieldValue(
       variable,
@@ -76,14 +79,17 @@ export class Structure extends React.Component<Props, State> {
       savedValueProp,
       executionResult,
     );
+    const name = this.openLaw.getName(subVariable);
+    const inputExtraText = inputExtraTextMap && inputExtraTextMap[name];
 
     return (
       <div
         className={css.structureRow}
-        key={this.openLaw.getName(subVariable)}>
+        key={name}>
         <InputRenderer
           apiClient={apiClient}
           executionResult={executionResult}
+          inputExtraText={inputExtraText}
           inputProps={inputProps}
           onChangeFunction={this.onChange}
           onValidate={onValidate}
@@ -96,15 +102,18 @@ export class Structure extends React.Component<Props, State> {
   }
 
   render() {
-    const { executionResult, variable } = this.props;
+    const { executionResult, inputExtraTextMap, variable } = this.props;
     const cleanName = this.openLaw.getCleanName(variable);
     const fields = this.openLaw.getStructureFieldDefinitions(
       variable,
       executionResult,
     ).map(field => this.renderFields(field));
+    const structureExtraText = inputExtraTextMap && inputExtraTextMap[this.openLaw.getName(variable)];
 
     return (
       <div className={singleSpaceString(`${css.structure} ${cleanName}`)}>
+        {structureExtraText && <ExtraText text={structureExtraText} />}
+        
         {fields}
       </div>
     );

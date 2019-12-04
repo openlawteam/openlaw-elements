@@ -98,6 +98,24 @@ test('Can render without bad savedValue', () => {
   expect(() => getByDisplayValue(/-1f/i)).toThrow();
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <NumberInput
+      cleanName="Contestant-BBQ-Experience-Years"
+      description="Contestant BBQ Experience Years"
+      getValidity={getValidity}
+      inputExtraText="Contestant BBQ Experience Years extra text"
+      name="Contestant BBQ Experience Years"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+    />
+  );
+  
+  getByText(/contestant bbq experience years extra text/i);
+});
+
 test('Can insert "1e19"', () => {
   const { getByDisplayValue, getByPlaceholderText } = render(
     <NumberInput

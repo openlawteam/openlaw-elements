@@ -9,10 +9,10 @@ import {
 import '@testing-library/jest-dom/extend-expect';
 import { Openlaw } from 'openlaw';
 
-import { Text } from '../Text';
-import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
+import { Text } from '../Text';
 
 const template = 'Please, be a giver of ETH: [[Contestant ETH Address: EthAddress "Your ETH address for the registration fee ($200)"]]';
 const getValidity = testGetValidity(
@@ -81,6 +81,24 @@ test('Can render without bad savedValue', () => {
 
   getByPlaceholderText(/contestant eth address/i);
   expect(() => getByDisplayValue(/0xc0ffe/i)).toThrow();
+});
+
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <Text
+      cleanName="Contestant-ETH-Address"
+      description="Contestant ETH Address"
+      getValidity={getValidity}
+      inputExtraText="Contestant ETH Address extra text"
+      name="Contestant ETH Address"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue="0xc0ffee254729296a45a3885639AC7E10F9d54979"
+    />
+  );
+  
+  getByText(/contestant eth address extra text/i);
 });
 
 test('Can call onChangeFunction', () => {

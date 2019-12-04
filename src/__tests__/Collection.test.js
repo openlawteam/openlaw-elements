@@ -351,4 +351,54 @@ describe('Collection', () => {
 
     expect(getAllByPlaceholderText(/favorite meats/i).length).toBe(1);
   });
+
+  test('Can render extra text string for collection variable', () => {
+    const { getByText } = render(
+      <FakeApp
+        inputExtraTextMap={{
+          'Certification List': 'Certification List extra text'
+        }}
+      />
+    );
+
+    getByText(/certification list extra text/i);
+  });
+
+  test('Can render extra text string for collection variable\'s sub-variables', () => {
+    const { getAllByText, getByText } = render(
+      <FakeApp
+        inputExtraTextMap={{
+          'Favorite Meats *': 'Favorite Meats extra text'
+        }}
+      />
+    );
+
+    getByText(/favorite meats extra text/i);
+
+    const addButton = document.querySelector('.openlaw-el-collection.Favorite-Meats .openlaw-el-button');
+
+    // add new empty Collection item
+    fireEvent.click(addButton);
+
+    expect(getAllByText(/favorite meats extra text/i).length).toBe(2);
+  });
+
+  test('Can render extra text string for collection variable\'s sub-structure variable', () => {
+    const { getAllByText, getByText } = render(
+      <FakeApp
+        inputExtraTextMap={{
+          'Certifier Eth Address': 'Certifier Eth Address extra text'
+        }}
+      />
+    );
+
+    getByText(/certifier eth address extra text/i);
+
+    const addButton = document.querySelector('.openlaw-el-collection.Certification-List .openlaw-el-button');
+
+    // add new empty Collection item
+    fireEvent.click(addButton);
+
+    expect(getAllByText(/certifier eth address extra text/i).length).toBe(2);
+  });
 });

@@ -7,8 +7,8 @@ import {
 import '@testing-library/jest-dom/extend-expect';
 import { Openlaw } from 'openlaw';
 
-import { Choice } from '../Choice';
 import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
+import { Choice } from '../Choice';
 import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';
 
 const template = '[[Contestant Regional Style: Choice("Carolinas", "Hawaii", "Kansas City", "Memphis", "Texas")]]\
@@ -105,6 +105,26 @@ test('Should render without bad savedValue', () => {
 
   getByLabelText(/contestant bbq region/i);
   expect(() => getByDisplayValue(/bad, bad leroy brown/i)).toThrow();
+});
+
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <Choice
+      choiceValues={choiceValues}
+      cleanName="Contestant-BBQ-Region"
+      description="Contestant BBQ Region"
+      getValidity={getValidity}
+      inputExtraText="Contestant BBQ Region extra text"
+      name="Contestant BBQ Region"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+      variableType="Choice"
+    />
+  );
+  
+  getByText(/contestant bbq region extra text/i);
 });
 
 test('Can render field-level error message onBlur with savedValue', () => {

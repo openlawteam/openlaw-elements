@@ -99,6 +99,24 @@ test('Can render without bad savedValue', () => {
   expect(() => getByDisplayValue(/test\.bad@/i)).toThrow();
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <ExternalSignature
+      cleanName="DocuSign Signatory"
+      description="DocuSign Signatory"
+      getValidity={getValidity}
+      inputExtraText="DocuSign Signatory extra text"
+      name="DocuSign Signatory"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+    />
+  );
+
+  getByText(/docusign signatory extra text/i);
+});
+
 test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 

@@ -2,11 +2,13 @@
 
 import * as React from 'react';
 
-import { FieldError } from './FieldError';
-import { onBlurValidation, onChangeValidation } from './validation';
 import { CSS_CLASS_NAMES as css } from './constants';
+import { FieldError } from './FieldError';
+import ExtraText from './ExtraText';
+import { onBlurValidation, onChangeValidation } from './validation';
 import { singleSpaceString } from './utils';
 import type {
+  FieldExtraTextType,
   FieldEnumType,
   FieldPropsValueType,
   OnChangeFuncType,
@@ -18,6 +20,7 @@ type Props = {
   choiceValues: Array<string>,
   cleanName: string,
   description: string,
+  inputExtraText: ?FieldExtraTextType,
   inputProps: ?FieldPropsValueType,
   getValidity: ValidityFuncType,
   name: string,
@@ -102,7 +105,7 @@ export class Choice extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { choiceValues, cleanName, description, inputProps, variableType } = this.props;
+    const { choiceValues, cleanName, description, inputExtraText, inputProps, variableType } = this.props;
     const { currentValue, errorMessage, shouldShowError } = this.state;
     const errorClassName = (errorMessage && shouldShowError) ? css.fieldInputError : '';
     const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
@@ -133,6 +136,8 @@ export class Choice extends React.PureComponent<Props, State> {
             shouldShowError={shouldShowError}
           />
         </label>
+        
+        {inputExtraText && <ExtraText text={inputExtraText} />}
       </div>
     );
   }

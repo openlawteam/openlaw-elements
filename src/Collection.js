@@ -3,12 +3,14 @@
 import * as React from 'react';
 const uuidv4 = require('uuid/v4');
 
+import ExtraText from './ExtraText';
 import { InputRenderer } from './InputRenderer';
 import { Structure } from './Structure';
 import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import type {
   FieldErrorType,
+  FieldExtraTextMapType,
   FieldPropsType,
   OnChangeFuncType,
   OnValidateFuncType,
@@ -17,6 +19,7 @@ import type {
 type Props = {
   apiClient: Object, // opt-out of type checker until we export its Flow types
   executionResult: {},
+  inputExtraTextMap: ?FieldExtraTextMapType,
   inputProps?: FieldPropsType,
   onChange: OnChangeFuncType,
   onValidate: ?OnValidateFuncType,
@@ -217,8 +220,9 @@ export class Collection extends React.Component<Props, State> {
       this.props.savedValue,
       index,
     );
-    const { executionResult, inputProps } = this.props;
-    
+    const { executionResult, inputExtraTextMap, inputProps, variable } = this.props;
+    const subVariableExtraText = inputExtraTextMap && inputExtraTextMap[`${this.openLaw.getName(variable)} *`];
+
     // append new client-side unique React key, if none exists
     if (!this.uniqueCollectionIds[index]) this.addUniqueCollectionId(uuidv4());
 
@@ -232,6 +236,7 @@ export class Collection extends React.Component<Props, State> {
             <Structure
               apiClient={this.props.apiClient} // for API call to Google for geo data (if generating an Address)
               executionResult={executionResult}
+              inputExtraTextMap={inputExtraTextMap}
               inputProps={inputProps}
               key={`${this.openLaw.getCleanName(subVariable)}-collection`}
               onChange={this.onChange}
@@ -244,6 +249,7 @@ export class Collection extends React.Component<Props, State> {
             <InputRenderer
               apiClient={this.props.apiClient}
               executionResult={this.props.executionResult}
+              inputExtraText={subVariableExtraText}
               inputProps={inputProps}
               onChangeFunction={this.onChange}
               onKeyUp={this.onKeyUp}
@@ -271,7 +277,7 @@ export class Collection extends React.Component<Props, State> {
   }
 
   render() {
-    const { executionResult, savedValue, variable } = this.props;
+    const { executionResult, inputExtraTextMap, savedValue, variable } = this.props;
     const cleanName = this.openLaw.getCleanName(variable);
     const description = this.openLaw.getDescription(variable);
     const collectionSize = this.openLaw.getCollectionSize(
@@ -279,6 +285,7 @@ export class Collection extends React.Component<Props, State> {
       savedValue,
       executionResult,
     );
+    const collectionExtraText = inputExtraTextMap && inputExtraTextMap[this.openLaw.getName(variable)];
 
     const fields = [];
 
@@ -291,6 +298,8 @@ export class Collection extends React.Component<Props, State> {
         <div className={css.collectionDescription}>
           <span>{description}</span>
         </div>
+
+        {collectionExtraText && <ExtraText text={collectionExtraText} />}
 
         {fields}
 

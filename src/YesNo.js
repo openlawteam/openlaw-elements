@@ -2,12 +2,14 @@
 
 import * as React from 'react';
 
+import ExtraText from './ExtraText';
 import { FieldError } from './FieldError';
 import { CSS_CLASS_NAMES as css } from './constants';
 import { singleSpaceString } from './utils';
 import { onBlurValidation, onChangeValidation } from './validation';
 import type {
   FieldEnumType,
+  FieldExtraTextType,
   FieldPropsValueType,
   OnChangeFuncType,
   OnValidateFuncType,
@@ -18,6 +20,7 @@ type Props = {
   cleanName: string,
   description: string,
   getValidity: ValidityFuncType,
+  inputExtraText: ?FieldExtraTextType,
   inputProps: ?FieldPropsValueType,
   name: string,
   onChange: OnChangeFuncType,
@@ -126,7 +129,7 @@ export class YesNo extends React.PureComponent<Props, State> {
   }
 
   render() {
-    const { cleanName, description, inputProps, variableType } = this.props;
+    const { cleanName, description, inputExtraText, inputProps, variableType } = this.props;
     const { errorMessage, shouldShowError } = this.state;
     const inputPropsClassName = (inputProps && inputProps.className) ? `${inputProps.className}` : '';
 
@@ -173,6 +176,8 @@ export class YesNo extends React.PureComponent<Props, State> {
             shouldShowError={shouldShowError}
           />
         </div>
+
+        {inputExtraText && <ExtraText text={inputExtraText} />}
       </div>
     );
   }

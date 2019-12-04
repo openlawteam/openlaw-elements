@@ -83,6 +83,24 @@ test('Can render without bad savedValue', () => {
   expect(() => getByDisplayValue(/1 we/i)).toThrow();
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <Text
+      cleanName="Contestant-Longest-BBQ"
+      description="Contestant Longest BBQ"
+      getValidity={getValidity}
+      inputExtraText="Contestant Longest BBQ extra text"
+      name="Contestant Longest BBQ"
+      onChange={() => {}}
+      onKeyUp={() => {}}
+      openLaw={Openlaw}
+      savedValue="1 week"
+    />
+  );
+  
+  getByText(/contestant longest bbq extra text/i);
+});
+
 test('Can call onChangeFunction', () => {
   const changeSpy = jest.fn();
 

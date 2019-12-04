@@ -81,6 +81,23 @@ test('Can render with savedValue', () => {
   expect(getByText(/edit contestant picture/i).disabled).toBeFalsy();
 });
 
+test('Can render user-provided extra text string', () => {
+  const { getByText } = render(
+    <ImageInput
+      cleanName="Contestant-Picture"
+      description="Contestant Picture"
+      getValidity={getValidity}
+      inputExtraText="Contestant Picture extra text"
+      name="Contestant Picture"
+      onChange={() => {}}
+      openLaw={Openlaw}
+      savedValue=""
+    />
+  );
+
+  getByText(/contestant picture extra text/i);
+});
+
 test('Can disable edit button if input is disabled via inputProps', () => {
   const { getByText } = render(
     <ImageInput

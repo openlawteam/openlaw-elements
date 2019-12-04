@@ -172,9 +172,9 @@ export class DatePicker extends React.PureComponent<Props, State> {
             errorMessage={errorMessage}
             shouldShowError={shouldShowError}
           />
-
-          {inputExtraText && <ExtraText text={inputExtraText} />}
         </label>
+        
+        {inputExtraText && <ExtraText text={inputExtraText} />}
       </div>
     );
   }

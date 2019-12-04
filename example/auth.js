@@ -2,17 +2,18 @@
 
 import { APIClient } from 'openlaw';
 
-const { OPENLAW_EMAIL, OPENLAW_INSTANCE_NAME, OPENLAW_PASSWORD } = process.env;
-
 // Provide your OPENLAW_INSTANCE_NAME for logging into your OpenLaw instance.
-const INSTANCE_URL = `https://lib.openlaw.io/api/v1/${OPENLAW_INSTANCE_NAME.toLowerCase() || 'default'}`;
+const instanceNameEnv = process.env.OPENLAW_INSTANCE_NAME;
+const INSTANCE_URL = `https://lib.openlaw.io/api/v1/${
+  instanceNameEnv && instanceNameEnv.toLowerCase() || 'default'
+}`;
 
 export const apiClientSingleton = new APIClient(INSTANCE_URL);
 
 export const attemptAuth = () => {
   const loginDetails = {
-    email: OPENLAW_EMAIL || '',
-    password: OPENLAW_PASSWORD || '',
+    email: process.env.OPENLAW_EMAIL || '',
+    password: process.env.OPENLAW_PASSWORD || '',
   };
 
   apiClientSingleton

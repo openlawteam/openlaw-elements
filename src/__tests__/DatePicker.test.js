@@ -8,7 +8,6 @@ import {
 } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 
-import TestOpenLawFormComponent from '../__test_utils__/OpenLawFormComponent';
 import { DatePicker } from '../DatePicker';
 import { FIELD_DEFAULT_ERROR_MESSAGE, TYPE_TO_READABLE } from '../constants';
 import { getTemplateExecutionData, getValidity as testGetValidity } from '../__test_utils__/helpers';

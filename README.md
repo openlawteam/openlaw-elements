@@ -119,6 +119,14 @@ OPENLAW_EMAIL=alex@email.com OPENLAW_PASSWORD=password npm start
 * Select an Address lookup from the drop-down
 * See those values in the rendered preview HTML
 
+#### Authenticating against your own instance
+
+If you would like to use your own [OpenLaw Private Instance](https://docs.openlaw.io/private-self-hosted-instances/#private-instances) to authenticate against, provide the `OPENLAW_INSTANCE_NAME` environment variable.
+
+```
+OPENLAW_INSTANCE_NAME="cool" OPENLAW_EMAIL=alex@email.com OPENLAW_PASSWORD=password npm start
+```
+
 ### About the app
 
 The example app (`openlaw-elements/example`) can help you gain ideas and understanding to build your own OpenLaw app in JavaScript and React. In contrast to the example app, the "Usage" section above intentionally leaves out more complex behavior to simply illustrate the required dependencies in order to use `<OpenLawForm />` correctly.

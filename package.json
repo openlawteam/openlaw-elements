@@ -122,7 +122,7 @@
     "flatpickr": "^4.6.3",
     "prop-types": "^15.7.2",
     "react-autosuggest": "^9.4.3",
-    "react-image-crop": "^6.0.12",
+    "react-image-crop": "^8.4.2",
     "uuid": "^3.3.3"
   },
   "keywords": [

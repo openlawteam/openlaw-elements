@@ -82,7 +82,7 @@
     "babel-loader": "^8.0.5",
     "babel-plugin-flow-react-proptypes": "^25.0.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.24",
-    "cpy-cli": "^2.0.0",
+    "cpy-cli": "^3.0.0",
     "cross-env": "^6.0.3",
     "css-loader": "^3.2.1",
     "eslint": "^6.7.2",

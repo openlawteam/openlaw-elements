@@ -30,7 +30,7 @@ import 'openlaw-elements/dist/openlaw-elements.min.css';
 // OpenLaw APIClient: https://docs.openlaw.io/api-client/#authentication
 //  - used to fetch geo data in our `Address` field type
 //  - to run against your own private OpenLaw instance: 'https://[YOUR.INSTANCE.URL]';
-const apiClient = new APIClient('https://app.openlaw.io');
+const apiClient = new APIClient('https://lib.openlaw.io/api/v1/default');
 // You can login from a Node server (e.g. Express), and be sure to pass the `OPENLAW_JWT`  on to the client.
 // If you require your users to have an account on your instance, create a login page on the client.
 apiClient.login('[YOUR_OPENLAW_EMAIL]', '[YOUR_OPENLAW_PASSWORD]');

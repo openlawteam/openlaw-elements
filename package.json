@@ -86,7 +86,7 @@
     "cross-env": "^6.0.3",
     "css-loader": "^3.2.1",
     "eslint": "^6.7.2",
-    "eslint-plugin-flowtype": "^4.5.2",
+    "eslint-plugin-flowtype": "^4.6.0",
     "eslint-plugin-react": "^7.17.0",
     "flow-bin": "^0.105.2",
     "flow-copy-source": "^2.0.9",
